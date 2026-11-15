@@ -39,10 +39,18 @@ jobs:
           git add site/data
           if git diff --cached --quiet; then
             echo "No data changes."
-          else
-            git commit -m "Refresh data"
-            git push
+            exit 0
           fi
+          git commit -m "Refresh data"
+          # Another run may have pushed since checkout: rebase onto it (keeping our fresh
+          # data on conflict; in a rebase "theirs" is the commit being replayed) and retry.
+          for attempt in 1 2 3; do
+            git push && exit 0
+            git fetch origin main
+            git rebase -X theirs origin/main || { git rebase --abort; break; }
+          done
+          # Never block the deploy over a data commit; the next run will commit it.
+          echo "::warning::Could not push refreshed data; deploying anyway."
 
       - uses: actions/configure-pages@v6
 
