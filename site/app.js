@@ -11,8 +11,9 @@
     get(k, d) { try { const v = localStorage.getItem('tp.' + k); return v === null ? d : v; } catch { return d; } },
     set(k, v) { try { localStorage.setItem('tp.' + k, String(v)); } catch { /* ignore */ } },
   };
+  const RANGES = ['1', '5', '10', '25', 'all'];
   const state = {
-    range: store.get('range', '10'),
+    range: RANGES.includes(store.get('range', '10')) ? store.get('range', '10') : '10',
     real: store.get('real', '0') === '1',
     oz: parseFloat(store.get('oz', '1')),
   };
@@ -52,7 +53,7 @@
   // ---- month helpers ----
   const mi = (s) => { const [y, m] = s.split('-').map(Number); return y * 12 + m - 1; };
   const mlabel = (m) => MONTHS[((m % 12) + 12) % 12] + ' ' + Math.floor(m / 12);
-  const nowMonth = () => { const d = new Date(); return d.getFullYear() * 12 + d.getMonth(); };
+  const monthOf = (d) => d.getFullYear() * 12 + d.getMonth();
 
   function monthly(id) {
     const s = D.series[id];
@@ -69,6 +70,12 @@
     const c = monthly('cpi');
     cpiMap = new Map(c.map((p) => [p.m, p.v]));
     cpiLast = c[c.length - 1];
+    // Fill gaps (BLS published no October 2025 CPI after the government shutdown) by
+    // interpolating between the neighboring months, so no price month is dropped.
+    for (let i = 1; i < c.length; i++) {
+      const a = c[i - 1], b = c[i];
+      for (let m = a.m + 1; m < b.m; m++) cpiMap.set(m, a.v + (b.v - a.v) * (m - a.m) / (b.m - a.m));
+    }
   }
   const cpiAt = (m) => cpiMap.get(m) ?? (m > cpiLast.m ? cpiLast.v : null);
   function toReal(pts) {
@@ -82,7 +89,7 @@
   // ---- building a card's points ----
   function livePoint(v, after) {
     const d = live.at || new Date();
-    const m = d.getFullYear() * 12 + d.getMonth();
+    const m = monthOf(d);
     const dim = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
     let x = m + (d.getDate() - 0.5) / dim;
     if (after && x <= after.x) x = after.x + 0.05;
@@ -284,7 +291,8 @@
     const pts = details._host._pts || [];
     const table = el('table');
     const head = el('tr');
-    head.append(el('th', {}, 'Month'), el('th', {}, state.real && def.kind !== 'ratio' ? 'Value (today\'s $)' : 'Value'));
+    head.append(el('th', {}, 'Month'), el('th', {}, !state.real || def.kind === 'ratio' ? 'Value'
+      : def.kind === 'usd' ? 'Value (today\'s $)' : 'Value (inflation-adjusted)'));
     const thead = el('thead'); thead.append(head);
     const tbody = el('tbody');
     for (const p of [...pts].reverse()) {
@@ -327,13 +335,18 @@
       if (ago) stat.append(el('span', { class: 'delta' }, `${fmtDelta(last.v, ago.v)} vs a year ago`));
       stat.append(el('span', { class: 'when' }, last.label));
       const hi = maxPt(pts), lo = minPt(pts);
-      const share = Math.round(shareBelow(pts, last.v) * 100);
-      context.textContent = `Higher than ${share}% of months in ${rangeText()}. Range: ${fmt(lo.v, def.kind)} (${lo.label}) to ${fmt(hi.v, def.kind)} (${hi.label}).`;
+      // Rank the latest point against the other months (same convention as the hero).
+      const share = shareBelow(pts.slice(0, -1), last.v);
+      const rank = share === 1 ? `Highest of any month in ${rangeText()}`
+        : share === 0 ? `Lowest of any month in ${rangeText()}`
+        : `Higher than ${Math.round(share * 100)}% of months in ${rangeText()}`;
+      context.textContent = `${rank}. Range: ${fmt(lo.v, def.kind)} (${lo.label}) to ${fmt(hi.v, def.kind)} (${hi.label}).`;
       lineChart(host, pts, def, { ...meta, rangeText: rangeText() });
       lastW = host.clientWidth;
       if (details.open) fillTable(details, def);
     };
     card._render = render;
+    card._live = Boolean(def.live);
     new ResizeObserver(() => { if (Math.abs(host.clientWidth - lastW) > 4) render(); }).observe(host);
     return card;
   }
@@ -382,16 +395,21 @@
     const peak = maxPt(nominal), rpeak = maxPt(real);
     const items = [];
     const fromPeak = pct(price, peak.v);
-    items.push(fromPeak < -5
-      ? `Down ${Math.round(-fromPeak)}% from its record monthly average of ${fmt(peak.v, 'usd')} (${peak.label}).`
-      : `Close to its record monthly average of ${fmt(peak.v, 'usd')} (${peak.label}).`);
+    items.push(fromPeak >= 0
+      ? `Record territory: above its highest monthly average ever, ${fmt(peak.v, 'usd')} (${peak.label}).`
+      : fromPeak < -5
+        ? `Down ${Math.round(-fromPeak)}% from its record monthly average of ${fmt(peak.v, 'usd')} (${peak.label}).`
+        : `Within ${Math.max(1, Math.round(-fromPeak))}% of its record monthly average of ${fmt(peak.v, 'usd')} (${peak.label}).`);
     const since = nominal[0].label.split(' ')[1];
     const share = Math.round(shareBelow(nominal, price) * 100);
     items.push(share >= 50
       ? `Still higher than ${share}% of all months since ${since}, before adjusting for inflation.`
       : `Lower than ${100 - share}% of all months since ${since}, before adjusting for inflation.`);
     if (rpeak.m !== peak.m) {
-      items.push(`In today's dollars the record is ${rpeak.label}, at ${fmt(rpeak.v, 'usd')}. Today's price is ${Math.round(-pct(price, rpeak.v))}% below that.`);
+      const fromReal = pct(price, rpeak.v);
+      items.push(fromReal >= 0
+        ? `Even adjusted for inflation this beats the old record, ${fmt(rpeak.v, 'usd')} in today's dollars (${rpeak.label}).`
+        : `In today's dollars the record is ${rpeak.label}, at ${fmt(rpeak.v, 'usd')}. Today's price is ${Math.max(1, Math.round(-fromReal))}% below that.`);
     }
     const ratioNow = live.gold / live.silver;
     const med = median(ratioMonthly().map((p) => p.v));
@@ -483,7 +501,7 @@
       const a = el('a', { href: s.url, rel: 'noopener' }, s.name);
       box.append(a);
       if (s.updated) box.append(document.createTextNode(` (updated ${s.updated})`));
-      box.append(document.createTextNode(i < list.length - 1 ? '; ' : '; '));
+      box.append(document.createTextNode('; '));
     });
     const g = el('a', { href: 'https://gold-api.com', rel: 'noopener' }, 'gold-api.com');
     box.append(g, document.createTextNode(' for live spot prices.'));
@@ -524,11 +542,13 @@
 
     if (live) { renderHero(); }
     renderAll();
-    if (await refreshLive()) { renderHero(); renderAll(); }
+    // Only the hero and the cards that plot the live price change when it updates.
+    const renderLive = () => { renderHero(); for (const c of cards) if (c._live) c._render(); };
+    if (await refreshLive()) renderLive();
     else if (!live) showError('Live silver price is unavailable right now.');
     else renderHero();
     setInterval(async () => {
-      if (document.visibilityState === 'visible' && await refreshLive()) { renderHero(); renderAll(); }
+      if (document.visibilityState === 'visible' && await refreshLive()) renderLive();
     }, 5 * 60 * 1000);
   }
 

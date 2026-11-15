@@ -22,6 +22,7 @@ import io
 import json
 import re
 import sys
+import urllib.parse
 import urllib.request
 from pathlib import Path
 
@@ -80,8 +81,7 @@ def find_link(page: str, pattern: str, fallback: str) -> str:
         html = get(page).decode("utf-8", "replace")
         m = re.search(pattern, html)
         if m:
-            link = m.group(0)
-            return link if link.startswith("http") else "https://www.fao.org" + link
+            return urllib.parse.urljoin(page, m.group(0))
     except Exception as e:  # noqa: BLE001 - any failure means "use the fallback"
         print(f"  warn: could not read {page}: {e}", file=sys.stderr)
     return fallback
