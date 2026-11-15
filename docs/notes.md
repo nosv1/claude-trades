@@ -20,13 +20,16 @@ urea; FAO sub-index tiles; range filter, inflation toggle, table view per chart.
 <https://nosv1.github.io/claude-trades/>. Pages source must be "GitHub Actions"; with "Deploy from a
 branch" the root shows the README and the dashboard only appears under `/site/`.
 
-**Next ideas, roughly in order of value:**
+**Roadmap, in order (Claude's call as domain expert, 2026-11-15):**
 
-1. Trade flows: who exports and imports wheat, rice, etc. (UN Comtrade, free key), e.g. "which
-   countries depend on Russian/Ukrainian wheat". This is the "global trade" half of the video.
-2. Daily spot history: `site/data/spot.json` already logs one silver/gold price a day; chart it
-   once there are a few weeks.
-3. Alerts: notify when silver crosses a price he picks.
+1. Who feeds whom: export/import flows for wheat, rice, fertilizer (UN Comtrade, free key), e.g.
+   which countries depend on Russian/Ukrainian wheat. The "global trade" half of the video.
+2. Shortage early warnings: USDA stocks-to-use ratios (best single leading signal), export bans,
+   shipping chokepoints (Red Sea, Panama). Prices only show a shortage after it starts.
+3. Daily spot chart: `site/data/spot.json` already logs one silver/gold price a day.
+4. Price alert when silver crosses a price he picks.
+
+Code review fixes merged 2026-11-15 (CPI gap interpolation, workflow push retry, etc.).
 
 ## Log
 
