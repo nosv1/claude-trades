@@ -16,7 +16,9 @@ urea; FAO sub-index tiles; range filter, inflation toggle, table view per chart.
 
 ## Handoff
 
-**Where it stands (2026-11-15):** milestone 1 on PR from `dashboard-v1`; merge turns on the site.
+**Where it stands (2026-11-15):** milestone 1 merged to `main` and live at
+<https://nosv1.github.io/claude-trades/>. Pages source must be "GitHub Actions"; with "Deploy from a
+branch" the root shows the README and the dashboard only appears under `/site/`.
 
 **Next ideas, roughly in order of value:**
 
