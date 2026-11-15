@@ -1,3 +1,39 @@
 # claude-trades
 
-Something about food shortages and global trade. Scope to come.
+**Trade Pulse**: a dashboard for silver, gold, world food prices and what drives them (oil,
+fertilizer), with decades of history so today's numbers have context.
+
+Live at **<https://nosv1.github.io/claude-trades/>**.
+
+## What's on it
+
+- **Silver right now:** live spot price, what your ounces are worth, and where today's price ranks
+  against the last 1, 5 and 10 years and all history since 1960.
+- **Metals:** silver, gold, the gold/silver ratio, copper.
+- **Food:** the FAO Food Price Index and its five groups, plus wheat, maize, rice, soybeans.
+- **Drivers:** Brent crude oil and urea fertilizer.
+- Every chart has 1Y / 5Y / 10Y / 25Y / All ranges, an inflation adjustment and a table view.
+
+## Data (all free, no API keys)
+
+| Source | What | How often |
+| --- | --- | --- |
+| [World Bank Pink Sheet](https://www.worldbank.org/en/research/commodity-markets) | Monthly commodity prices since 1960 | Early each month |
+| [FAO Food Price Index](https://www.fao.org/worldfoodsituation/foodpricesindex/en/) | Monthly food price indices since 1990 | Early each month |
+| [FRED CPIAUCSL](https://fred.stlouisfed.org/series/CPIAUCSL) | US consumer prices, for inflation adjustment | Monthly |
+| [gold-api.com](https://gold-api.com) | Live silver and gold spot price | Live, in the browser |
+
+## How it works
+
+A static site in `site/`, no build step. A GitHub Action
+([.github/workflows/update-and-deploy.yml](.github/workflows/update-and-deploy.yml)) runs daily:
+it runs `scripts/fetch_data.py`, commits any new data in `site/data/`, and publishes `site/` to
+GitHub Pages. The page also asks gold-api.com for the live silver and gold price when it loads.
+
+## Run it locally
+
+```sh
+pip install openpyxl
+python scripts/fetch_data.py          # refresh site/data/
+python -m http.server 8000 -d site    # then open http://localhost:8000
+```

@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Trade Pulse</title>
+  <meta name="description" content="Silver, gold, food and the things that drive food prices, with decades of history for context.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M3 22 L10 14 L16 18 L23 8 L29 12' fill='none' stroke='%232a78d6' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="top">
+    <h1>Trade Pulse</h1>
+    <p class="sub">Metals, food and what drives food prices, with decades of history for context.</p>
+  </header>
+
+  <main>
+    <section class="hero card" aria-labelledby="hero-title">
+      <div class="hero-head">
+        <h2 id="hero-title">Silver right now</h2>
+        <span class="live" id="live-status">loading</span>
+      </div>
+      <p class="hero-figure" id="silver-price">-</p>
+      <p class="hero-unit">per troy ounce, spot price</p>
+
+      <div class="stash">
+        <label for="oz">Your silver</label>
+        <input id="oz" type="number" inputmode="decimal" min="0" step="0.1" value="1">
+        <span>oz is worth <strong id="stash-value">-</strong></span>
+      </div>
+
+      <ul class="verdict" id="verdict"></ul>
+
+      <h3 class="mini-title">Where today's price sits</h3>
+      <p class="mini-note">Ranked against every monthly average in each window. Far left means cheaper than all of them, far right means pricier than all of them.</p>
+      <div class="ranges" id="silver-ranges"></div>
+    </section>
+
+    <div class="filters" role="group" aria-label="Chart options">
+      <div class="seg" id="range" role="radiogroup" aria-label="Time range">
+        <button type="button" data-v="1">1Y</button>
+        <button type="button" data-v="5">5Y</button>
+        <button type="button" data-v="10">10Y</button>
+        <button type="button" data-v="25">25Y</button>
+        <button type="button" data-v="all">All</button>
+      </div>
+      <label class="toggle">
+        <input type="checkbox" id="real">
+        <span>Adjust for inflation</span>
+      </label>
+    </div>
+    <p class="filter-note" id="filter-note"></p>
+
+    <section aria-labelledby="metals-title">
+      <h2 class="section-title" id="metals-title">Metals</h2>
+      <p class="section-lede">Silver is half money, half industrial metal (solar panels, electronics), so it swings harder than gold. Copper goes into wiring, buildings and EVs, which makes it a rough gauge of how busy the world's factories are.</p>
+      <div class="grid" id="metals"></div>
+    </section>
+
+    <section aria-labelledby="food-title">
+      <h2 class="section-title" id="food-title">Food</h2>
+      <p class="section-lede">The FAO Food Price Index is the world's grocery bill: what a basket of internationally traded food costs, compared with 2014-2016 (= 100). Wheat, maize, rice and soybeans feed most people, either directly or as animal feed.</p>
+      <div class="grid" id="food"></div>
+      <h3 class="mini-title">Inside the food index</h3>
+      <p class="mini-note">Each group's index now, change over the past year, and its last 12 months.</p>
+      <div class="tiles" id="fao-parts"></div>
+    </section>
+
+    <section aria-labelledby="drivers-title">
+      <h2 class="section-title" id="drivers-title">What drives food prices</h2>
+      <p class="section-lede">Food is made from energy. Diesel runs the tractors and ships, and natural gas is the raw material for nitrogen fertilizer like urea. When oil and fertilizer spike, food usually follows a few months later. From early 2021 to spring 2022, as natural gas prices soared and then Russia invaded Ukraine, urea went up about 3.5 times and the food index hit its all-time record.</p>
+      <div class="grid" id="drivers"></div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <p><strong>Sources.</strong> <span id="sources"></span></p>
+    <p>Charts show monthly average prices. The silver and gold "now" points are the live spot price from gold-api.com. Inflation adjustment uses US consumer prices and shows past prices in today's dollars. Data refreshes daily.</p>
+    <p>Not financial advice. Just a way to see where things stand.</p>
+  </footer>
+
+  <div id="error" class="error" hidden></div>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,7 +1,7 @@
 # claude-trades
 
-Project TBD. The spark: a video on food shortages and global trade (2026-11-15). Scope, data, and
-form (sim, dashboard, model, game) are all undecided.
+**Trade Pulse**: a static dashboard on GitHub Pages for silver, gold, world food prices and what
+drives them, with decades of history for context. Scope and milestones: [docs/notes.md](docs/notes.md).
 
 ## Read first
 
@@ -18,10 +18,14 @@ Claude).
 
 - **Mode: "just build it"** (his call, 2026-11-15). Claude writes the code, as in SpellIt! and
   afterwatch. The flight-instructor default in PROFILE.md doesn't apply here unless he says so.
-- **Still his:** what the project *is*. Until there's a scope in docs/notes.md, help him find it:
-  ask what in the video caught him, offer two or three concrete shapes, let him pick. Don't build
-  ahead of that.
+- **Claude is the domain expert too** (his call, 2026-11-15): he knows little about global trade and
+  said to make the calls. Pick what to show and explain it in plain words on the page; check claims
+  against the data before writing them.
 - **Commits:** authored as Claude (`--author="Claude <noreply@anthropic.com>"`), explicit paths
   only, never `git add -A` or `git add .`.
-- **Remote:** private repo [nosv1/claude-trades](https://github.com/nosv1/claude-trades) (2026-11-15). Plan: web app on GitHub Pages.
-- **Run it:** nothing to run yet.
+- **Remote:** public repo [nosv1/claude-trades](https://github.com/nosv1/claude-trades); site at
+  <https://nosv1.github.io/claude-trades/>, deployed by the GitHub Action on every push to `main`
+  and daily (it also refreshes `site/data/`).
+- **Run it:** `pip install openpyxl`, `python scripts/fetch_data.py`, then
+  `python -m http.server 8000 -d site` and open <http://localhost:8000>.
+- **Data quirk:** FRED stalls browser-like User-Agent strings; the fetch script uses a plain one.
