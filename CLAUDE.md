@@ -23,5 +23,5 @@ Claude).
   ahead of that.
 - **Commits:** authored as Claude (`--author="Claude <noreply@anthropic.com>"`), explicit paths
   only, never `git add -A` or `git add .`.
-- **Remote:** local only for now (2026-11-15). No GitHub repo yet.
+- **Remote:** private repo [nosv1/claude-trades](https://github.com/nosv1/claude-trades) (2026-11-15). Plan: web app on GitHub Pages.
 - **Run it:** nothing to run yet.

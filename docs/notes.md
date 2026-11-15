@@ -16,6 +16,7 @@ Newest first. Update at sign-off, commit as Claude.
 
 ## Log
 
+- **2026-11-15:** GitHub repo created (private), merged its "Initial commit" with local history, pushed. Video that sparked it: "Why We're Suddenly Being Told to Stockpile" (The Invisible Hand, https://youtu.be/nrXNWn3BLK8). He has ~1 oz silver; wants a global-trends dashboard (food + metals) as a web app on GitHub Pages.
 - **2026-11-15:** repo created (git init, CLAUDE.md, these notes). Mode "just build it". Local only.
   Folder is still named `cluade-trades` (typo); rename to `claude-trades` was blocked by a process
   holding the folder.
