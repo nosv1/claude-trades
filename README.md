@@ -23,6 +23,9 @@ Live at **<https://nosv1.github.io/claude-trades/>**.
 - **Food:** the FAO Food Price Index and its five groups, plus wheat, maize, rice, soybeans.
 - **Drivers:** Brent crude oil and urea fertilizer.
 - Every chart has 1Y / 5Y / 10Y / 25Y / All ranges, an inflation adjustment and a table view.
+- **Check yourself:** a short quiz that brings back what you missed, and "make a call" guesses on
+  next month's food and oil prices that get scored when the data comes in (saved in your browser
+  only).
 - **Who feeds whom:** for wheat, maize, rice, soybeans and nitrogen fertilizer, who sells it, who
   buys it, and which buyers would be hit hardest if one seller stopped exporting.
 

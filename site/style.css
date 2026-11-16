@@ -317,6 +317,37 @@ main > section, .ts, .trade { scroll-margin-top: calc(var(--nav-h) + 8px); }
 .scn-out p { margin: 0; font-size: 14px; }
 .scn-out .arrow { font-size: 11px; color: var(--ink-2); margin-right: 6px; }
 
+/* Check yourself */
+.check { margin-top: 32px; }
+.qlist { display: grid; gap: 16px; }
+.qcard { display: grid; gap: 8px; }
+.qcard + .qcard { padding-top: 14px; border-top: 1px solid var(--grid); }
+.qq { margin: 0; font-size: 15px; font-weight: 600; }
+.qopts { display: grid; gap: 6px; }
+.qopts.two { grid-template-columns: 1fr 1fr; }
+.qopt {
+  font: inherit; font-size: 14px; text-align: left; color: var(--ink); background: var(--chip);
+  border: 1px solid transparent; border-radius: 10px; padding: 10px 12px; cursor: pointer; min-height: 44px;
+}
+.qopts.two .qopt { text-align: center; font-weight: 600; }
+.qopt:hover:not(:disabled) { border-color: var(--axis); }
+.qopt:disabled { cursor: default; color: var(--ink-2); }
+.qopt.is-right { border-color: var(--st-good); color: var(--ink); font-weight: 600; }
+.qopt.is-right::before { content: "✓ "; color: var(--st-good); }
+.qopt.is-wrong { border-color: var(--st-alert); color: var(--ink); }
+.qopt.is-wrong::before { content: "✗ "; color: var(--st-alert); }
+.qopt:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.qfb { margin: 0; font-size: 14px; color: var(--ink-2); }
+.qfb:empty { display: none; }
+.qfb a, .callback a { color: inherit; }
+.qmark { font-weight: 700; margin-right: 6px; }
+.qmark.ok { color: var(--st-good); }
+.qmark.no { color: var(--st-alert); }
+.callback {
+  margin: 14px 0 0; padding: 10px 12px; font-size: 14px; border-radius: 10px;
+  background: var(--surface); border: 1px solid var(--border);
+}
+
 /* Who feeds whom */
 .filters.local { position: static; margin-top: 0; padding-top: 0; }
 .grid2 { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); margin-top: 6px; }
