@@ -119,18 +119,18 @@ class Data:
 # ---- briefing.json ----
 # A number that probably came from the data: a percent, a dollar amount or a decimal.
 UNIT = r"(?:%|percent(?:age[\s-]+points?)?\b|per\s+cent\b|dollars?\b|points?\b|pts\b)"
-# The low end of a range: "8" in "8-10%" or "3 to 10 percent".
-RANGE_LOW = re.compile(r"\$?(\d[\d,]*(?:\.\d+)?)\s*(?:-|\u2013|to)\s*\$?\d[\d,]*(?:\.\d+)?[\s-]*" + UNIT, re.I)
-NUMBER = re.compile(r"\$\s*(\d[\d,]*(?:\.\d+)?)"
-                    r"|(\d[\d,]*(?:\.\d+)?)[\s-]*" + UNIT +
+NUM = r"\d[\d,]*(?:\.\d+)?"
+# One pass, each span once: "$125"; "8%" / "8 percent" / "2 percentage points"; a range's low end
+# too ("8-10%", "3 to 10 percent", but not a year: "through 2024 to 15%"); any other decimal.
+NUMBER = re.compile(r"\$\s*(" + NUM + r")"
+                    r"|(?<![\d.,])(?:(?!(?:19|20)\d\d\b)(" + NUM + r")\s*(?:-|\u2013|to)\s*\$?)?(" + NUM + r")[\s-]*" + UNIT +
                     r"|(\d+\.\d+)", re.I)
-NOT_LABEL = r"since last week"  # any opening with it would repeat the page's label
+NOT_LABEL = r"since last week(?!end)"  # would repeat the page's label ("weekend" is fine)
 
 
 def quoted_numbers(t):
     """Every data-looking number in the text, as floats, repeats included."""
-    nums = [float(next(g for g in m.groups() if g).replace(",", "")) for m in NUMBER.finditer(t)]
-    return nums + [float(m.group(1).replace(",", "")) for m in RANGE_LOW.finditer(t)]
+    return [float(g.replace(",", "")) for m in NUMBER.finditer(t) for g in m.groups() if g]
 
 
 def unmatched(nums, facts):
