@@ -54,6 +54,12 @@
         ...bucket(food.yoy, [-5, 5, 15], ['Down more than 5%', 'About flat (within 5%)', 'Up 5% to 15%', 'Up more than 15%']),
         why: `The FAO Food Price Index was ${food.last.v.toFixed(1)} in ${mlabel(food.last.m)}, ${signed(food.yoy)} in a year.`, link: 'card-fao_food' });
     }
+    const usdS = series(D, 'usd');
+    if (usdS && usdS.yoy != null) {
+      qs.push({ id: 'usd-year', q: 'The US dollar compared with a year ago?',
+        ...bucket(usdS.yoy, [-5, 5, 10], ['Weaker by more than 5%', 'About the same (within 5%)', 'Stronger by 5% to 10%', 'Stronger by more than 10%']),
+        why: `The dollar index is ${signed(usdS.yoy)} in a year. A stronger dollar usually pushes the dollar prices of oil, grain and metals down.`, link: 'card-usd' });
+    }
     const urea = series(D, 'urea');
     if (urea && urea.ch6 != null) {
       qs.push({ id: 'urea-6m', q: 'What has fertilizer (urea) done over the past 6 months?',
@@ -112,6 +118,9 @@
     { id: 'c-silver', q: 'Why does silver swing harder than gold?',
       options: ['It\'s half money, half industrial metal', 'It\'s rarer than gold', 'It\'s mostly used for jewelry', 'Governments set its price'], answer: 0,
       why: 'Solar panels and electronics use a lot of silver, so it moves with factories as well as with fear.' },
+    { id: 'c-dollar', q: 'When the US dollar gets stronger, what usually happens to the dollar price of oil and grain?',
+      options: ['It tends to fall', 'It tends to rise', "Nothing; they're unrelated", 'Only gold changes'], answer: 0,
+      why: "They're priced in dollars, so a stronger dollar makes them dearer for everyone else, and buyers pull back. Since 2006, oil fell by a median of 45% in years the dollar rose 8% or more." },
     { id: 'c-ban', q: 'What usually happens when a big food exporter bans exports?',
       options: ['Buyers panic and world prices jump', 'World prices fall', 'Nothing much', 'Only that country\'s prices rise'], answer: 0,
       why: '2008: rice nearly tripled in six months after India and Vietnam limited exports.' },
