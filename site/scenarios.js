@@ -117,41 +117,61 @@
     return li;
   }
 
+  // Phones get folded cards (the gist only, tap for the full chain); wider screens start open.
+  const WIDE = window.matchMedia('(min-width: 760px)').matches;
+
+  function outcome(arrow, label, list) {
+    const p = el('p', {});
+    p.append(el('span', { class: 'arrow', 'aria-hidden': 'true' }, arrow), el('strong', {}, label), list.join(', '));
+    return p;
+  }
+
   function cardEl(sc) {
     const lk = LIKELY[sc.likelihood] || LIKELY.possible;
     const a = el('article', { class: 'card scn' });
+    const fold = el('details', { class: 'fold' });
+    fold.open = WIDE;
+    const sum = el('summary');
     const top = el('div', { class: 'sig-top' });
     const chip = el('span', { class: 'chip lk' });
     chip.append(el('span', { class: 'dots', 'aria-hidden': 'true' }, lk.dots), lk.label);
-    top.append(chip, el('span', { class: 'sig-tag' }, sc.horizon));
-    a.append(top, el('h3', {}, sc.title));
-    a.append(el('p', { class: 'scn-progress' }, sc.checked
-      ? `${sc.seen} of ${sc.checked} measurable steps showing in the data`
-      : 'No measurable steps yet'));
+    const right = el('span', { class: 'sig-right' });
+    right.append(el('span', { class: 'sig-tag' }, sc.horizon), el('span', { class: 'chev', 'aria-hidden': 'true' }));
+    top.append(chip, right);
+    sum.append(top, el('h3', {}, sc.title));
+
+    // progress strip: one mark per step, then where the chain stands
+    const strip = el('div', { class: 'strip' });
+    const marks = el('span', { class: 'marks', 'aria-hidden': 'true' });
+    marks.append(...sc.steps.map((st) => el('span', { class: 'mk m-' + st.state })));
+    const next = sc.steps.find((st) => st.state !== 'seen');
+    strip.append(marks, el('span', { class: 'strip-txt' }, sc.checked
+      ? `${sc.seen} of ${sc.checked} measurable steps in the data` : 'No measurable steps yet'));
+    sum.append(strip);
+    if (next) {
+      const n = el('p', { class: 'scn-next' });
+      n.append(el('strong', {}, 'Next: '), next.text);
+      sum.append(n);
+    }
+    const out = el('div', { class: 'scn-out' });
+    if (sc.up && sc.up.length) out.append(outcome('▲', 'Could push up: ', sc.up));
+    if (sc.down && sc.down.length) out.append(outcome('▼', 'Could push down: ', sc.down));
+    sum.append(out);
+
+    const body = el('div', { class: 'fold-body' });
     const ol = el('ol', { class: 'chain' });
     ol.append(...sc.steps.map((st, i) => {
       const li = stepEl(st);
       if (st.state === 'seen' && sc.steps[i + 1] && sc.steps[i + 1].state === 'seen') li.classList.add('joined');
       return li;
     }));
-    a.append(ol);
-    const out = el('div', { class: 'scn-out' });
-    if (sc.up && sc.up.length) {
-      const p = el('p', {});
-      p.append(el('span', { class: 'arrow', 'aria-hidden': 'true' }, '▲'), el('strong', {}, 'Could push up: '), sc.up.join(', '));
-      out.append(p);
-    }
-    if (sc.down && sc.down.length) {
-      const p = el('p', {});
-      p.append(el('span', { class: 'arrow', 'aria-hidden': 'true' }, '▼'), el('strong', {}, 'Could push down: '), sc.down.join(', '));
-      out.append(p);
-    }
-    a.append(out);
     const why = el('p', { class: 'sig-body' });
     why.append(el('strong', {}, `Why ${lk.label.toLowerCase()}: `), sc.why);
     const hist = el('p', { class: 'sig-body' });
     hist.append(el('strong', {}, 'Last time: '), sc.history);
-    a.append(why, hist);
+    body.append(ol, why, hist);
+    fold.append(sum, body);
+    a.append(fold);
     return a;
   }
 
