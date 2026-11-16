@@ -22,9 +22,11 @@
     <a href="#silver" data-for="silver">Silver</a>
     <a href="#charts" data-for="charts">Charts</a>
     <a href="#trade" data-for="trade">Trade</a>
+    <a href="#check" data-for="check">Quiz</a>
   </nav>
 
   <main>
+    <p class="callback" id="callback" role="status" hidden></p>
     <section class="weekly card" id="weekly" aria-labelledby="read-headline" hidden>
       <p class="read-kicker">This week's read <span id="read-byline"></span></p>
       <h2 class="read-headline" id="read-headline"></h2>
@@ -147,6 +149,23 @@
       </div>
       <p class="filter-note" id="trade-note"></p>
     </section>
+    <section class="check" id="check" aria-labelledby="check-title" hidden>
+      <h2 class="section-title" id="check-title">Check yourself</h2>
+      <p class="section-lede">A minute of recall makes this stick better than rereading it. Answers come from today's data, so they change as the world does.</p>
+      <div class="grid2">
+        <article class="card">
+          <h3 class="card-title">Quick quiz</h3>
+          <p class="mini-note" id="quiz-score"></p>
+          <div class="qlist" id="quiz"></div>
+        </article>
+        <article class="card">
+          <h3 class="card-title">Make a call</h3>
+          <p class="mini-note" id="calls-record"></p>
+          <div class="qlist" id="calls"></div>
+        </article>
+      </div>
+      <p class="filter-note">Your answers and calls are saved only in this browser.</p>
+    </section>
   </main>
 
   <footer class="foot">
@@ -161,6 +180,7 @@
   <script src="trade.js"></script>
   <script src="outlook.js"></script>
   <script src="scenarios.js"></script>
+  <script src="quiz.js"></script>
   <script src="nav.js"></script>
 </body>
 </html>

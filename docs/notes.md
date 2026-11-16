@@ -33,6 +33,15 @@ Code review fixes merged 2026-11-15 (CPI gap interpolation, workflow push retry,
 
 ## Log
 
+- **2026-11-16:** He wants to actually remember it. Added **Check yourself** (`site/quiz.js`, nav
+  "Quiz"): 4 questions per visit mixing live-data questions (oil and food vs a year ago, urea 6
+  months, El Niño, top seller per crop, which item is in an early trend) with "how it works" ones;
+  spaced repetition (Leitner boxes: misses due again at once, then 1/3/7/21/60 days). Plus **Make a
+  call**: guess whether next month's food index and oil are higher or lower; scored when the data
+  arrives, with a banner at the top of the page. All in localStorage (`tp.quiz`, `tp.calls`).
+  Weekly routine status: first test run blocked (no GitHub write access for the cloud session;
+  Default environment blocks news sites). He needs to install the Claude GitHub App on the repo and
+  open up the environment's network.
 - **2026-11-16:** Mobile reading pass: sticky section nav (`site/nav.js`, scroll-spy, hides links to
   hidden sections); Heads up, What could happen next and the weekly read's items fold on phones
   (`details.fold`, open by default at 760px+). Folded scenario cards show a progress strip, the
