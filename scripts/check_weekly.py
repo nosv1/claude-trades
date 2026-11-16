@@ -12,10 +12,10 @@ What it checks, beyond shape:
   summary and lookback need one entry in summary_facts / lookback_facts per number they quote.
 - A lookback (what happened since last week) is required unless this is the very first read.
 - With --sources, every source's "quote" appears on the page it links to (so news claims are
-  backed by something that page actually says), and every "checked" page exists.
-- Every topic in the news sweep (TOPICS) is reported in "checked", from the 2026-11-17 read on; a
-  "covered" topic links one of the items' sources. A new read is dated today, so that rule (and
-  any later date-based one) can't be dodged by backdating.
+  backed by something that page actually says), and every covered or quiet page exists.
+- Every topic in the news sweep (TOPICS) is reported in "checked" by every new read from 2026-11-17
+  on (whatever date it gives itself); a "covered" topic links one of the items' sources.
+- Odd JSON (a list where text belongs, say) is reported as a problem, never a crash.
 - claude-log.json only grows: old entries can't be edited or removed, so misses stay visible.
 - Each scenario's likelihood matches its latest log entry (changes have to be logged).
 - A newly logged likelihood can't already be true in the data (no free wins).
@@ -45,7 +45,6 @@ TOPICS = ("oil", "gas-fertilizer", "enso", "southeast-asia", "south-asia", "blac
           "australia", "china", "importers", "shipping", "reports", "metals", "money", "politics")
 STATUSES = {"covered", "quiet", "unreached"}
 CHECKLIST_FROM = dt.date(2026, 11, 17)  # reads dated before this were written without a checklist
-NEW_READ_SLACK_DAYS = 2  # a new read is dated today; slack for time zones and a rerun the next day
 FETCH_CAP = 5_000_000  # bytes read per page; a bigger page counts as "couldn't check"
 FETCH_WORKERS = 8
 MAX_FETCHES = 60  # 5 items x 4 sources + 15 topics is 35; anything past this isn't fetched
@@ -200,30 +199,16 @@ def check_quoted(b, p, data):
                "add one fact per number (same value), or write news numbers in words")
 
 
-def check_new_read_date(b, p, prev):
-    """A new read (not the published one) is dated today, so date-based rules can't be dodged by
-    backdating. Re-checking the published read later is fine."""
-    if b == prev:
-        return
-    try:
-        d = dt.date.fromisoformat(b.get("date"))
-    except (TypeError, ValueError):
-        return  # date() has already reported it
-    p.need(abs((dt.date.today() - d).days) <= NEW_READ_SLACK_DAYS,
-           f"briefing.date: a new read is dated today, not {d}")
-
-
-def check_briefing(b, p, data, prev=None, warn=None):
+def check_briefing(b, p, data, prev, warn):
     if not p.need(isinstance(b, dict), "briefing: not an object"):
         return
     date(p, b.get("date"), "briefing.date")
-    check_new_read_date(b, p, prev)
     text(p, b.get("by"), "briefing.by", 2, 40)
     text(p, b.get("headline"), "briefing.headline", 10, 140)
     text(p, b.get("summary"), "briefing.summary", 40, 600)
     check_lookback(b, p, prev)
     check_quoted(b, p, data)
-    check_checklist(b, p, prev, [] if warn is None else warn)
+    check_checklist(b, p, prev, warn)
     items = b.get("items")
     if p.need(isinstance(items, list) and 2 <= len(items) <= 5, "briefing.items: needs 2-5 items"):
         for i, it in enumerate(items):
@@ -253,18 +238,23 @@ def check_briefing(b, p, data, prev=None, warn=None):
 
 
 def dicts(v):
-    """The objects in a JSON list; nothing if it isn't a list."""
-    return [x for x in v if isinstance(x, dict)] if isinstance(v, list) else []
+    """(index, object) for the objects in a JSON list, indices as in the file; nothing if not a list."""
+    return [(i, x) for i, x in enumerate(v) if isinstance(x, dict)] if isinstance(v, list) else []
 
 
-def item_source_urls(b):
-    return {s["url"] for it in dicts(b.get("items")) for s in dicts(it.get("sources")) if https_url(s.get("url"))}
+def item_sources(b):
+    """(where, url, quote) for every item source with a usable https:// url."""
+    return [(f"items[{i}].sources[{j}]", s["url"], s.get("quote"))
+            for i, it in dicts(b.get("items")) for j, s in dicts(it.get("sources")) if https_url(s.get("url"))]
 
 
 def checklist_required(b, prev):
-    """From CHECKLIST_FROM on, and always once the published read has one. Fails closed: a missing
-    or bad date requires it too."""
+    """Any new read once today is CHECKLIST_FROM or later (so a backdated date can't dodge it), a
+    read dated then or later, and always once the published read has one. Re-checking the published
+    read itself is fine. Fails closed: a missing or bad date requires it."""
     if isinstance(prev, dict) and "checked" in prev:
+        return True
+    if b != prev and dt.date.today() >= CHECKLIST_FROM:
         return True
     try:
         return dt.date.fromisoformat(b.get("date")) >= CHECKLIST_FROM
@@ -294,13 +284,13 @@ def check_checklist(b, p, prev, warn):
         return
     if not p.need(len(lst) <= len(TOPICS), f"briefing.checked: {len(lst)} entries, but there are {len(TOPICS)} topics"):
         return
-    seen, item_urls = set(), item_source_urls(b)
+    seen, item_urls = set(), {url for _, url, _ in item_sources(b)}
     for i, c in enumerate(lst):
         if p.need(isinstance(c, dict), f"briefing.checked[{i}]: not an object"):
             check_checked_entry(c, f"briefing.checked[{i}]", p, seen, item_urls)
     missing = [t for t in TOPICS if t not in seen]
     p.need(not missing, f"briefing.checked: topics not reported: {', '.join(missing)}")
-    unreached = sum(1 for c in dicts(lst) if c.get("status") == "unreached")
+    unreached = sum(1 for _, c in dicts(lst) if c.get("status") == "unreached")
     if unreached * 3 > len(TOPICS):
         warn.append(f"checked: {unreached} of {len(TOPICS)} topics unreached; the read's view is narrow")
 
@@ -340,14 +330,14 @@ def fetch_text(url):
         req = urllib.request.Request(url, headers={"User-Agent": UA})
         with urllib.request.urlopen(req, timeout=25) as r:
             raw = r.read(FETCH_CAP + 1)
-            charset = r.headers.get_content_charset() or "utf-8"
+            if len(raw) > FETCH_CAP:
+                return None, f"page over {FETCH_CAP:,} bytes", False
+            t = raw.decode(r.headers.get_content_charset() or "utf-8", "ignore")
     except urllib.error.HTTPError as e:
         return None, str(e), e.code in (404, 410)
-    except Exception as e:  # noqa: BLE001 - any other fetch failure just means "couldn't check"
+    except Exception as e:  # noqa: BLE001 - any other failure (an unknown charset too) means "couldn't check"
         return None, str(e), False
-    if len(raw) > FETCH_CAP:
-        return None, f"page over {FETCH_CAP:,} bytes", False
-    t = re.sub(r"(?s)<(script|style)[^>]*>.*?</\1>", " ", raw.decode(charset, "ignore"))
+    t = re.sub(r"(?s)<(script|style)[^>]*>.*?</\1>", " ", t)
     return norm(html.unescape(re.sub(r"<[^>]+>", " ", t))), None, False
 
 
@@ -359,17 +349,16 @@ def fetch_all(urls):
 
 
 def check_sources(b, p, warn):
-    """Each item source's quote is on its page; each checked page exists. A page that doesn't exist
-    fails; one that can't be reached (blocked, timeout, too big) is only a warning."""
-    srcs = [(f"items[{i}].sources[{j}]", s["url"], s.get("quote"))
-            for i, it in enumerate(dicts(b.get("items"))) for j, s in enumerate(dicts(it.get("sources")))
-            if https_url(s.get("url"))]
-    checked = [(f"checked[{i}]", c["url"], None)
-               for i, c in enumerate(dicts(b.get("checked"))) if https_url(c.get("url"))]
+    """Each item source's quote is on its page, and each covered or quiet page exists. A checked page
+    that's gone (404/410) fails: it's the only proof the topic was looked at. Anything else that
+    can't be reached (blocked, timeout, too big, or an item source some site 404s to bots) warns."""
+    srcs = item_sources(b)
+    checked = [(f"checked[{i}]", c["url"], None) for i, c in dicts(b.get("checked"))
+               if c.get("status") in ("covered", "quiet") and https_url(c.get("url"))]
     pages = fetch_all([u for _, u, _ in srcs + checked])
     for where, url, quote in srcs + checked:
         page, why, gone = pages.get(url, (None, "not fetched: too many links", False))
-        if not p.need(not gone, f"{where}: {url} doesn't exist ({why}); link the page you opened"):
+        if quote is None and not p.need(not gone, f"{where}: {url} doesn't exist ({why}); link the page you opened"):
             continue
         if page is None:
             warn.append(f"{where}: couldn't fetch {url} ({why}); not checked")
@@ -523,6 +512,15 @@ def git_base(rel):
     return None
 
 
+def guarded(p, name, check, *args):
+    """Run one file's checks. Odd JSON that gets past the shape checks (a list used as a key, say)
+    becomes a listed problem instead of a traceback. Fails closed: the read is rejected."""
+    try:
+        check(*args)
+    except (TypeError, AttributeError, KeyError, IndexError, ValueError) as e:
+        p.append(f"{name}: unexpected shape ({type(e).__name__}: {e}); fix the file's structure")
+
+
 def main():
     sources = "--sources" in sys.argv
     p, warn = Problems(), []
@@ -549,15 +547,17 @@ def main():
             docs[name] = json.loads(path.read_text(encoding="utf-8"))
         except ValueError as e:
             p.append(f"{name}: not valid JSON ({e})")
+    b = docs.get("briefing.json")
     if "briefing.json" in docs:
-        check_briefing(docs["briefing.json"], p, data, git_base("site/data/briefing.json"), warn)
-        if sources:
-            check_sources(docs["briefing.json"], p, warn)
+        guarded(p, "briefing.json", check_briefing, b, p, data, git_base("site/data/briefing.json"), warn)
+    if sources and isinstance(b, dict):
+        guarded(p, "briefing.json sources", check_sources, b, p, warn)
     if "scenarios.json" in docs:
-        check_scenarios(docs["scenarios.json"], p, data)
+        guarded(p, "scenarios.json", check_scenarios, docs["scenarios.json"], p, data)
     if "claude-log.json" in docs:
         sc = docs["scenarios.json"].get("scenarios") if isinstance(docs.get("scenarios.json"), dict) else None
-        check_log(docs["claude-log.json"], p, data, sc, git_base("site/data/claude-log.json"))
+        guarded(p, "claude-log.json", check_log, docs["claude-log.json"], p, data, sc,
+                git_base("site/data/claude-log.json"))
     for w in warn:
         print("Warning: " + w)
     if p:

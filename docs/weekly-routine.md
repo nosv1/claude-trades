@@ -57,7 +57,7 @@ non-experts who want to know what to look out for in the coming months.
    that says what each topic covers.
 
    | id | Topic |
-   |---|---|
+   | --- | --- |
    | `oil` | Oil, OPEC+ decisions and sanctions on oil (Russia, Iran) |
    | `gas-fertilizer` | Natural gas and fertilizer (urea, Russian fertilizer sanctions) |
    | `enso` | El Niño and La Niña (NOAA) |
@@ -111,7 +111,7 @@ non-experts who want to know what to look out for in the coming months.
    `checked`: one entry per topic in step 3, every week. `covered` means it's in an item, and its
    `url` is one of that item's sources; `quiet` means you looked and nothing worth an item
    happened; `unreached` means no page could be opened. A good week is mostly `covered` and
-   `quiet`. `date` is today's date: the checker fails a new read dated otherwise.
+   `quiet`. The checker fetches every `covered` and `quiet` page and fails one that doesn't exist.
 
    2 to 5 items, most important first. If it was a quiet week, say so; don't inflate small news.
    `facts`: one entry per number in the text that comes from `site/data` (`m` is `last`, `yoy`,
