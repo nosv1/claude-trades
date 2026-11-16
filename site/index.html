@@ -152,6 +152,7 @@
     <section class="check" id="check" aria-labelledby="check-title" hidden>
       <h2 class="section-title" id="check-title">Check yourself</h2>
       <p class="section-lede">Answering questions helps you remember more than rereading does. Some answers come from today's numbers, so they change as the world does.</p>
+      <div class="card sync" id="sync" hidden></div>
       <div class="grid2">
         <article class="card">
           <h3 class="card-title">Quick quiz</h3>
@@ -164,7 +165,7 @@
           <div class="qlist" id="calls"></div>
         </article>
       </div>
-      <p class="filter-note">Your answers and calls are saved only in this browser.</p>
+      <p class="filter-note">Your answers and calls are saved in this browser. If you sign in, a copy is also saved to your account so it works on your other devices.</p>
     </section>
   </main>
 
@@ -181,6 +182,8 @@
   <script src="outlook.js"></script>
   <script src="scenarios.js"></script>
   <script src="quiz.js"></script>
+  <script src="sync-config.js"></script>
+  <script src="sync.js"></script>
   <script src="nav.js"></script>
 </body>
 </html>

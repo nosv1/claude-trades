@@ -348,6 +348,12 @@ main > section, .ts, .trade { scroll-margin-top: calc(var(--nav-h) + 8px); }
   background: var(--surface); border: 1px solid var(--border);
 }
 
+.sync { display: grid; gap: 8px; margin: 10px 0 14px; font-size: 14px; }
+.sync p { margin: 0; }
+.sync .gbtn { min-height: 44px; }
+.sync-acts { display: flex; flex-wrap: wrap; gap: 8px; }
+.sync-acts .more { margin-top: 0; }
+
 /* Who feeds whom */
 .filters.local { position: static; margin-top: 0; padding-top: 0; }
 .grid2 { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); margin-top: 6px; }

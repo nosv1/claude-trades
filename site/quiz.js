@@ -15,7 +15,11 @@
     return e;
   }
   const load = (k, d) => { try { const v = localStorage.getItem('tp.' + k); return v ? JSON.parse(v) : d; } catch { return d; } };
-  const save = (k, v) => { try { localStorage.setItem('tp.' + k, JSON.stringify(v)); } catch { /* private mode */ } };
+  // Saving also tells sync.js (if signed in) to copy the change to the cloud.
+  const save = (k, v) => {
+    try { localStorage.setItem('tp.' + k, JSON.stringify(v)); } catch { /* private mode */ }
+    window.dispatchEvent(new Event('tp:progress'));
+  };
   const today = () => { const d = new Date(); return d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate(); };
   const addDays = (n) => { const d = new Date(); d.setDate(d.getDate() + n); return d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate(); };
   const signed = (x) => (x >= 0 ? '+' : '−') + Math.abs(Math.round(x)) + '%';
@@ -79,7 +83,8 @@
         const nm = (p) => T.names[String(p)] || '?';
         const the = (p) => (['United States', 'United Kingdom', 'Netherlands', 'Philippines'].includes(nm(p)) ? 'the ' + nm(p) : nm(p));
         const opts = shuffle([ex[0], ex[1], ex[2], ex[4 + Math.floor(Math.random() * Math.min(3, ex.length - 4))]]);
-        qs.push({ id: 'seller-' + c.id, q: `Which country sells the most of the world's traded ${c.id}?`,
+        const crop = c.id === 'maize' ? 'corn' : c.id;
+        qs.push({ id: 'seller-' + c.id, q: `Which country sells the most ${crop} to other countries?`,
           options: opts.map(([p]) => nm(p)), answer: opts.indexOf(ex[0]),
           why: `${nm(ex[0][0])} sells about ${Math.round(ex[0][1] / c.covered * 100)}% of it, then ${the(ex[1][0])} and ${the(ex[2][0])}.`, link: 'trade' });
       }
@@ -134,10 +139,12 @@
     const fresh = shuffle(all.filter((q) => !memo[q.id]));
     const later = all.filter((q) => memo[q.id] && memo[q.id].due > t).sort((a, b) => memo[a.id].due - memo[b.id].due);
     const out = [];
-    // keep a mix: at most 2 "how it works" questions per visit
+    // keep a mix: at most 2 "how it works" questions and 1 "who sells the most" per visit
+    const kind = (q) => (q.id.startsWith('c-') ? 'c' : q.id.startsWith('seller-') ? 's' : 'd');
+    const cap = { c: 2, s: 1, d: PER_VISIT };
     for (const q of [...due, ...fresh, ...later]) {
       if (out.length >= PER_VISIT) break;
-      if (q.id.startsWith('c-') && out.filter((x) => x.id.startsWith('c-')).length >= 2) continue;
+      if (out.filter((x) => kind(x) === kind(q)).length >= cap[kind(q)]) continue;
       out.push(q);
     }
     for (const q of [...due, ...fresh, ...later]) { if (out.length >= PER_VISIT) break; if (!out.includes(q)) out.push(q); }
@@ -168,6 +175,7 @@
           const m = memo[q.id] || { box: 0 };
           m.box = ok ? Math.min(m.box + 1, GAPS.length - 1) : 0;
           m.due = addDays(GAPS[m.box]); // a miss is due again right away
+          m.t = Date.now(); // for merging with other devices
           memo[q.id] = m;
           save('quiz', memo);
           fb.replaceChildren(el('span', { class: 'qmark ' + (ok ? 'ok' : 'no'), 'aria-hidden': 'true' }, ok ? '✓' : '✗'),
@@ -270,6 +278,12 @@
     const all = [...dataQuestions(D, E, T), ...CONCEPTS];
     renderQuiz(pick(all, memo), memo);
     renderCalls(D);
+    // sync.js merged in progress from another device: refresh what we hold
+    window.addEventListener('tp:synced', () => {
+      for (const k of Object.keys(memo)) delete memo[k];
+      Object.assign(memo, load('quiz', {}));
+      renderCalls(D);
+    });
     $('check').hidden = false;
   }
 

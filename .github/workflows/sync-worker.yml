@@ -1,0 +1,42 @@
+# Deploy the sign-in/sync worker (worker/) to Cloudflare when it changes.
+# Needs two repository secrets: CLOUDFLARE_API_TOKEN ("Edit Cloudflare Workers" token) and
+# CLOUDFLARE_ACCOUNT_ID. Without them the job skips instead of failing.
+name: Deploy sync worker
+
+on:
+  push:
+    branches: [main]
+    paths: ["worker/**", ".github/workflows/sync-worker.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Check secrets
+        id: have
+        env:
+          TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          if [ -n "$TOKEN" ] && [ -n "$ACCOUNT" ]; then echo "ok=true" >> "$GITHUB_OUTPUT"
+          else echo "::warning::Cloudflare secrets not set; skipping the worker deploy."; echo "ok=false" >> "$GITHUB_OUTPUT"; fi
+
+      - name: Deploy
+        id: deploy
+        if: steps.have.outputs.ok == 'true'
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: worker
+          wranglerVersion: "4.162.0"
+
+      - name: Show the worker's URL
+        if: steps.have.outputs.ok == 'true'
+        run: echo "Worker URL: ${{ steps.deploy.outputs.deployment-url }}" | tee -a "$GITHUB_STEP_SUMMARY"
