@@ -79,8 +79,12 @@ jobs:
       - id: deployment
         uses: actions/deploy-pages@v5
 
-      - name: Fail if a page claim broke
-        if: needs.build.outputs.claims != 'success'
+  claims:
+    needs: [build, deploy]
+    if: always() && needs.build.result == 'success' && needs.build.outputs.claims == 'failure'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Report the broken page claim
         run: |
-          echo "::error title=Page claim no longer true::scripts/check_claims.py failed on the fresh data; fix the sentence in site/index.html or site/quiz.js"
+          echo "::error title=Page claim check failed::scripts/check_claims.py failed on the fresh data. Either a sentence in site/index.html or site/quiz.js no longer matches it, or the data is missing; see the build job's 'Check page claims' log."
           exit 1
