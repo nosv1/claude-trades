@@ -1,0 +1,103 @@
+{
+  "updated": "2026-11-15",
+  "by": "Claude",
+  "note": "Chains of events that have played out before. Steps with a 'check' light up from the data; steps without one are news to watch for. Likelihoods are judgment calls from the history cited.",
+  "scenarios": [
+    {
+      "id": "elnino",
+      "title": "El Niño dries out Asia's harvests",
+      "likelihood": "likely",
+      "why": "NOAA gives better than a 79% chance it stays strong to very strong through March 2027, and its effect on tropical crops is well documented.",
+      "horizon": "Now to late 2027",
+      "steps": [
+        { "text": "A strong El Niño forms in the Pacific", "lag": "Now", "check": { "s": "oni", "m": "last", "op": ">=", "v": 1.5 } },
+        { "text": "Dry, hot weather in Indonesia, Malaysia, India, Thailand and Australia", "lag": "Through early 2027", "watch": "drought and weak-monsoon news from those countries" },
+        { "text": "Sugar and rice prices climb", "lag": "0 to 6 months", "check": { "any": [ { "s": "fao_sugar", "m": "ch6", "op": ">=", "v": 15 }, { "s": "rice", "m": "yoy", "op": ">=", "v": 15 } ] } },
+        { "text": "Palm oil output falls and cooking oil jumps 25% or more in a year", "lag": "6 to 12 months after the peak", "check": { "s": "fao_oils", "m": "yoy", "op": ">=", "v": 25 } }
+      ],
+      "up": ["Cooking oil", "Sugar", "Rice", "Wheat"],
+      "down": [],
+      "history": "In all 5 strong El Niños since 1990, cooking oils cost more a year after the peak: 2% and 9% more after the two in the 1990s, and 27% to 55% more after the last three."
+    },
+    {
+      "id": "lanina",
+      "title": "La Niña follows and hits the Americas",
+      "likelihood": "likely",
+      "why": "After 7 of the 9 strong El Niños since 1950, the Pacific swung to La Niña within 18 months.",
+      "horizon": "Mid-2027 to 2028",
+      "steps": [
+        { "text": "El Niño peaks and starts to fade", "lag": "Early 2027", "check": { "s": "oni", "m": "fromPeak", "op": "<=", "v": -0.3 } },
+        { "text": "The Pacific flips cool: La Niña", "lag": "6 to 12 months later", "check": { "s": "oni", "m": "last", "op": "<=", "v": -0.5 } },
+        { "text": "Drought in Argentina, southern Brazil and the southern US", "lag": "The next growing season", "watch": "crop-condition news from Argentina and the US Plains" },
+        { "text": "Soybean and maize prices rise 20% or more in a year", "lag": "Months after the dry spell", "check": { "any": [ { "s": "soybeans", "m": "yoy", "op": ">=", "v": 20 }, { "s": "maize", "m": "yoy", "op": ">=", "v": 20 } ] } }
+      ],
+      "up": ["Soybeans", "Maize", "Wheat", "Meat (through feed costs)"],
+      "down": [],
+      "history": "The 2020-23 La Niña lasted three winters in a row. In the last one, a drought cut Argentina's soybean harvest to the smallest in more than 20 years."
+    },
+    {
+      "id": "oilfood",
+      "title": "Expensive oil leaks into food",
+      "likelihood": "possible",
+      "why": "Oil alone is a weak guide. After the 6 oil spikes this size since 1990, world food prices were higher a year later 3 times and lower 3 times. It usually takes a second push, like a bad harvest, and El Niño could be one.",
+      "horizon": "Next 3 to 12 months",
+      "steps": [
+        { "text": "Oil spikes", "lag": "Now", "check": { "s": "brent", "m": "yoy", "op": ">=", "v": 40 } },
+        { "text": "Diesel, shipping and farm costs rise", "lag": "Weeks", "watch": "diesel and freight prices in the news" },
+        { "text": "Crops that double as fuel (biodiesel, ethanol) get pricier", "lag": "1 to 6 months", "check": { "any": [ { "s": "soybeans", "m": "yoy", "op": ">=", "v": 15 }, { "s": "maize", "m": "yoy", "op": ">=", "v": 15 }, { "s": "fao_oils", "m": "yoy", "op": ">=", "v": 15 } ] } },
+        { "text": "World food prices climb 10% or more in a year", "lag": "3 to 12 months", "check": { "s": "fao_food", "m": "yoy", "op": ">=", "v": 10 } }
+      ],
+      "up": ["Groceries", "Delivery and travel"],
+      "down": [],
+      "history": "2021-22: oil doubled, then Russia invaded Ukraine. World food prices rose 35% in a year to their all-time record."
+    },
+    {
+      "id": "oilcure",
+      "title": "High oil prices cure themselves",
+      "likelihood": "possible",
+      "why": "Of the 9 oil spikes this big since 1970, oil was lower a year later in 4 and higher in 5. Close to a coin flip.",
+      "horizon": "Next 6 to 18 months",
+      "steps": [
+        { "text": "Oil spikes", "lag": "Now", "check": { "s": "brent", "m": "yoy", "op": ">=", "v": 40 } },
+        { "text": "People drive less, businesses cut back, producers pump more", "lag": "Months", "watch": "OPEC output decisions and talk of a slowdown" },
+        { "text": "Oil falls 20% or more from its recent high", "lag": "6 to 18 months", "check": { "s": "brent", "m": "fromPeak", "op": "<=", "v": -20 } },
+        { "text": "Gas, shipping and food costs ease", "lag": "A few months after", "check": { "s": "fao_food", "m": "ch3", "op": "<=", "v": -3 } }
+      ],
+      "up": [],
+      "down": ["Oil", "Gas prices", "Copper, if it comes with a recession"],
+      "history": "2008: oil averaged $134 in July and $42 in December as the financial crisis hit. Copper fell by almost two thirds over the same months."
+    },
+    {
+      "id": "exportban",
+      "title": "An export ban sets off a scramble",
+      "likelihood": "possible",
+      "why": "Governments limit food exports when prices at home jump, and staple prices are up sharply this year. India sells about a quarter of the world's traded rice, Russia about a fifth of its wheat.",
+      "horizon": "Any time",
+      "steps": [
+        { "text": "A staple jumps 25% or more in a year", "lag": "Now", "check": { "any": [ { "s": "rice", "m": "yoy", "op": ">=", "v": 25 }, { "s": "wheat", "m": "yoy", "op": ">=", "v": 25 } ] } },
+        { "text": "A top seller limits exports to keep food cheap at home", "lag": "Any time", "watch": "export bans, quotas or taxes from India (rice) or Russia (wheat)" },
+        { "text": "Buyers panic and prices spike 20% or more in 3 months", "lag": "Weeks", "check": { "any": [ { "s": "rice", "m": "ch3", "op": ">=", "v": 20 }, { "s": "wheat", "m": "ch3", "op": ">=", "v": 20 } ] } },
+        { "text": "Countries that rely on one seller get hit hardest", "lag": "Months", "watch": "the buyers shown in Who feeds whom, below", "link": "trade" }
+      ],
+      "up": ["Rice", "Wheat", "Bread"],
+      "down": [],
+      "history": "2008: rice nearly tripled in six months as India and Vietnam limited exports. 2010: wheat rose 56% in two months after Russia's drought and export ban. 2023: rice rose 24% in two months after India's ban."
+    },
+    {
+      "id": "fertilizer",
+      "title": "Cheap fertilizer means bigger harvests",
+      "likelihood": "possible",
+      "why": "After the 7 fertilizer crashes this size since 1975, maize was cheaper a year later in 5. This pulls the other way from El Niño and expensive oil.",
+      "horizon": "2027 harvests",
+      "steps": [
+        { "text": "Fertilizer prices crash", "lag": "Now", "check": { "s": "urea", "m": "fromPeak", "op": "<=", "v": -30 } },
+        { "text": "Farmers fertilize more for the 2027 planting season", "lag": "Spring 2027", "watch": "planting and fertilizer-sales reports" },
+        { "text": "Bigger harvests", "lag": "Summer and fall 2027", "watch": "harvest estimates from the USDA and FAO" },
+        { "text": "Grain prices fall 10% or more in 6 months", "lag": "Around harvest", "check": { "any": [ { "s": "maize", "m": "ch6", "op": "<=", "v": -10 }, { "s": "wheat", "m": "ch6", "op": "<=", "v": -10 } ] } }
+      ],
+      "up": [],
+      "down": ["Maize", "Wheat", "Soybeans"],
+      "history": "Early 2023: urea had fallen by two thirds from its 2022 peak. A year later, maize was 33% cheaper and wheat 26% cheaper."
+    }
+  ]
+}
