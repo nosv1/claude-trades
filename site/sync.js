@@ -44,7 +44,7 @@
     const quiz = normQuiz(remote.quiz);
     for (const [id, v] of Object.entries(normQuiz(local.quiz))) if (!quiz[id] || v.t >= quiz[id].t) quiz[id] = v;
     const byKey = new Map();
-    for (const c of [...(remote.calls || []), ...(local.calls || [])].filter((c) => c && c.s).map(normCall)) {
+    for (const c of [...(remote.calls || []), ...(local.calls || [])].filter((x) => x && x.s).map(normCall)) {
       const k = c.s + '|' + c.from, prev = byKey.get(k);
       if (!prev) { byKey.set(k, c); continue; }
       const keep = prev.result && !c.result ? prev : c.result && !prev.result ? c : prev.made <= c.made ? prev : c;
@@ -83,7 +83,8 @@
   // ---- Google sign-in ----
   function firstName(jwt) {
     try {
-      const p = JSON.parse(decodeURIComponent(escape(atob(jwt.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')))));
+      const bin = atob(jwt.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'));
+      const p = JSON.parse(new TextDecoder().decode(Uint8Array.from(bin, (ch) => ch.charCodeAt(0))));
       return p.given_name || '';
     } catch { return ''; }
   }

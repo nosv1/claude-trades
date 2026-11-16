@@ -44,63 +44,74 @@ export class User extends DurableObject {
   }
 }
 
+function corsHeaders(origin, ok) {
+  return ok ? {
+    'Access-Control-Allow-Origin': origin,
+    'Access-Control-Allow-Methods': 'GET, PUT, POST, DELETE, OPTIONS',
+    'Access-Control-Allow-Headers': 'Authorization, Content-Type',
+    'Access-Control-Max-Age': '86400',
+    Vary: 'Origin',
+  } : { Vary: 'Origin' };
+}
+
+async function login(req, env, json) {
+  const body = await readJSON(req);
+  const sub = env.DEV_FAKE_LOGIN === '1' && body && typeof body.dev_sub === 'string'
+    ? body.dev_sub // local testing only (.dev.vars)
+    : await verifyGoogle(body && body.credential, env.GOOGLE_CLIENT_ID);
+  if (!sub) return json({ error: 'sign-in failed' }, 401);
+  const sid = await userStub(env, sub).newSession();
+  return json({ token: `${sub}.${sid}` });
+}
+
+async function putProgress(req, stub, auth, json) {
+  const text = await req.text();
+  if (new TextEncoder().encode(text).length > MAX_BYTES) return json({ error: 'too big' }, 413);
+  let parsed;
+  try { parsed = JSON.parse(text); } catch { return json({ error: 'bad data' }, 400); }
+  const p = clean(parsed);
+  if (!p) return json({ error: 'bad data' }, 400);
+  return (await stub.putProgress(auth.sid, p)) ? json({ ok: true }) : json({ error: 'not signed in' }, 401);
+}
+
+// Routes that need a session token. Each gets (req, stub, auth, json).
+const SIGNED_IN = {
+  'GET /progress': async (req, stub, auth, json) => {
+    const p = await stub.getProgress(auth.sid);
+    return p ? json(p) : json({ error: 'not signed in' }, 401);
+  },
+  'PUT /progress': putProgress,
+  'DELETE /progress': async (req, stub, auth, json) =>
+    ((await stub.wipe(auth.sid)) ? json({ ok: true }) : json({ error: 'not signed in' }, 401)),
+  'POST /logout': async (req, stub, auth, json) => {
+    await stub.endSession(auth.sid);
+    return json({ ok: true });
+  },
+};
+
 export default {
   async fetch(req, env) {
     const origin = req.headers.get('Origin') || '';
-    const allowed = (env.ALLOWED_ORIGINS || '').split(',').map((s) => s.trim()).filter(Boolean);
-    const cors = allowed.includes(origin) ? {
-      'Access-Control-Allow-Origin': origin,
-      'Access-Control-Allow-Methods': 'GET, PUT, POST, DELETE, OPTIONS',
-      'Access-Control-Allow-Headers': 'Authorization, Content-Type',
-      'Access-Control-Max-Age': '86400',
-      Vary: 'Origin',
-    } : { Vary: 'Origin' };
+    const allowed = (env.ALLOWED_ORIGINS || '').split(',').map((x) => x.trim()).filter(Boolean);
+    const ok = allowed.includes(origin);
+    const cors = corsHeaders(origin, ok);
     const json = (body, status = 200) => new Response(JSON.stringify(body), {
       status, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store', ...cors },
     });
 
-    if (req.method === 'OPTIONS') return new Response(null, { status: allowed.includes(origin) ? 204 : 403, headers: cors });
-    if (!allowed.includes(origin)) return json({ error: 'origin not allowed' }, 403);
-    const path = new URL(req.url).pathname;
+    if (req.method === 'OPTIONS') return new Response(null, { status: ok ? 204 : 403, headers: cors });
+    if (!ok) return json({ error: 'origin not allowed' }, 403);
+    const route = `${req.method} ${new URL(req.url).pathname}`;
 
     try {
-      if (path === '/login' && req.method === 'POST') {
-        const body = await readJSON(req);
-        let sub;
-        if (env.DEV_FAKE_LOGIN === '1' && body && typeof body.dev_sub === 'string') sub = body.dev_sub; // local testing only
-        else sub = await verifyGoogle(body && body.credential, env.GOOGLE_CLIENT_ID);
-        if (!sub) return json({ error: 'sign-in failed' }, 401);
-        const sid = await userStub(env, sub).newSession();
-        return json({ token: `${sub}.${sid}` });
-      }
-
+      if (route === 'POST /login') return await login(req, env, json);
       const auth = parseToken(req.headers.get('Authorization'));
       if (!auth) return json({ error: 'not signed in' }, 401);
-      const stub = userStub(env, auth.sub);
-
-      if (path === '/progress' && req.method === 'GET') {
-        const p = await stub.getProgress(auth.sid);
-        return p ? json(p) : json({ error: 'not signed in' }, 401);
-      }
-      if (path === '/progress' && req.method === 'PUT') {
-        const text = await req.text();
-        if (new TextEncoder().encode(text).length > MAX_BYTES) return json({ error: 'too big' }, 413);
-        let parsed;
-        try { parsed = JSON.parse(text); } catch { return json({ error: 'bad data' }, 400); }
-        const p = clean(parsed);
-        if (!p) return json({ error: 'bad data' }, 400);
-        return (await stub.putProgress(auth.sid, p)) ? json({ ok: true }) : json({ error: 'not signed in' }, 401);
-      }
-      if (path === '/progress' && req.method === 'DELETE') {
-        return (await stub.wipe(auth.sid)) ? json({ ok: true }) : json({ error: 'not signed in' }, 401);
-      }
-      if (path === '/logout' && req.method === 'POST') {
-        await stub.endSession(auth.sid);
-        return json({ ok: true });
-      }
-      return json({ error: 'not found' }, 404);
-    } catch (e) {
-      return json({ error: 'server error' }, 500);
+      const handler = Object.hasOwn(SIGNED_IN, route) ? SIGNED_IN[route] : null;
+      if (!handler) return json({ error: 'not found' }, 404);
+      return await handler(req, userStub(env, auth.sub), auth, json);
+    } catch {
+      return json({ error: 'server error' }, 500); // never leak internals; the page just retries later
     }
   },
 };

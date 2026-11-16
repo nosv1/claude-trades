@@ -28,7 +28,9 @@ usd, oil, food = monthly("usd"), monthly("brent"), monthly("fao_food")
 period = [m for m in usd if 2007 <= m // 12 <= 2025 and yoy(usd, m) is not None]
 up = [m for m in period if yoy(usd, m) >= 0.08]
 down = [m for m in period if yoy(usd, m) <= -0.08]
-years = lambda ms: sorted({m // 12 for m in ms})
+def years(ms):
+    return sorted({m // 12 for m in ms})
+
 
 def all_(ms, test):
     """True if there are months and every one has data and passes; missing data fails the claim."""

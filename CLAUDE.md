@@ -26,6 +26,9 @@ Claude).
   term the first time ("the Fed (the US central bank)"). Keep real names (FAO Food Price Index,
   Brent, maize, urea) rather than swapping them for plain ones (his call, 2026-11-16). Rules in
   [docs/weekly-routine.md](docs/weekly-routine.md).
+- **Coding standard:** [docs/coding-standard.md](docs/coding-standard.md), NASA/JPL's "Power of Ten"
+  adapted to JS/Python (his call, 2026-11-16). ESLint and Ruff must pass with zero warnings (the Lint
+  workflow runs on every push); refactors are checked by rendering the page before and after.
 - **Commits:** authored as Claude (`--author="Claude <noreply@anthropic.com>"`), explicit paths
   only, never `git add -A` or `git add .`.
 - **Remote:** public repo [nosv1/claude-trades](https://github.com/nosv1/claude-trades); site at

@@ -23,9 +23,7 @@
     return e;
   }
   const signed = (x) => (x >= 0 ? '+' : '−') + Math.abs(Math.round(x)) + '%';
-  async function getJSON(url) {
-    try { const r = await fetch(url, { cache: 'no-cache' }); return r.ok ? await r.json() : null; } catch { return null; }
-  }
+  const getJSON = window.TP.getJSON;
 
   // ---- metrics ----
   function series(D, id) {

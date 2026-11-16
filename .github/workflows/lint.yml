@@ -1,0 +1,37 @@
+name: Lint
+
+# docs/coding-standard.md rule 10: zero warnings, checked on every push. Kept apart from
+# update-and-deploy.yml so a lint failure never blocks the daily data refresh.
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: JavaScript (ESLint)
+        run: npx --yes eslint@10.14.0 --max-warnings 0 .
+
+      - name: Python (Ruff)
+        run: |
+          pip install ruff==0.17.3
+          ruff check .
+
+      - name: Page claims match the data
+        run: python scripts/check_claims.py

@@ -1,7 +1,8 @@
 'use strict';
-// Small helpers shared by quiz.js, sync.js and scoreboard.js.
+// Small helpers shared by the page's scripts; loaded first.
 // Progress lives in localStorage under "tp." keys. save() announces real changes with a
 // "tp:progress" event so sync.js (when signed in) can copy them to the cloud.
+// getJSON checks every data file where it comes in (docs/coding-standard.md rules 5 and 7).
 window.TP = (() => {
   const key = (k) => 'tp.' + k;
   function el(tag, attrs = {}, text) {
@@ -23,5 +24,22 @@ window.TP = (() => {
     } catch { return; /* private mode */ }
     if (!quiet) window.dispatchEvent(new Event('tp:progress'));
   }
-  return { el, load, save };
+  // series.json: {series: {id: {start: "YYYY-MM", values: [number | null, ...]}}}, at most 1,200
+  // months per series. Anything else means a broken refresh; the page then shows its error box.
+  function seriesOK(D) {
+    return Boolean(D && D.series && typeof D.series === 'object') && Object.values(D.series).every((s) =>
+      s && /^\d{4}-\d{2}$/.test(s.start) && Array.isArray(s.values) && s.values.length <= 1200
+      && s.values.every((v) => v === null || Number.isFinite(v)));
+  }
+  // Every data file goes through here: null if it's missing, not JSON, or (series.json) the wrong shape.
+  async function getJSON(url) {
+    let d;
+    try {
+      const r = await fetch(url, { cache: 'no-cache' });
+      if (!r.ok) return null;
+      d = await r.json();
+    } catch { return null; } // offline or not JSON: same as missing
+    return url.endsWith('series.json') && !seriesOK(d) ? null : d;
+  }
+  return { el, load, save, getJSON, seriesOK };
 })();
