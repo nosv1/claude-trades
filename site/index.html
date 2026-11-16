@@ -36,6 +36,7 @@
       <div class="ranges" id="silver-ranges"></div>
     </section>
 
+    <div class="ts">
     <div class="filters" role="group" aria-label="Chart options">
       <div class="seg" id="range" role="radiogroup" aria-label="Time range">
         <button type="button" data-v="1">1Y</button>
@@ -71,15 +72,43 @@
       <p class="section-lede">Food is made from energy. Diesel runs the tractors and ships, and natural gas is the raw material for nitrogen fertilizer like urea. When oil and fertilizer spike, food usually follows a few months later. From early 2021 to spring 2022, as natural gas prices soared and then Russia invaded Ukraine, urea went up about 3.5 times and the food index hit its all-time record.</p>
       <div class="grid" id="drivers"></div>
     </section>
+    </div>
+
+    <section class="trade" id="trade" aria-labelledby="trade-title" hidden>
+      <h2 class="section-title" id="trade-title">Who feeds whom</h2>
+      <p class="section-lede">A handful of countries grow most of the food the world trades. Pick a crop to see who sells it and who relies on them. Then pick a seller to see who would be hit hardest if it stopped exporting, the way Russia and Ukraine's grain was cut off in 2022.</p>
+      <div class="filters local" role="group" aria-label="Crop">
+        <div class="seg" id="crop" role="radiogroup" aria-label="Crop"></div>
+      </div>
+      <div class="grid2">
+        <article class="card">
+          <h3 class="card-title">Who sells it</h3>
+          <p class="mini-note" id="sell-note"></p>
+          <div class="bars" id="sellers"></div>
+        </article>
+        <article class="card">
+          <h3 class="card-title">Who depends on it</h3>
+          <div class="pick">
+            <label for="supplier">If this seller stopped:</label>
+            <select id="supplier"></select>
+          </div>
+          <p class="insight" id="insight"></p>
+          <div class="meters" id="buyers"></div>
+          <button type="button" class="more" id="more-buyers" hidden></button>
+        </article>
+      </div>
+      <p class="filter-note" id="trade-note"></p>
+    </section>
   </main>
 
   <footer class="foot">
-    <p><strong>Sources.</strong> <span id="sources"></span></p>
+    <p><strong>Sources.</strong> <span id="sources"></span> <span id="trade-source"></span></p>
     <p>Charts show monthly average prices. The silver and gold "now" points are the live spot price from gold-api.com. Inflation adjustment uses US consumer prices and shows past prices in today's dollars. Data refreshes daily.</p>
     <p>Not financial advice. Just a way to see where things stand.</p>
   </footer>
 
   <div id="error" class="error" hidden></div>
   <script src="app.js"></script>
+  <script src="trade.js"></script>
 </body>
 </html>
