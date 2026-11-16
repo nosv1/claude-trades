@@ -53,13 +53,21 @@ Code review fixes merged 2026-11-15 (CPI gap interpolation, workflow push retry,
 
 ## Log
 
+- **2026-11-16 (morning):** Weekly routine prompt updated to the three-file flow (it still said
+  "only those two files", which clashed with the claude-log step). Code-review fixes: dollar claim
+  reworded to match the data (above); `usd` in the scenario name map; dollar months kept only once
+  FRED has posted a later month (it lags about a week); index label is "broad basket of 26
+  currencies"; the "Since last week:" label shows once; top-level `facts` checks numbers in the
+  summary and lookback; `lookback` is required whenever the published read is from an earlier date
+  (no hard-coded date); dollar Heads-up goes through the shared `add()`.
 - **2026-11-16:** Added the **US dollar** (FRED DTWEXBGS broad index, daily -> monthly averages of
   finished months, as `usd` in series.json): a Drivers chart (no inflation adjustment, `noReal`), a
   Heads-up signal (Watch at +/-8% y/y, else "calm"), a data quiz question and a "how it works" one.
   Checked against our data first: since 2006, y/y changes in the dollar and in gold, silver, Brent,
   copper, FAO food, wheat, maize, soybeans correlate -0.47 to -0.73; in dollar-up-8%+ years Brent's
-  median y/y was -45% and FAO food -19% (only 4 strong-dollar episodes, so the page notes shared
-  causes). Dollar now: 121.5, +0.6% y/y. Not done: importer currencies (Egypt, Nigeria, Pakistan);
+  median y/y was -45% and FAO food -19%, but that's really 2008-09 and 2014-16 (2012 was one
+  month); in 2022 the dollar rose 9-12% and Brent was +11% to +46%, FAO food 0 to +14% (the war).
+  So the page says "a push, not a rule". Dollar-down-8%+ months: oil and food rose in every one. Dollar now: 121.5, +0.6% y/y. Not done: importer currencies (Egypt, Nigeria, Pakistan);
   FRED doesn't carry them daily, needs a source.
 - **2026-11-16:** Weekly read now looks back: a required `lookback` ("Since last week", shown in a
   shaded box) on what happened to last week's points and watch items, including what we got wrong.

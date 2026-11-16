@@ -115,16 +115,26 @@ class Data:
 
 
 # ---- briefing.json ----
-def check_briefing(b, p, data):
+def check_briefing(b, p, data, prev=None):
     if not p.need(isinstance(b, dict), "briefing: not an object"):
         return
     date(p, b.get("date"), "briefing.date")
     text(p, b.get("by"), "briefing.by", 2, 40)
     text(p, b.get("headline"), "briefing.headline", 10, 140)
     text(p, b.get("summary"), "briefing.summary", 40, 600)
-    # Required from the second weekly read on (the first one had no "last week" to look back on).
-    if "lookback" in b or str(b.get("date", "")) > "2026-11-16":
+    # Required whenever there's an earlier published read to look back on.
+    earlier = isinstance(prev, dict) and str(prev.get("date", "")) < str(b.get("date", ""))
+    if "lookback" in b or earlier:
         text(p, b.get("lookback"), "briefing.lookback (what happened since last week)", 40, 600)
+    # Numbers in the summary and lookback get checked too.
+    top = b.get("facts", [])
+    if p.need(isinstance(top, list) and len(top) <= 12, "briefing.facts: needs a list of the numbers in summary/lookback"):
+        for j, f in enumerate(top):
+            check_fact(f, p, f"briefing.facts[{j}]", data)
+        for k in ("summary", "lookback"):
+            t = b.get(k)
+            if isinstance(t, str) and re.search(r"\d\s*%|\$\s*\d", t):
+                p.need(bool(top), f"briefing.{k}: has a % or $ number, so add it to the top-level facts")
     items = b.get("items")
     if p.need(isinstance(items, list) and 2 <= len(items) <= 5, "briefing.items: needs 2-5 items"):
         for i, it in enumerate(items):
@@ -352,7 +362,7 @@ def main():
         except ValueError as e:
             p.append(f"{name}: not valid JSON ({e})")
     if "briefing.json" in docs:
-        check_briefing(docs["briefing.json"], p, data)
+        check_briefing(docs["briefing.json"], p, data, git_base("site/data/briefing.json"))
         if sources:
             check_sources(docs["briefing.json"], p, warn)
     if "scenarios.json" in docs:

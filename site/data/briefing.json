@@ -3,6 +3,7 @@
   "by": "Claude",
   "headline": "Oil prices fell fast in early November as the US-Iran war seemed to cool, but ships near Iran still aren't safe.",
   "summary": "Oil averaged $125 a barrel in October, the highest since 2008. Then it dropped in November after the US signaled no new strikes on Iran. Gold and silver slid because traders expect US interest rates to go up. In food, sugar keeps rising because of El Niño and weather, while grain prices eased.",
+  "facts": [{ "s": "brent", "m": "last", "v": 125, "month": "2026-10" }],
   "items": [
     {
       "tag": "Energy",

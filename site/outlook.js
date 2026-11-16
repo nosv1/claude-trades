@@ -156,20 +156,18 @@
     // The US dollar: commodities are priced in it, so it tends to move against them
     const usdP = pts(D, 'usd');
     if (usdP.length > 24) {
-      const usd = stats(usdP);
-      const up = usd.yoy >= 8, down = usd.yoy <= -8;
-      if (up || down) {
-        add({
-          level: 'watch', short: 'the dollar', tag: 'Money', series: usd, card: 'usd',
-          title: `The US dollar is ${up ? 'up' : 'down'} ${Math.abs(Math.round(usd.yoy))}% in a year`,
-          body: up
-            ? 'Oil, grain and metals are priced in dollars. A stronger dollar makes them cost more for everyone else, and their dollar prices have usually fallen when it rose.'
-            : 'A weaker dollar makes dollar-priced food, fuel and metals cheaper for the rest of the world. Their dollar prices have usually risen when it fell.',
-          watch: up
-            ? 'Food import bills in countries with weak currencies, like Egypt, Nigeria and Pakistan. A falling local currency is often how world prices turn into local food crises.'
-            : 'Whether gold, oil and grain keep climbing.',
-        });
-      } else calm.push('the dollar');
+      const dollar = stats(usdP);
+      const up = dollar.yoy >= 8, down = dollar.yoy <= -8;
+      add({
+        level: up || down ? 'watch' : null, short: 'the dollar', tag: 'Money', series: dollar, card: 'usd',
+        title: `The US dollar is ${up ? 'up' : 'down'} ${Math.abs(Math.round(dollar.yoy))}% in a year`,
+        body: up
+          ? 'Oil, grain and metals are priced in dollars. A stronger dollar makes them cost more for everyone else, which pushes their dollar prices down. It\'s a push, not a rule: in 2022 a war pushed harder the other way.'
+          : 'A weaker dollar makes dollar-priced food, fuel and metals cheaper for the rest of the world. Since 2006, their dollar prices rose every time the dollar fell this much.',
+        watch: up
+          ? 'Food import bills in countries with weak currencies, like Egypt, Nigeria and Pakistan. A falling local currency is often how world prices turn into local food crises.'
+          : 'Whether gold, oil and grain keep climbing.',
+      });
     }
 
     // Copper
