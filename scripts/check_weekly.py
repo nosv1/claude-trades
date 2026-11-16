@@ -118,8 +118,29 @@ class Data:
 
 # ---- briefing.json ----
 # A number that probably came from the data: a percent, a dollar amount or a decimal.
-NUMBER = re.compile(r"\$\s*\d[\d,]*(?:\.\d+)?|\d[\d,]*(?:\.\d+)?\s*(?:%|percent\b|per cent\b|dollars?\b|points?\b)"
-                    r"|\d+\.\d+", re.I)
+NUMBER = re.compile(r"\$\s*(\d[\d,]*(?:\.\d+)?)"
+                    r"|(\d[\d,]*(?:\.\d+)?)[\s-]*(?:%|percent(?:age[\s-]+points?)?\b|per\s+cent\b|dollars?\b|points?\b|pts\b)"
+                    r"|(\d+\.\d+)", re.I)
+NOT_LABEL = r"since last week(?![\w'\u2019])"  # "Since last week:" but not "Since last week's"
+
+
+def quoted_numbers(t):
+    """Every data-looking number in the text, as floats, repeats included."""
+    return [float(next(g for g in m.groups() if g).replace(",", "")) for m in NUMBER.finditer(t)]
+
+
+def unmatched(nums, facts):
+    """Numbers with no fact of the same size behind them (each fact backs one number; the sign is
+    in the words, e.g. 'fell 8%' for v = -8). Allows rounding: within 1, or 1% for big numbers."""
+    left = [abs(f["v"]) for f in facts if isinstance(f, dict) and isinstance(f.get("v"), (int, float))]
+    miss = []
+    for n in nums:
+        hit = next((i for i, v in enumerate(left) if abs(v - n) <= max(1.0, 0.01 * n)), None)
+        if hit is None:
+            miss.append(n)
+        else:
+            left.pop(hit)
+    return miss
 
 
 def check_briefing(b, p, data, prev=None):
@@ -143,12 +164,11 @@ def check_briefing(b, p, data, prev=None):
         for j, f in enumerate(fl):
             check_fact(f, p, f"briefing.{k}_facts[{j}]", data)
         t = b.get(k)
-        nums = sorted({re.sub(r"\s+", " ", n.lower()) for n in NUMBER.findall(t)}) if isinstance(t, str) else []
-        p.need(len(fl) >= len(nums),
-               f"briefing.{k}: quotes {len(nums)} number(s) ({', '.join(nums)}) but {k}_facts has {len(fl)}; "
-               "add one per number, or write news numbers in words")
+        miss = unmatched(quoted_numbers(t), fl) if isinstance(t, str) else []
+        p.need(not miss, f"briefing.{k}: no {k}_facts entry backs {', '.join(f'{n:g}' for n in miss)}; "
+               "add one fact per number (same value), or write news numbers in words")
     if isinstance(b.get("lookback"), str):
-        p.need(not re.match(r"\s*since last week\b", b["lookback"], re.I),
+        p.need(not re.match(r"\s*" + NOT_LABEL, b["lookback"], re.I),
                "briefing.lookback: don't start with \"Since last week\"; the page adds that label")
     items = b.get("items")
     if p.need(isinstance(items, list) and 2 <= len(items) <= 5, "briefing.items: needs 2-5 items"):
@@ -342,10 +362,17 @@ def check_log(L, p, data, scenarios, base):
 
 
 def git_base(rel):
-    """The published version of a file: origin/main if we have it, else HEAD; None if neither.
-    origin/main first, so a rerun after committing to the weekly branch still compares with what's
-    actually live."""
-    for ref in ("origin/main", "HEAD"):
+    """The published version of a file: origin/main, else main, else HEAD (but not on a claude/
+    branch, where HEAD may be the routine's own commit); None if none of them has it."""
+    refs = ["origin/main", "main"]
+    try:
+        branch = subprocess.run(["git", "rev-parse", "--abbrev-ref", "HEAD"], cwd=ROOT,
+                                capture_output=True, text=True, timeout=20).stdout.strip()
+    except (OSError, subprocess.SubprocessError):
+        branch = ""
+    if branch and not branch.startswith("claude/"):
+        refs.append("HEAD")  # on a weekly branch, HEAD may be our own commit: never compare with it
+    for ref in refs:
         try:
             out = subprocess.run(["git", "show", f"{ref}:{rel}"], cwd=ROOT, capture_output=True,
                                  text=True, encoding="utf-8", timeout=20)

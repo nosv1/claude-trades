@@ -36,7 +36,7 @@
     $('read-summary').textContent = b.summary;
     const lb = $('read-lookback');
     lb.replaceChildren();
-    const t = str(b.lookback, 600) ? b.lookback.replace(/^\s*since last week\b\s*[:,.;\u2013\u2014-]*\s*/i, '') : '';
+    const t = str(b.lookback, 600) ? b.lookback.replace(/^\s*since last week(?![\w'\u2019])\s*[:,.;\u2013\u2014-]*\s*/i, '') : '';
     if (/\w/.test(t)) lb.append(el('strong', {}, 'Since last week: '), t.charAt(0).toUpperCase() + t.slice(1));
     lb.hidden = !lb.childNodes.length;
     $('read-items').replaceChildren(...b.items.map((it) => {
