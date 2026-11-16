@@ -50,20 +50,37 @@ non-experts who want to know what to look out for in the coming months.
    You'll write this up as `lookback` (step 4): honest and specific, including anything last week's
    read got wrong or that didn't happen. Also glance at `claude-log.json` for any call or
    likelihood that was decided this week.
-3. Search the news from the past 7-10 days: oil and OPEC, El Niño and crop weather (Southeast Asia
-   palm oil, India monsoon and rice, Australia wheat, Argentina and Brazil soybeans), food export bans
-   or taxes (India rice, Russia wheat), fertilizer and natural gas, shipping chokepoints (Red Sea,
-   Black Sea, Panama), FAO and USDA reports, copper, gold and silver. Prefer primary or well-known
-   sources: FAO, USDA, NOAA, IEA, OPEC, World Bank, Reuters, AP, Bloomberg, FT.
-   The cloud environment only reaches allowlisted sites (Reuters, AP, BBC, CNBC, S&P Global, DTN,
-   FAO, USDA, NOAA, EIA, IEA, OPEC, World Bank, IMF, MPOB). If a page fails with ENOTFOUND, don't
-   retry it: find the same story on an allowed site, or leave the claim out. Search results alone
-   are not a source; open the page.
-   Also search **politics that moves supply**: wars and ceasefires, sanctions (Russian and Iranian
-   oil, Russian fertilizer), tariffs and trade deals, export bans, OPEC+ decisions, central-bank and
-   dollar moves, and elections or leadership changes in big producers and buyers (US, China, India,
-   Russia, Brazil, Argentina, Indonesia, Saudi Arabia, the EU). Upcoming elections and summits with
-   a date go in `watch`.
+3. **Sweep every topic below. Don't skip any**, even on a quiet week or a second run the same
+   day. Search the news from the past 7-10 days for each one, open at least one page, and note
+   what you found for the `checked` list (step 4). The ids match `TOPICS` in
+   `scripts/check_weekly.py`, which fails the read if any is missing. This table is the one place
+   that says what each topic covers.
+
+   | id | Topic |
+   | --- | --- |
+   | `oil` | Oil, OPEC+ decisions and sanctions on oil (Russia, Iran) |
+   | `gas-fertilizer` | Natural gas and fertilizer (urea, Russian fertilizer sanctions) |
+   | `enso` | El Niño and La Niña (NOAA) |
+   | `southeast-asia` | Southeast Asia: palm oil (MPOB; Indonesia's export rules), rice (Thailand, Vietnam) |
+   | `south-asia` | India and South Asia: monsoon, rice, export bans and taxes |
+   | `black-sea` | Russia and Ukraine: wheat, export bans, quotas and taxes |
+   | `americas` | US, Brazil and Argentina: soybeans and maize, crop weather |
+   | `australia` | Australia: wheat and dry weather |
+   | `china` | China: what it buys, and from whom |
+   | `importers` | Countries that buy most of their food abroad (Egypt and North Africa, the Middle East, Africa south of the Sahara) |
+   | `shipping` | Shipping routes: Red Sea, Strait of Hormuz, Black Sea, Panama Canal |
+   | `reports` | FAO and USDA reports out this week |
+   | `metals` | Gold, silver and copper |
+   | `money` | Central banks (the Fed and others) and the dollar |
+   | `politics` | Wars and ceasefires, sanctions, tariffs and trade deals, export bans anywhere not above, and elections or leadership changes in big producers and buyers (US, China, India, Russia, Brazil, Argentina, Indonesia, Saudi Arabia, the EU) |
+
+   Prefer primary or well-known sources: FAO, USDA, NOAA, IEA, OPEC, World Bank, Reuters, AP,
+   Bloomberg, FT. The cloud environment only reaches allowlisted sites (Reuters, AP, BBC, CNBC,
+   S&P Global, DTN, FAO, USDA, NOAA, EIA, IEA, OPEC, World Bank, IMF, MPOB). If a page fails with
+   ENOTFOUND or 403, don't retry it: find the same story on an allowed site, or leave the claim
+   out. Search results alone are not a source; open the page. If you can't open any page for a
+   topic, mark it `unreached` and say why. Never mark a topic `quiet` without opening a page.
+   **Politics stays neutral** (see Rules). Upcoming elections and summits with a date go in `watch`.
 4. Write `site/data/briefing.json`:
 
    ```json
@@ -84,9 +101,18 @@ non-experts who want to know what to look out for in the coming months.
          "facts": [{ "s": "brent", "m": "last", "v": 125, "month": "2026-10" }, { "s": "brent", "m": "yoy", "v": 93 }]
        }
      ],
+     "checked": [
+       { "topic": "oil", "status": "covered | quiet | unreached", "note": "What you found, or why you couldn't (10-200 chars)", "url": "https://page you opened (not needed for unreached)" }
+     ],
      "watch": ["Dated things coming up in the next week or two, e.g. 'FAO Food Price Index, Fri 4 Dec' (1-4 items)"]
    }
    ```
+
+   `checked`: one entry per topic in step 3, every week. `covered` means it's in an item, and its
+   `url` is one of that item's sources; `quiet` means you looked and nothing worth an item
+   happened; `unreached` means no page could be opened. A good week is mostly `covered` and
+   `quiet`. With `--sources` the checker fetches every `quiet` page and fails one that doesn't exist
+   (a `covered` page is an item source, checked with its quote).
 
    2 to 5 items, most important first. If it was a quiet week, say so; don't inflate small news.
    `facts`: one entry per number in the text that comes from `site/data` (`m` is `last`, `yoy`,
@@ -124,7 +150,8 @@ non-experts who want to know what to look out for in the coming months.
 8. Run `python scripts/check_weekly.py --sources`. It matches your facts against the data, fetches
    every source to find its quote, and checks the log is append-only. Fix every problem it lists
    and run it again until it passes. Never push files that fail it. ("Couldn't fetch" is a warning:
-   check that page is on the allowlist.)
+   check that page is on the allowlist. But a `quiet` page that doesn't exist (404) fails: link
+   the page you actually opened, or mark the topic `unreached` and say why.)
 9. Commit and push to the branch:
 
    ```sh
@@ -137,4 +164,4 @@ non-experts who want to know what to look out for in the coming months.
    If the push is rejected, add `-2` to the branch name and push again (don't force-push). The
    workflow publishes any `claude/weekly-read-*` branch, then deletes it.
 10. End with a 4-line summary: the headline, what changed in the scenarios, your two calls, and
-   anything that didn't work (including anything the checker caught).
+   anything that didn't work (including anything the checker caught and any `unreached` topic).
