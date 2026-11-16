@@ -33,6 +33,11 @@ Code review fixes merged 2026-11-15 (CPI gap interpolation, workflow push retry,
 
 ## Log
 
+- **2026-11-16:** He wants "don't miss out" more than stock-up advice. Added **Trend and value**
+  under Heads up: 12-month trend vs distance from the 5-year average (both documented long-run
+  tendencies in commodities, weak per item), giving one reading per item: Early trend, Late trend,
+  Cooling from a high, Out of favor (turning up), No clear signal. Copy is explicit that it's not a
+  buy list and public info is already priced in. At launch: grains = early trend; oil, copper = late.
 - **2026-11-16:** He clarified the goal: awareness, "look out for this in the coming months". Added a
   **Heads up** section at the top (`site/outlook.js`): rule-based signals (Alert / Watch / Pressure
   point / Easing) for oil, El Nino/La Nina (NOAA ONI + advisory, new `enso.json`), world food prices

@@ -220,6 +220,19 @@ details.tbl summary { cursor: pointer; color: var(--ink-2); width: fit-content; 
 html { scroll-behavior: smooth; }
 .chart-card, .trade { scroll-margin-top: 64px; }
 
+/* Trend and value */
+.trendvalue { margin-top: 28px; }
+.radar { display: grid; }
+.rrow { padding: 10px 0; border-bottom: 1px solid var(--grid); }
+.rrow:first-child { padding-top: 0; }
+.rrow:last-child { border-bottom: 0; padding-bottom: 0; }
+.rhead { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.rhead .nm { font-weight: 600; }
+.rchip { font-size: 12px; font-weight: 600; border-radius: 999px; padding: 2px 9px; background: var(--chip); color: var(--ink-2); white-space: nowrap; }
+.rchip.r-early, .rchip.r-turning { background: var(--series); color: #fff; }
+.rnums { display: flex; flex-wrap: wrap; gap: 2px 14px; margin-top: 4px; font-size: 13px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.rtext { margin: 4px 0 0; font-size: 13px; color: var(--muted); }
+
 /* Who feeds whom */
 .filters.local { position: static; margin-top: 0; padding-top: 0; }
 .grid2 { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); margin-top: 6px; }
