@@ -41,11 +41,13 @@ via the weekly-read workflow); sync worker auto-deploys on changes under `worker
    shipping chokepoints (Red Sea, Panama). Prices only show a shortage after it starts.
 3. Daily spot chart: `site/data/spot.json` already logs one silver/gold price a day.
 4. Price alert when silver crosses a price he picks.
-5. **Currencies** (he asked 2026-11-16). ~~US dollar~~ done 2026-11-16 (see log). Still to do: add the US dollar index (FRED `DTWEXBGS`, broad, daily;
-   same plain-UA fetch as CPI) as a driver chart and a Heads-up signal. A strong dollar makes
-   dollar-priced food and fuel dearer for everyone else and tends to push commodity prices down in
-   dollars. Maybe also the currencies of big food importers (Egypt, Nigeria, Pakistan), where a
-   falling currency is what turns world prices into local food crises.
+5. **Currencies** (he asked 2026-11-16). ~~US dollar~~ done 2026-11-16 (see log). Still to do: **importer currencies** (Egypt, Nigeria, Pakistan). Source found 2026-11-16:
+   BIS exchange rates, keyless SDMX CSV, monthly averages since 2000, all three in one call:
+   `https://stats.bis.org/api/v1/data/WS_XRU/M.EG+NG+PK.EGP+NGN+PKR.A?format=csv&startPeriod=2000-01`
+   (columns CURRENCY, TIME_PERIOD, OBS_VALUE; units = local currency per USD; lags ~2-3 months).
+   5 years to Aug/Sep 2026: EGP 15.7 -> 50.3, NGN 411 -> 1,353, PKR 168 -> 277 per USD. Idea: show
+   "wheat in local money" (wheat $ x rate) next to wheat in dollars, and a Heads-up signal when a
+   big importer's currency drops 15%+ in a year.
 
 Code review fixes merged 2026-11-15 (CPI gap interpolation, workflow push retry, etc.).
 
