@@ -7,7 +7,7 @@
       "id": "elnino",
       "title": "El Niño dries out Asia's harvests",
       "likelihood": "likely",
-      "why": "The US weather agency (NOAA) says El Niño is still getting stronger. It gives about a 60% chance this becomes one of the strongest ever. Sugar is already up 28% in 3 months.",
+      "why": "The US weather agency (NOAA) says El Niño is still getting stronger. It gives about a 60% chance this becomes the strongest since records began in 1950. Sugar is already up 28% in 3 months.",
       "horizon": "Now to late 2027",
       "steps": [
         {
@@ -63,7 +63,10 @@
         "Wheat"
       ],
       "down": [],
-      "history": "In all 5 strong El Niños since 1990, cooking oil cost more a year later. After the last three, it cost 27% to 55% more."
+      "history": "In all 5 strong El Niños since 1990, cooking oil cost more a year later. After the last three, it cost 27% to 55% more.",
+      "outcome": 3,
+      "deadline": "2027-12",
+      "cases": 5
     },
     {
       "id": "lanina",
@@ -125,7 +128,10 @@
         "Meat (animal feed costs more)"
       ],
       "down": [],
-      "history": "A La Niña lasted from 2020 to 2023. In its last year, a drought shrank Argentina's soybean harvest to its smallest in over 20 years."
+      "history": "A La Niña lasted from 2020 to 2023. In its last year, a drought shrank Argentina's soybean harvest to its smallest in over 20 years.",
+      "outcome": 1,
+      "deadline": "2028-05",
+      "cases": 9
     },
     {
       "id": "oilfood",
@@ -191,7 +197,10 @@
         "Delivery and travel"
       ],
       "down": [],
-      "history": "2021-22: oil doubled, then Russia invaded Ukraine. World food prices rose 35% in a year, to an all-time high."
+      "history": "2021-22: oil doubled, then Russia invaded Ukraine. World food prices rose 35% in a year, to an all-time high.",
+      "outcome": 3,
+      "deadline": "2027-11",
+      "cases": 6
     },
     {
       "id": "oilcure",
@@ -242,7 +251,10 @@
         "Gas prices",
         "Copper, if the economy slows a lot"
       ],
-      "history": "2008: oil averaged $134 a barrel in July, then $42 in December when the financial crisis hit. Copper fell by almost two thirds in those months too."
+      "history": "2008: oil averaged $134 a barrel in July, then $42 in December when the financial crisis hit. Copper fell by almost two thirds in those months too.",
+      "outcome": 2,
+      "deadline": "2028-05",
+      "cases": 9
     },
     {
       "id": "exportban",
@@ -309,7 +321,10 @@
         "Bread"
       ],
       "down": [],
-      "history": "2008: rice nearly tripled in six months after India and Vietnam limited sales. 2010: wheat rose 56% in two months after Russia banned sales. 2023: rice rose 24% in two months after India's ban."
+      "history": "2008: rice nearly tripled in six months after India and Vietnam limited sales. 2010: wheat rose 56% in two months after Russia banned sales. 2023: rice rose 24% in two months after India's ban.",
+      "outcome": 2,
+      "deadline": "2027-11",
+      "cases": 3
     },
     {
       "id": "fertilizer",
@@ -365,7 +380,10 @@
         "Wheat",
         "Soybeans"
       ],
-      "history": "Early 2023: fertilizer (urea) had dropped by two thirds from its 2022 high. A year later, maize was 33% cheaper and wheat 26% cheaper."
+      "history": "Early 2023: fertilizer (urea) had dropped by two thirds from its 2022 high. A year later, maize was 33% cheaper and wheat 26% cheaper.",
+      "outcome": 3,
+      "deadline": "2027-12",
+      "cases": 7
     }
   ]
 }

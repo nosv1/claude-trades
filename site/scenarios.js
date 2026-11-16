@@ -9,7 +9,7 @@
     longshot: { label: 'Long shot', dots: '○○○', rank: 2 },
   };
   const NAME = {
-    brent: 'Oil', fao_food: 'World food prices', fao_oils: 'Cooking oils', fao_sugar: 'Sugar',
+    brent: 'Brent oil', fao_food: 'FAO Food Price Index', fao_oils: 'Cooking oils', fao_sugar: 'Sugar',
     fao_cereals: 'Cereals', rice: 'Rice', wheat: 'Wheat', maize: 'Maize', soybeans: 'Soybeans',
     urea: 'Urea', copper: 'Copper', gold: 'Gold', silver: 'Silver',
   };
@@ -171,6 +171,11 @@
     const hist = el('p', { class: 'sig-body' });
     hist.append(el('strong', {}, 'Last time: '), sc.history);
     body.append(ol, why, hist);
+    if (Number.isInteger(sc.cases) && sc.cases > 0) {
+      body.append(el('p', { class: 'scn-cases' }, sc.cases < 10
+        ? `Based on ${sc.cases} past case${sc.cases > 1 ? 's' : ''}. That's only a few, so treat it as a rough guide.`
+        : `Based on ${sc.cases} past cases.`));
+    }
     fold.append(sum, body);
     a.append(fold);
     return a;

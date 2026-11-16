@@ -144,7 +144,7 @@
         level, short: 'fertilizer', tag: 'Farming', series: urea, card: 'urea',
         title: level === 'easing'
           ? (drop >= 30 ? `Urea fertilizer is getting cheaper: down ${Math.round(drop)}% since ${mlabel(urea.peak6.m)}` : `Urea fertilizer down ${Math.round(-urea.yoy)}% in a year`)
-          : `Fertilizer up ${Math.round(urea.yoy)}% in a year`,
+          : `Urea fertilizer up ${Math.round(urea.yoy)}% in a year`,
         body: level === 'easing'
           ? (drop >= 30 ? `Urea fertilizer jumped to ${usd(urea.peak6.v)} a ton in ${mlabel(urea.peak6.m)}. Now it's ${usd(urea.last.v)}. ` : '')
             + 'Cheaper fertilizer makes next season\'s crops cheaper to grow. That pushes against expensive oil.'
@@ -262,7 +262,7 @@
   // Both are documented long-run tendencies in commodity markets, weak and noisy for any one item.
   const RADAR = [
     ['silver', 'Silver', 'silver'], ['gold', 'Gold', 'gold'], ['copper', 'Copper', null],
-    ['brent', 'Oil', null], ['wheat', 'Wheat', null], ['maize', 'Maize', null], ['rice', 'Rice', null],
+    ['brent', 'Oil (Brent)', null], ['wheat', 'Wheat', null], ['maize', 'Maize', null], ['rice', 'Rice', null],
     ['soybeans', 'Soybeans', null], ['urea', 'Fertilizer (urea)', null],
   ];
   const READS = {

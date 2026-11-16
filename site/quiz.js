@@ -1,25 +1,16 @@
 'use strict';
 // "Check yourself": a few questions per visit, spaced so missed ones come back sooner
 // (Leitner boxes), plus "make a call" guesses on the next monthly update that get scored when
-// the data arrives. Everything is kept in this browser's localStorage only.
+// the data arrives. Saved in this browser's localStorage (common.js), and synced by sync.js
+// when the person signs in.
 (() => {
   const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   const PER_VISIT = 4;
   const GAPS = [0, 1, 3, 7, 21, 60]; // days until a question comes back, by box
 
   const $ = (id) => document.getElementById(id);
-  function el(tag, attrs = {}, text) {
-    const e = document.createElement(tag);
-    for (const [k, v] of Object.entries(attrs)) { if (k === 'class') e.className = v; else e.setAttribute(k, v); }
-    if (text != null) e.textContent = text;
-    return e;
-  }
-  const load = (k, d) => { try { const v = localStorage.getItem('tp.' + k); return v ? JSON.parse(v) : d; } catch { return d; } };
-  // Saving also tells sync.js (if signed in) to copy the change to the cloud.
-  const save = (k, v) => {
-    try { localStorage.setItem('tp.' + k, JSON.stringify(v)); } catch { /* private mode */ }
-    window.dispatchEvent(new Event('tp:progress'));
-  };
+  // save() only writes (and tells sync.js) when something actually changed
+  const { el, load, save } = window.TP;
   const today = () => { const d = new Date(); return d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate(); };
   const addDays = (n) => { const d = new Date(); d.setDate(d.getDate() + n); return d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate(); };
   const signed = (x) => (x >= 0 ? '+' : '−') + Math.abs(Math.round(x)) + '%';

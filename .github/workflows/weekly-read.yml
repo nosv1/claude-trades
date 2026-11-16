@@ -1,5 +1,5 @@
 # Publish the weekly read: the Claude routine (docs/weekly-routine.md) pushes briefing.json and
-# scenarios.json to a claude/weekly-read-YYYY-MM-DD branch. This checks them, copies only those two files to
+# scenarios.json to a claude/weekly-read-YYYY-MM-DD branch. This checks them, copies only those files to
 # main, deletes the branch and starts a deploy.
 name: Publish weekly read
 
@@ -28,9 +28,10 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Take the two files from the branch
-        run: git checkout "origin/$GITHUB_REF_NAME" -- site/data/briefing.json site/data/scenarios.json
+      - name: Take the Claude-written files from the branch
+        run: git checkout "origin/$GITHUB_REF_NAME" -- site/data/briefing.json site/data/scenarios.json site/data/claude-log.json
 
+      # Compares claude-log.json with the published one (git HEAD) so old entries can't change.
       - name: Check them
         run: python scripts/check_weekly.py
 
@@ -38,7 +39,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898388+github-actions[bot]@users.noreply.github.com"
-          git add site/data/briefing.json site/data/scenarios.json
+          git add site/data/briefing.json site/data/scenarios.json site/data/claude-log.json
           if git diff --cached --quiet; then
             echo "Nothing new."
           else

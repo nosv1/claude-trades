@@ -33,6 +33,23 @@ Code review fixes merged 2026-11-15 (CPI gap interpolation, workflow push retry,
 
 ## Log
 
+- **2026-11-16:** "How are we making sure we're not confidently wrong?" Built three guards:
+  (1) **Claude's track record** (`site/scoreboard.js`, `site/data/claude-log.json`): append-only log
+  of Claude's monthly higher/lower calls (fao_food, brent; next unstarted month) and every scenario
+  likelihood with a data check and deadline; the page grades them and shows "said Likely: X of Y
+  happened". Seeded 2026-11-16 with 6 likelihoods and 2 calls (Dec 2026: FAO up, Brent down).
+  (2) **Fact check** (`scripts/check_weekly.py`): briefing items list `facts` (numbers matched
+  against site/data) and each source carries an exact `quote`; `--sources` fetches every page and
+  finds it. Also enforces append-only log, logged likelihood changes, no already-true "predictions",
+  calls only on unstarted months. Proved it catches 7 kinds of error. Applying it to the first
+  weekly read found 2 real errors, now fixed: "fell for the third month in a row" (it rose in Sep;
+  came from an unopened search headline) and "one of the strongest" (NOAA: ~60% chance of the
+  strongest since 1950). (3) **Case counts**: each chain has `cases`; under 10 shows "only a few,
+  treat it as a rough guide". Also fixed all 10 /code-review findings on sync (merge before every
+  write, no writes on no-change visits, login-failure state, JWKS refetch, 400 on bad JSON, byte
+  cap, GIS retry, conditional sync note, shared `site/common.js`, real names). Sync worker live at
+  https://trade-pulse-sync.nosv1.workers.dev; the workflow's YAML had an unquoted colon (my bug),
+  which is why his Actions failed. Still waiting on the Google OAuth client ID.
 - **2026-11-16:** He marked up the plain-words summary: keep "usual price", "sells abroad", "Weak
   spot", "Early rise", "trackable steps"; undo the name swaps. Real names are back (FAO Food Price
   Index, Brent crude, maize, urea), each explained once in plain words; the "grocery bill" line is

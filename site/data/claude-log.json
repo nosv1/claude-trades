@@ -1,0 +1,119 @@
+{
+  "note": "Append-only log of what Claude said, graded by the page against later data. scripts/check_weekly.py refuses edits to old entries.",
+  "calls": [
+    {
+      "s": "fao_food",
+      "target": "2026-12",
+      "call": "up",
+      "made": "2026-11-16",
+      "why": "El Niño is pushing sugar up and threatens palm oil, after three small monthly dips."
+    },
+    {
+      "s": "brent",
+      "target": "2026-12",
+      "call": "down",
+      "made": "2026-11-16",
+      "why": "War fears are easing and the IEA expects more oil than buyers need."
+    }
+  ],
+  "likelihoods": [
+    {
+      "id": "elnino",
+      "made": "2026-11-16",
+      "likelihood": "likely",
+      "claim": "Palm oil harvests shrink, and cooking oil jumps 25% or more in a year",
+      "check": {
+        "s": "fao_oils",
+        "m": "yoy",
+        "op": ">=",
+        "v": 25
+      },
+      "deadline": "2027-12"
+    },
+    {
+      "id": "lanina",
+      "made": "2026-11-16",
+      "likelihood": "likely",
+      "claim": "The Pacific flips cool: La Niña",
+      "check": {
+        "s": "oni",
+        "m": "last",
+        "op": "<=",
+        "v": -0.5
+      },
+      "deadline": "2028-05"
+    },
+    {
+      "id": "oilfood",
+      "made": "2026-11-16",
+      "likelihood": "possible",
+      "claim": "World food prices climb 10% or more in a year",
+      "check": {
+        "s": "fao_food",
+        "m": "yoy",
+        "op": ">=",
+        "v": 10
+      },
+      "deadline": "2027-11"
+    },
+    {
+      "id": "oilcure",
+      "made": "2026-11-16",
+      "likelihood": "likely",
+      "claim": "Oil falls 20% or more from its recent high",
+      "check": {
+        "s": "brent",
+        "m": "fromPeak",
+        "op": "<=",
+        "v": -20
+      },
+      "deadline": "2028-05"
+    },
+    {
+      "id": "exportban",
+      "made": "2026-11-16",
+      "likelihood": "possible",
+      "claim": "Buyers panic and prices jump 20% or more in 3 months",
+      "check": {
+        "any": [
+          {
+            "s": "rice",
+            "m": "ch3",
+            "op": ">=",
+            "v": 20
+          },
+          {
+            "s": "wheat",
+            "m": "ch3",
+            "op": ">=",
+            "v": 20
+          }
+        ]
+      },
+      "deadline": "2027-11"
+    },
+    {
+      "id": "fertilizer",
+      "made": "2026-11-16",
+      "likelihood": "possible",
+      "claim": "Grain prices fall 10% or more in 6 months",
+      "check": {
+        "any": [
+          {
+            "s": "maize",
+            "m": "ch6",
+            "op": "<=",
+            "v": -10
+          },
+          {
+            "s": "wheat",
+            "m": "ch6",
+            "op": "<=",
+            "v": -10
+          }
+        ]
+      },
+      "deadline": "2027-12"
+    }
+  ]
+}

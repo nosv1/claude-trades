@@ -15,6 +15,9 @@ Live at **<https://nosv1.github.io/claude-trades/>**.
 - **What could happen next:** chains of events that have played out before (El Niño, La Niña,
   oil, export bans, fertilizer), each step lighting up when the data shows it. Written by Claude
   in `site/data/scenarios.json`.
+- **Claude's track record:** every call and "Likely / Possible" rating Claude makes is logged with
+  a date and graded against later data, and old entries can't be edited
+  ([site/data/claude-log.json](site/data/claude-log.json)).
 - **Trend and value:** for each commodity, its 12-month trend against its 5-year average, read as
   early trend, late trend, cooling, out of favor or no clear signal.
 - **Silver right now:** live spot price, what your ounces are worth, and where today's price ranks
