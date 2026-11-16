@@ -35,6 +35,10 @@ non-experts who want to know what to look out for in the coming months.
    or taxes (India rice, Russia wheat), fertilizer and natural gas, shipping chokepoints (Red Sea,
    Black Sea, Panama), FAO and USDA reports, copper, gold and silver. Prefer primary or well-known
    sources: FAO, USDA, NOAA, IEA, OPEC, World Bank, Reuters, AP, Bloomberg, FT.
+   The cloud environment only reaches allowlisted sites (Reuters, AP, BBC, CNBC, S&P Global, DTN,
+   FAO, USDA, NOAA, EIA, IEA, OPEC, World Bank, IMF, MPOB). If a page fails with ENOTFOUND, don't
+   retry it: find the same story on an allowed site, or leave the claim out. Search results alone
+   are not a source; open the page.
    Also search **politics that moves supply**: wars and ceasefires, sanctions (Russian and Iranian
    oil, Russian fertilizer), tariffs and trade deals, export bans, OPEC+ decisions, central-bank and
    dollar moves, and elections or leadership changes in big producers and buyers (US, China, India,
