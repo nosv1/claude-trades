@@ -92,9 +92,10 @@ non-experts who want to know what to look out for in the coming months.
    `facts`: one entry per number in the text that comes from `site/data` (`m` is `last`, `yoy`,
    `ch3`, `ch6` or `fromPeak`; percentages as written, e.g. 93 for +93%; `month` defaults to the
    latest). An empty list is fine if the item quotes no data numbers. `summary_facts` and
-   `lookback_facts` do the same for the summary and the lookback, one entry per number; the checker
-   fails either field if it quotes more numbers (%, $, decimals, "8 percent", "40 points") than its
-   list has entries; write news numbers in words ("about two million barrels") or put them in an item. Don't start
+   `lookback_facts` do the same for the summary and the lookback. The checker finds every number
+   there (%, $, decimals, "8 percent", "2 percentage points", both ends of "8-10%"), repeats
+   included, and each needs its own fact with that same `v` (the sign goes in the words: "fell 8%"
+   is `v: -8`). Write news numbers in words ("about two million barrels") or put them in an item. Don't start
    `lookback` with "Since last week" (the page adds it). Words like "every time", "always" or
    "never" need a script check over the whole history first; prefer "usually" or "in N of M".
 5. **Verify before you go on.** For each item, re-read its claims against the quotes you saved. If

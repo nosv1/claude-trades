@@ -169,8 +169,8 @@
         const like = usdP.map((q) => q.m).filter((m) => m < dollar.last.m && dY(m) != null
           && (up ? dY(m) >= 0.08 : dY(m) <= -0.08) && oY(m) != null && fY(m) != null);
         const went = (y) => like.filter((m) => (up ? y(m) < 0 : y(m) > 0)).length;
-        const n = like.length;
-        if (n) tally = ` In the ${n === 1 ? 'one earlier month' : `${n} earlier months`} since 2007 when the dollar moved this much, oil ${up ? 'fell' : 'rose'} in ${went(oY)} and world food prices in ${went(fY)}.`;
+        const n = like.length, since = Math.floor(usdP[0].m / 12) + 1; // first year with a year-ago
+        if (n >= 3) tally = ` Since ${since}, the dollar moved this much in ${n} earlier months. Oil ${up ? 'fell' : 'rose'} in ${went(oY)} of them, and world food prices in ${went(fY)}.`;
       }
       add({
         level: up || down ? 'watch' : null, short: 'the dollar', tag: 'Money', series: dollar, card: 'usd',

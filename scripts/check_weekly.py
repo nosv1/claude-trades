@@ -118,24 +118,30 @@ class Data:
 
 # ---- briefing.json ----
 # A number that probably came from the data: a percent, a dollar amount or a decimal.
+UNIT = r"(?:%|percent(?:age[\s-]+points?)?\b|per\s+cent\b|dollars?\b|points?\b|pts\b)"
+# The low end of a range: "8" in "8-10%" or "3 to 10 percent".
+RANGE_LOW = re.compile(r"\$?(\d[\d,]*(?:\.\d+)?)\s*(?:-|\u2013|to)\s*\$?\d[\d,]*(?:\.\d+)?[\s-]*" + UNIT, re.I)
 NUMBER = re.compile(r"\$\s*(\d[\d,]*(?:\.\d+)?)"
-                    r"|(\d[\d,]*(?:\.\d+)?)[\s-]*(?:%|percent(?:age[\s-]+points?)?\b|per\s+cent\b|dollars?\b|points?\b|pts\b)"
+                    r"|(\d[\d,]*(?:\.\d+)?)[\s-]*" + UNIT +
                     r"|(\d+\.\d+)", re.I)
-NOT_LABEL = r"since last week(?![\w'\u2019])"  # "Since last week:" but not "Since last week's"
+NOT_LABEL = r"since last week"  # any opening with it would repeat the page's label
 
 
 def quoted_numbers(t):
     """Every data-looking number in the text, as floats, repeats included."""
-    return [float(next(g for g in m.groups() if g).replace(",", "")) for m in NUMBER.finditer(t)]
+    nums = [float(next(g for g in m.groups() if g).replace(",", "")) for m in NUMBER.finditer(t)]
+    return nums + [float(m.group(1).replace(",", "")) for m in RANGE_LOW.finditer(t)]
 
 
 def unmatched(nums, facts):
     """Numbers with no fact of the same size behind them (each fact backs one number; the sign is
-    in the words, e.g. 'fell 8%' for v = -8). Allows rounding: within 1, or 1% for big numbers."""
+    in the words, e.g. 'fell 8%' for v = -8). v is the number as written, so the match is tight:
+    within 0.05, or 0.5% for big numbers. Biggest numbers first, each taking its closest fact."""
     left = [abs(f["v"]) for f in facts if isinstance(f, dict) and isinstance(f.get("v"), (int, float))]
     miss = []
-    for n in nums:
-        hit = next((i for i, v in enumerate(left) if abs(v - n) <= max(1.0, 0.01 * n)), None)
+    for n in sorted(nums, reverse=True):
+        near = [(abs(v - n), i) for i, v in enumerate(left) if abs(v - n) <= max(0.05, 0.005 * n)]
+        hit = min(near)[1] if near else None
         if hit is None:
             miss.append(n)
         else:
@@ -318,7 +324,8 @@ def check_log(L, p, data, scenarios, base):
         return
     # append-only against the version already published; fail closed if we can't find it
     if p.need(isinstance(base, dict), "claude-log: can't read the published claude-log.json "
-              "(needs git with origin/main or HEAD), so can't check that old entries are unchanged"):
+              "(needs git with origin/main or main; HEAD only off claude/ branches), so can't check that "
+              "old entries are unchanged"):
         for k in ("calls", "likelihoods"):
             old = base.get(k) or []
             p.need(len(L[k]) >= len(old) and L[k][:len(old)] == old,
