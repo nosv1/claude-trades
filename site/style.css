@@ -351,6 +351,9 @@ main > section, .ts, .trade { scroll-margin-top: calc(var(--nav-h) + 8px); }
 .sync { display: grid; gap: 8px; margin: 10px 0 14px; font-size: 14px; }
 .sync p { margin: 0; }
 .sync .gbtn { min-height: 44px; }
+/* Google's button is an iframe with a light page inside. If its color-scheme differs from ours (dark
+   mode), browsers paint an opaque white box behind it; matching it keeps the frame transparent. */
+.sync .gbtn, .sync .gbtn iframe { color-scheme: light; background: transparent; }
 .sync-acts { display: flex; flex-wrap: wrap; gap: 8px; }
 .sync-acts .more { margin-top: 0; }
 
