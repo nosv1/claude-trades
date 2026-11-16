@@ -17,23 +17,23 @@ urea; FAO sub-index tiles; range filter, inflation toggle, table view per chart.
 ## Handoff
 
 **Where it stands (2026-11-16, end of session):** live at <https://nosv1.github.io/claude-trades/>
-(Pages source must be "GitHub Actions"). Sections: This week's read, Heads up, What could happen
+(Pages source must be "GitHub Actions"). Sections: The latest read, Heads up, What could happen
 next (+ Claude's track record), Trend and value, Silver, Charts, Who feeds whom, Check yourself.
 
-**Running on their own:** daily data refresh + deploy (Action); weekly read every Monday 14:00 UTC (8am Central)
-(routine `trig_01XVXQyruGPYEB3Pps7ASnkE`, follows [weekly-routine.md](weekly-routine.md), publishes
-via the weekly-read workflow); sync worker auto-deploys on changes under `worker/`.
+**Running on their own:** daily data refresh + deploy (Action); the read every **Monday and Friday**
+14:00 UTC (8am Central; was weekly until 2026-11-16) (routine `trig_01XVXQyruGPYEB3Pps7ASnkE`,
+follows [weekly-routine.md](weekly-routine.md), publishes via the weekly-read workflow; the file
+and branch names still say "weekly"); sync worker auto-deploys on changes under `worker/`.
 
 **Next session, first:**
-1. **Review and merge the `checklist` branch** (7d912d2, built 2026-11-16 in the routine's cloud
-   session, which he kept chatting with from his phone: claude.ai/code/session_01CAx28g14KBLwkA9s6WpZ7y;
-   cloud sessions don't show in the local VS Code history). Every weekly read must mark all 15
-   news topics covered / quiet / unreached; the checker fails a skip from the 23 Nov read. Then
-   **widen access**: Reuters/AP/BBC are refused by the search tool and CNBC/S&P Global block cloud
-   machines (neither fixable by him); he can add hosts to the Default environment allowlist
-   (suggested: api.gdeltproject.org, amis-outlook.org, cropmonitor.org, fews.net, wfp.org,
-   igc.int, ifpri.org, aljazeera.com, thehindubusinessline.com). The page doesn't show the
-   checklist yet.
+1. **Check the first Mon/Fri-era read: Fri 2026-11-20.** First run under the checklist (all 15
+   topics, from `checked`) and the local-language quote rule. `RemoteTrigger list_runs` /
+   `get_run_log`. Watch for: `unreached` counts, quotes that fail because they were translated,
+   and whether a full sweep twice a week is too heavy (run time, his usage).
+   **Widen access** is waiting on him: hosts to add to the Default environment allowlist are in
+   the 2026-11-16 log entry (step by step given in chat). Reuters/AP/BBC refuse Anthropic's
+   crawler and CNBC/S&P Global block cloud machines: neither is a setting, and we don't route
+   around a site's opt-out. The page doesn't show the checklist yet.
 2. **Google sign-in confirmed working on his phone** (2026-11-16), and the dark-mode fix behind
    the button is good. Cross-device sync not yet confirmed.
 3. **Resume the code review** on commit 24f7453 (standard review round 1: shared `TP.getJSON`,
@@ -61,6 +61,18 @@ Code review fixes merged 2026-11-15 (CPI gap interpolation, workflow push retry,
 
 ## Log
 
+- **2026-11-16 (afternoon):** Merged `checklist` (4 review rounds). He asked about a faster
+  cadence: Claude's call was **Monday + Friday**, not three a week (the page's core data is
+  monthly, so extra reads would mostly say "nothing new"; Monday catches weekend news like OPEC+
+  meetings, Friday the week's markets and FAO's release). Routine cron `0 14 * * 1,5`, prompt and
+  doc reworded ("the latest read", "Since the last read:"; checker and page accept both labels).
+  Added the **local-language** rule: Russian, Indonesian, Portuguese/Spanish, Chinese, Arabic
+  sources are welcome; the item is in English but the `quote` is copied in the page's own
+  language from its raw text (a summarizing reader translates, and the checker would fail it).
+  Allowlist hosts suggested to him: api.gdeltproject.org (news search in ~65 languages),
+  amis-outlook.org, cropmonitor.org, fews.net, wfp.org, igc.int, ifpri.org, aljazeera.com,
+  thehindubusinessline.com, plus local: interfax.ru, kommersant.ru, kontan.co.id, bisnis.com,
+  conab.gov.br, bolsadecereales.com, bcr.com.ar, english.ahram.org.eg, apk-inform.com.
 - **2026-11-16:** He noticed the second weekly run only searched oil, gold, palm oil, rice,
   wheat, US grains and OPEC, and wants every topic checked every week, with a global view. Added
   a required news sweep: `briefing.json` now carries `checked`, one entry per topic in

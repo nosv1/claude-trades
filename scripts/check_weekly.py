@@ -10,7 +10,7 @@ news sites block some cloud runners) before it publishes. Exits 1 with a list of
 What it checks, beyond shape:
 - Every number in a briefing item's "facts" matches site/data (so quoted prices are real), and the
   summary and lookback need one entry in summary_facts / lookback_facts per number they quote.
-- A lookback (what happened since last week) is required unless this is the very first read.
+- A lookback (what happened since the last read) is required unless this is the very first read.
 - With --sources, every source's "quote" appears on the page it links to (so news claims are
   backed by something that page actually says), and every quiet page exists.
 - Every topic in the news sweep (TOPICS) is reported in "checked" by every new read from 2026-11-17
@@ -41,7 +41,7 @@ METRICS = {"last", "yoy", "ch3", "ch6", "fromPeak"}
 OPS = {">=", "<="}
 CALL_SERIES = {"fao_food", "brent"}
 SLUG = re.compile(r"^[a-z0-9-]{2,30}$")
-# The news sweep: every weekly read reports on each of these. What each one covers is the table in
+# The news sweep: every read reports on each of these. What each one covers is the table in
 # docs/weekly-routine.md, step 3 (one place, so the two can't drift).
 TOPICS = ("oil", "gas-fertilizer", "enso", "southeast-asia", "south-asia", "black-sea", "americas",
           "australia", "china", "importers", "shipping", "reports", "metals", "money", "politics")
@@ -152,7 +152,7 @@ NUMBER = re.compile(r"\$\s*(" + NUM + r")"
                     r"|(?<![\d.,])(?:(?!(?:19|20)\d\d\b)(" + NUM + r")\s*(?:-|\u2013|to)\s*\$?)?"
                     r"(" + NUM + r")[\s-]*" + UNIT +
                     r"|(\d+\.\d+)", re.I)
-NOT_LABEL = r"since last week(?!end)"  # would repeat the page's label ("weekend" is fine)
+NOT_LABEL = r"since (?:last week(?!end)|the last read)"  # would repeat the page's label ("weekend" is fine)
 
 
 def quoted_numbers(t):
@@ -182,10 +182,10 @@ def check_lookback(b, p, prev):
     same_day_first = (isinstance(prev, dict) and prev.get("date") == b.get("date")
                       and "lookback" not in prev)
     if "lookback" in b or not same_day_first:
-        text(p, b.get("lookback"), "briefing.lookback (what happened since last week)", 40, 600)
+        text(p, b.get("lookback"), "briefing.lookback (what happened since the last read)", 40, 600)
     if isinstance(b.get("lookback"), str):
         p.need(not re.match(r"\s*" + NOT_LABEL, b["lookback"], re.I),
-               "briefing.lookback: don't start with \"Since last week\"; the page adds that label")
+               "briefing.lookback: don't start with \"Since the last read\"; the page adds that label")
 
 
 def check_quoted(b, p, data):

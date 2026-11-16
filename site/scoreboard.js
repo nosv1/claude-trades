@@ -86,7 +86,7 @@
         `, ${xs.length - decided.length} still open. ${HOPE[lv]}`);
       rows.append(row);
     }
-    const first = calls.length ? 'result comes in early ' + mlabel(Math.min(...calls.map((x) => ym(x.target))) + 1) : 'call comes with the next weekly read';
+    const first = calls.length ? 'result comes in early ' + mlabel(Math.min(...calls.map((x) => ym(x.target))) + 1) : 'call comes with the next read';
     const cr = el('p', { class: 'sb-row' });
     cr.append(el('strong', {}, 'Monthly higher/lower calls: '), graded.length
       ? `${right} of ${graded.length} right. A coin flip would get about half.`

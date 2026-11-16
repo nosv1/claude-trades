@@ -1,6 +1,8 @@
-# Weekly routine: This week's read
+# Read routine: The latest read
 
-Instructions for the scheduled Claude Code routine that runs every Monday morning in the cloud.
+Instructions for the scheduled Claude Code routine that runs every Monday and Friday
+morning in the cloud (8am Central). Monday catches the weekend's news (OPEC+ often meets then);
+Friday catches the week's markets and FAO's monthly release (the first Friday or so).
 It writes three files, checks them, and pushes them to a `claude/weekly-read-YYYY-MM-DD` branch.
 The [weekly-read workflow](../.github/workflows/weekly-read.yml) checks them again, copies only
 those files to `main`, deletes the branch, and redeploys the site.
@@ -17,7 +19,7 @@ non-experts who want to know what to look out for in the coming months.
 - **Don't be confidently wrong.** Every news claim needs a page you opened this run, plus the
   exact words on that page that back it (the source's `quote`). Every number taken from
   `site/data/` goes in the item's `facts` so the checker can match it against the data. A search
-  result headline is not a source: it's how the first weekly read wrongly said food prices "fell
+  result headline is not a source: it's how the first read wrongly said food prices "fell
   for the third month in a row" when they had risen in September. When you're not sure, say less.
 - **Politics stays neutral.** Report what governments did or promised and what it could do to
   supply and prices, citing sources. No opinions on parties, candidates or policies; when outcomes
@@ -45,13 +47,14 @@ non-experts who want to know what to look out for in the coming months.
    (live silver and gold), `site/data/enso.json` (El Niño), `site/data/trade.json` (who sells to whom),
    and the current `briefing.json`, `scenarios.json` and `claude-log.json`. Work out each item's
    change over 1, 3, 6 and 12 months with a short Python script rather than by eye.
-2. **Look back first.** Before you overwrite `briefing.json`, read last week's version: its items
-   and its `watch` list. For each main point and each watch item, find out what actually happened.
-   You'll write this up as `lookback` (step 4): honest and specific, including anything last week's
-   read got wrong or that didn't happen. Also glance at `claude-log.json` for any call or
-   likelihood that was decided this week.
+2. **Look back first.** Before you overwrite `briefing.json`, read the last read (the current
+   file): its items and its `watch` list. For each main point and each watch item, find out what
+   actually happened. You'll write this up as `lookback` (step 4): honest and specific, including
+   anything the last read got wrong or that didn't happen. Also glance at `claude-log.json` for any
+   call or likelihood that was decided since then.
 3. **Sweep every topic below. Don't skip any**, even on a quiet week or a second run the same
-   day. Search the news from the past 7-10 days for each one, open at least one page, and note
+   day. Search the news since the last read, plus a day of overlap (about 4-5 days; on Monday,
+   include the weekend), for each one, open at least one page, and note
    what you found for the `checked` list (step 4). The ids match `TOPICS` in
    `scripts/check_weekly.py`, which fails the read if any is missing. This table is the one place
    that says what each topic covers.
@@ -69,7 +72,7 @@ non-experts who want to know what to look out for in the coming months.
    | `china` | China: what it buys, and from whom |
    | `importers` | Countries that buy most of their food abroad (Egypt and North Africa, the Middle East, Africa south of the Sahara) |
    | `shipping` | Shipping routes: Red Sea, Strait of Hormuz, Black Sea, Panama Canal |
-   | `reports` | FAO and USDA reports out this week |
+   | `reports` | FAO and USDA reports out since the last read |
    | `metals` | Gold, silver and copper |
    | `money` | Central banks (the Fed and others) and the dollar |
    | `politics` | Wars and ceasefires, sanctions, tariffs and trade deals, export bans anywhere not above, and elections or leadership changes in big producers and buyers (US, China, India, Russia, Brazil, Argentina, Indonesia, Saudi Arabia, the EU) |
@@ -81,15 +84,23 @@ non-experts who want to know what to look out for in the coming months.
    out. Search results alone are not a source; open the page. If you can't open any page for a
    topic, mark it `unreached` and say why. Never mark a topic `quiet` without opening a page.
    **Politics stays neutral** (see Rules). Upcoming elections and summits with a date go in `watch`.
+
+   **Read local-language news too.** Many supply stories break first in the local press, a day or
+   more before English coverage: Russian (wheat export taxes, quotas), Indonesian (palm oil rules),
+   Portuguese and Spanish (Brazil's and Argentina's harvests), Chinese (what China buys), Arabic
+   (Egypt's wheat buying). You can read them. Write the item in English, but copy the `quote` in
+   the page's own language, from the page's raw text (fetch it with `curl` and pull the sentence
+   out with Python): a page reader that summarizes or translates gives words that aren't on the
+   page, and the checker will fail them. Name the language in the source, e.g. `"Interfax (Russian)"`.
 4. Write `site/data/briefing.json`:
 
    ```json
    {
      "date": "YYYY-MM-DD",
      "by": "Claude",
-     "headline": "One sentence: the single most important thing this week (10-140 chars)",
+     "headline": "One sentence: the single most important thing since the last read (10-140 chars)",
      "summary": "2-3 sentences tying it together (40-600 chars)",
-     "lookback": "What happened to last week's main points and watch items, and anything we got wrong. The page adds the \"Since last week:\" label, so don't start with it (40-600 chars)",
+     "lookback": "What happened to the last read's main points and watch items, and anything we got wrong. The page adds the \"Since the last read:\" label, so don't start with it (40-600 chars)",
      "summary_facts": [{ "s": "brent", "m": "last", "v": 125, "month": "2026-10" }],
      "lookback_facts": [{ "s": "brent", "m": "ch3", "v": -8 }],
      "items": [
@@ -108,13 +119,13 @@ non-experts who want to know what to look out for in the coming months.
    }
    ```
 
-   `checked`: one entry per topic in step 3, every week. `covered` means it's in an item, and its
+   `checked`: one entry per topic in step 3, every read. `covered` means it's in an item, and its
    `url` is one of that item's sources; `quiet` means you looked and nothing worth an item
-   happened; `unreached` means no page could be opened. A good week is mostly `covered` and
+   happened; `unreached` means no page could be opened. A good read is mostly `covered` and
    `quiet`. With `--sources` the checker fetches every `quiet` page and fails one that doesn't exist
    (a `covered` page is an item source, checked with its quote).
 
-   2 to 5 items, most important first. If it was a quiet week, say so; don't inflate small news.
+   2 to 5 items, most important first. If it was a quiet few days, say so; don't inflate small news.
    `facts`: one entry per number in the text that comes from `site/data` (`m` is `last`, `yoy`,
    `ch3`, `ch6` or `fromPeak`; percentages as written, e.g. 93 for +93%; `month` defaults to the
    latest). An empty list is fine if the item quotes no data numbers. `summary_facts` and
@@ -122,7 +133,7 @@ non-experts who want to know what to look out for in the coming months.
    there (%, $, decimals, "8 percent", "2 percentage points", both ends of "8-10%"), repeats
    included, and each needs its own fact with that same `v` (the sign goes in the words: "fell 8%"
    is `v: -8`). Write news numbers in words ("about two million barrels") or put them in an item. Don't start
-   `lookback` with "Since last week" (the page adds it). Words like "every time", "always" or
+   `lookback` with "Since the last read" or "Since last week" (the page adds the label). Words like "every time", "always" or
    "never" need a script check over the whole history first; prefer "usually" or "in N of M".
 5. **Verify before you go on.** For each item, re-read its claims against the quotes you saved. If
    a claim isn't in a quote or in `site/data`, fix it or cut it.
@@ -144,7 +155,8 @@ non-experts who want to know what to look out for in the coming months.
      `{"id", "made": today, "likelihood", "claim": the outcome step's text, "check": the outcome
      step's check, "deadline"}`. The checker rejects a claim whose check is already true today.
    - **Calls:** append one call each for `fao_food` and `brent` for **next month** (the first month
-     that hasn't started), unless one already exists:
+     that hasn't started), unless one already exists (usually only the first read of a month
+     makes them):
      `{"s", "target": "YYYY-MM", "call": "up" | "down", "made": today, "why": "one short reason"}`.
      Make your honest best guess; a coin flip gets about half right, and that's the bar to beat.
 8. Run `python scripts/check_weekly.py --sources`. It matches your facts against the data, fetches
@@ -157,7 +169,7 @@ non-experts who want to know what to look out for in the coming months.
    ```sh
    git checkout -B claude/weekly-read-YYYY-MM-DD   # today's date
    git add site/data/briefing.json site/data/scenarios.json site/data/claude-log.json
-   git -c user.name=Claude -c user.email=noreply@anthropic.com commit --author="Claude <noreply@anthropic.com>" -m "This week's read, YYYY-MM-DD"
+   git -c user.name=Claude -c user.email=noreply@anthropic.com commit --author="Claude <noreply@anthropic.com>" -m "Latest read, YYYY-MM-DD"
    git push -u origin claude/weekly-read-YYYY-MM-DD
    ```
 

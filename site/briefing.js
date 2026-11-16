@@ -1,5 +1,5 @@
 'use strict';
-// "This week's read": a short briefing Claude writes each week into data/briefing.json
+// "The latest read": a short briefing Claude writes every Monday and Friday into data/briefing.json
 // (see docs/weekly-routine.md). The section stays hidden if the file is missing or malformed.
 (() => {
   const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -35,8 +35,8 @@
     $('read-summary').textContent = b.summary;
     const lb = $('read-lookback');
     lb.replaceChildren();
-    const t = str(b.lookback, 600) ? b.lookback.replace(/^\s*since last week(?![\w'\u2019])\s*[:,.;\u2013\u2014-]*\s*/i, '') : '';
-    if (/\w/.test(t)) lb.append(el('strong', {}, 'Since last week: '), t.charAt(0).toUpperCase() + t.slice(1));
+    const t = str(b.lookback, 600) ? b.lookback.replace(/^\s*since (?:last week|the last read)(?![\w'\u2019])\s*[:,.;\u2013\u2014-]*\s*/i, '') : '';
+    if (/\w/.test(t)) lb.append(el('strong', {}, 'Since the last read: '), t.charAt(0).toUpperCase() + t.slice(1));
     lb.hidden = !lb.childNodes.length;
     $('read-items').replaceChildren(...b.items.map((it) => {
       const li = el('li', { class: 'read-item' });
