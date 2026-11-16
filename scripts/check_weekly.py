@@ -13,6 +13,7 @@ What it checks, beyond shape:
 - A lookback (what happened since last week) is required unless this is the very first read.
 - With --sources, every source's "quote" appears on the page it links to (so news claims are
   backed by something that page actually says).
+- Every topic in the news sweep (TOPICS) is reported in "checked", from the 2026-11-17 read on.
 - claude-log.json only grows: old entries can't be edited or removed, so misses stay visible.
 - Each scenario's likelihood matches its latest log entry (changes have to be logged).
 - A newly logged likelihood can't already be true in the data (no free wins).
@@ -34,6 +35,26 @@ METRICS = {"last", "yoy", "ch3", "ch6", "fromPeak"}
 OPS = {">=", "<="}
 CALL_SERIES = {"fao_food", "brent"}
 SLUG = re.compile(r"^[a-z0-9-]{2,30}$")
+# The news sweep: every weekly read reports on each of these (docs/weekly-routine.md, step 3).
+TOPICS = {
+    "oil": "Oil, OPEC+ and sanctions on oil",
+    "gas-fertilizer": "Natural gas and fertilizer",
+    "enso": "El Niño and La Niña",
+    "southeast-asia": "Southeast Asia: palm oil and rice",
+    "south-asia": "India and South Asia: monsoon, rice, rules on selling abroad",
+    "black-sea": "Russia and Ukraine: wheat, rules on selling abroad",
+    "americas": "US, Brazil and Argentina: soybeans and maize",
+    "australia": "Australia: wheat",
+    "china": "China: what it buys",
+    "importers": "Countries that buy most of their food abroad (Africa, Middle East)",
+    "shipping": "Shipping routes: Red Sea, Hormuz, Black Sea, Panama",
+    "reports": "FAO and USDA reports",
+    "metals": "Gold, silver and copper",
+    "money": "Central banks and the dollar",
+    "politics": "Tariffs, trade deals, wars and elections that move supply",
+}
+STATUSES = {"covered", "quiet", "unreached"}
+CHECKLIST_FROM = "2026-11-17"  # reads dated before this were written without a checklist
 YM = re.compile(r"^\d{4}-(0[1-9]|1[0-2])$")
 SEASONS = ["DJF", "JFM", "FMA", "MAM", "AMJ", "MJJ", "JJA", "JAS", "ASO", "SON", "OND", "NDJ"]
 UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36"
@@ -185,6 +206,7 @@ def check_briefing(b, p, data, prev=None):
     text(p, b.get("summary"), "briefing.summary", 40, 600)
     check_lookback(b, p, prev)
     check_quoted(b, p, data)
+    check_checklist(b, p)
     items = b.get("items")
     if p.need(isinstance(items, list) and 2 <= len(items) <= 5, "briefing.items: needs 2-5 items"):
         for i, it in enumerate(items):
@@ -215,6 +237,32 @@ def check_briefing(b, p, data, prev=None):
             text(p, w, f"briefing.watch[{i}]", 10, 200)
 
 
+def check_checklist(b, p):
+    """Every topic in TOPICS once: covered (in an item), quiet (looked, nothing new) or unreached
+    (no source could be opened). Covered and quiet need the page that was opened."""
+    lst = b.get("checked")
+    if lst is None and str(b.get("date", "")) < CHECKLIST_FROM:
+        return
+    if not p.need(isinstance(lst, list) and len(lst) <= 2 * len(TOPICS),
+                  f"briefing.checked: needs one entry per topic: {', '.join(TOPICS)}"):
+        return
+    seen = set()
+    for i, c in enumerate(lst):
+        w = f"briefing.checked[{i}]"
+        if not p.need(isinstance(c, dict), f"{w}: not an object"):
+            continue
+        t, st = c.get("topic"), c.get("status")
+        p.need(t in TOPICS and t not in seen, f"{w}.topic: one of {sorted(TOPICS)}, once each")
+        seen.add(t)
+        p.need(st in STATUSES, f"{w}.status: one of {sorted(STATUSES)}")
+        text(p, c.get("note"), w + ".note (what you found, or why you couldn't)", 10, 200)
+        url = c.get("url")
+        p.need(st == "unreached" or (isinstance(url, str) and url.startswith("https://") and len(url) <= 400),
+               f"{w}.url: the https:// page you opened (only 'unreached' can skip it)")
+    missing = [t for t in TOPICS if t not in seen]
+    p.need(not missing, f"briefing.checked: topics not reported: {', '.join(missing)}")
+
+
 def check_fact(f, p, where, data):
     """{"s": series, "m": metric, "v": the number as written, "month": "YYYY-MM" (optional; default latest)}"""
     shaped = isinstance(f, dict) and f.get("m") in METRICS and isinstance(f.get("v"), (int, float))
@@ -236,30 +284,45 @@ def check_fact(f, p, where, data):
     p.need(ok, f"{where}: says {f['s']} {f['m']} = {f['v']}, but the data says {real:.2f}")
 
 
+def norm(s):
+    s = (s.replace("\u2019", "'").replace("\u2018", "'").replace("\u201c", '"').replace("\u201d", '"')
+          .replace("\u00a0", " "))
+    s = re.sub(r"[\u200b-\u206f]", "", s)
+    return re.sub(r"\s+", " ", s).strip().lower()
+
+
+def fetch_text(url, cache, warn, where):
+    """The page's visible text, normalized; None (with a warning) if it can't be fetched."""
+    if url not in cache:
+        try:
+            req = urllib.request.Request(url, headers={"User-Agent": UA})
+            with urllib.request.urlopen(req, timeout=25) as r:
+                t = r.read(5_000_000).decode(r.headers.get_content_charset() or "utf-8", "ignore")
+            t = re.sub(r"(?s)<(script|style)[^>]*>.*?</\1>", " ", t)
+            cache[url] = norm(html.unescape(re.sub(r"<[^>]+>", " ", t)))
+        except Exception as e:  # noqa: BLE001 - any fetch failure just means "couldn't check"
+            cache[url] = None
+            warn.append(f"{where}: couldn't fetch {url} ({e}); not checked")
+    return cache[url]
+
+
 def check_sources(b, p, warn):
-    def norm(s):
-        s = (s.replace("’", "'").replace("‘", "'").replace("“", '"').replace("”", '"')
-              .replace(" ", " "))
-        s = re.sub(r"[​-⁯]", "", s)
-        return re.sub(r"\s+", " ", s).strip().lower()
     cache = {}
     for i, it in enumerate(b.get("items") or []):
         for j, s in enumerate(it.get("sources") or []):
             url, quote = s.get("url"), s.get("quote")
             if not (isinstance(url, str) and isinstance(quote, str)):
                 continue
-            if url not in cache:
-                try:
-                    req = urllib.request.Request(url, headers={"User-Agent": UA})
-                    with urllib.request.urlopen(req, timeout=25) as r:
-                        t = r.read().decode(r.headers.get_content_charset() or "utf-8", "ignore")
-                    t = re.sub(r"(?s)<(script|style)[^>]*>.*?</\1>", " ", t)
-                    cache[url] = norm(html.unescape(re.sub(r"<[^>]+>", " ", t)))
-                except Exception as e:  # noqa: BLE001 - any fetch failure just means "couldn't check"
-                    cache[url] = None
-                    warn.append(f"items[{i}].sources[{j}]: couldn't fetch {url} ({e}); quote not checked")
-            if cache[url] is not None:
-                p.need(norm(quote) in cache[url], f"items[{i}].sources[{j}]: quote not found on {url}: {quote[:80]!r}")
+            page = fetch_text(url, cache, warn, f"items[{i}].sources[{j}]")
+            if page is not None:
+                p.need(norm(quote) in page, f"items[{i}].sources[{j}]: quote not found on {url}: {quote[:80]!r}")
+    checked = b.get("checked") if isinstance(b.get("checked"), list) else []
+    for i, c in enumerate(checked):
+        if isinstance(c, dict) and isinstance(c.get("url"), str) and c["url"].startswith("https://"):
+            fetch_text(c["url"], cache, warn, f"checked[{i}]")
+    unreached = sum(1 for c in checked if isinstance(c, dict) and c.get("status") == "unreached")
+    if unreached * 3 > len(TOPICS):
+        warn.append(f"checked: {unreached} of {len(TOPICS)} topics unreached; the read's view is narrow")
 
 
 # ---- scenarios.json ----
