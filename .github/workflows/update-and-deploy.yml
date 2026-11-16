@@ -31,6 +31,8 @@ jobs:
         run: |
           pip install openpyxl==3.1.5
           python scripts/fetch_data.py
+          # Annual trade data: refreshes only when trade.json is 30+ days old (~5 min, rate-limited API).
+          python scripts/fetch_trade.py || echo "::warning::Trade data fetch failed; keeping the previous trade.json."
 
       - name: Commit refreshed data
         run: |
