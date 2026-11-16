@@ -20,7 +20,7 @@ urea; FAO sub-index tiles; range filter, inflation toggle, table view per chart.
 (Pages source must be "GitHub Actions"). Sections: This week's read, Heads up, What could happen
 next (+ Claude's track record), Trend and value, Silver, Charts, Who feeds whom, Check yourself.
 
-**Running on their own:** daily data refresh + deploy (Action); weekly read every Monday 14:00 UTC
+**Running on their own:** daily data refresh + deploy (Action); weekly read every Monday 12:00 UTC (6am Central)
 (routine `trig_01XVXQyruGPYEB3Pps7ASnkE`, follows [weekly-routine.md](weekly-routine.md), publishes
 via the weekly-read workflow); sync worker auto-deploys on changes under `worker/`.
 
@@ -116,7 +116,7 @@ Code review fixes merged 2026-11-15 (CPI gap interpolation, workflow push retry,
   next step and what it could push up or down. Heads up went from ~8 phone screens to ~3. Also:
   the weekly routine now covers politics that moves supply, neutrally (new `Politics` tag).
 - **2026-11-16:** Option 3 wired: a weekly Claude Code routine (his subscription, no API key) runs
-  Mondays 14:00 UTC, follows [weekly-routine.md](weekly-routine.md), writes `site/data/briefing.json`
+  Mondays 12:00 UTC (6am Central), follows [weekly-routine.md](weekly-routine.md), writes `site/data/briefing.json`
   ("This week's read", top of the page) and updates `scenarios.json`, checks both with
   `scripts/check_weekly.py`, and pushes a `claude/weekly-read-YYYY-MM-DD` branch. The
   [weekly-read workflow](../.github/workflows/weekly-read.yml) re-checks, copies only those two files
