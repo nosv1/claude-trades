@@ -8,6 +8,7 @@ Sources (all free, no API key):
   FAO Food Price Index     monthly, since 1990
   FRED CPIAUCSL            US consumer prices, for inflation adjustment
   gold-api.com             live silver/gold spot price
+  NOAA CPC                 El Nino / La Nina status and the ONI ocean-temperature index
 
 The World Bank and FAO file links change with each monthly release, so the script finds them on
 each source's landing page and falls back to the last known link. If a source fails, the previous
@@ -44,6 +45,8 @@ FAO_FALLBACK = (
 )
 CPI_CSV = "https://fred.stlouisfed.org/graph/fredgraph.csv?id=CPIAUCSL"
 SPOT = "https://api.gold-api.com/price/{}"
+ONI = "https://www.cpc.ncep.noaa.gov/data/indices/oni.ascii.txt"
+ENSO_PAGE = "https://www.cpc.ncep.noaa.gov/products/analysis_monitoring/enso_advisory/ensodisc.shtml"
 
 # World Bank column header -> (id, display name, unit)
 WB_SERIES = {
@@ -183,6 +186,27 @@ def fetch_spot() -> dict:
     return spot
 
 
+def fetch_enso() -> dict:
+    """NOAA's El Nino/La Nina status, synopsis and the last 3 years of the ONI index."""
+    import html as htmllib
+    oni = []
+    for line in get(ONI).decode().splitlines():
+        parts = line.split()
+        if len(parts) == 4 and parts[1].isdigit():
+            oni.append([parts[0], int(parts[1]), float(parts[3])])
+    page = get(ENSO_PAGE).decode("cp1252", "replace")
+    text = re.sub(r"\s+", " ", htmllib.unescape(re.sub(r"<[^>]+>", " ", page)))
+    status = re.search(r"Alert System Status:\s*(.+?)\s*Synopsis:", text)
+    synopsis = re.search(r"Synopsis:\s*(.+?\.)\s+(?=[A-Z])", text)
+    issued = re.search(r"(\d{1,2} (?:January|February|March|April|May|June|July|August|September|"
+                       r"October|November|December) \d{4})", text)
+    if not oni or not synopsis:
+        raise RuntimeError("could not parse NOAA ENSO data")
+    return {"status": status.group(1).strip() if status else None,
+            "synopsis": synopsis.group(1).strip(), "issued": issued.group(1) if issued else None,
+            "url": ENSO_PAGE, "oni": oni[-36:]}
+
+
 def main() -> int:
     OUT.mkdir(parents=True, exist_ok=True)
     series_path, spot_path = OUT / "series.json", OUT / "spot.json"
@@ -203,6 +227,13 @@ def main() -> int:
     if len(failed) < 3:
         series_path.write_text(json.dumps(
             {"generated": now, "sources": sources, "series": series}, separators=(",", ":")))
+
+    try:
+        (OUT / "enso.json").write_text(json.dumps(fetch_enso(), separators=(",", ":"), ensure_ascii=False),
+                                       encoding="utf-8")
+    except Exception as e:  # noqa: BLE001 - keep the previous enso.json
+        failed.append("enso")
+        print(f"  FAILED enso: {e}", file=sys.stderr)
 
     # Live spot snapshot, plus one row per day so a daily history builds up over time.
     try:

@@ -310,7 +310,7 @@
   function buildCard(def) {
     const s = D.series[def.id] || {};
     const meta = { name: def.name || s.name || def.id, unit: def.unit || s.unit || '' };
-    const card = el('article', { class: 'card chart-card' });
+    const card = el('article', { class: 'card chart-card', id: 'card-' + def.id });
     const h = el('h3', {}, meta.name);
     const unit = el('div', { class: 'unit' }, meta.unit);
     const stat = el('div', { class: 'stat' });

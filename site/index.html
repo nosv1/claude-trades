@@ -4,17 +4,29 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Trade Pulse</title>
-  <meta name="description" content="Silver, gold, food and the things that drive food prices, with decades of history for context.">
+  <meta name="description" content="What's moving in food, energy and metals, and what to watch in the months ahead.">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M3 22 L10 14 L16 18 L23 8 L29 12' fill='none' stroke='%232a78d6' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header class="top">
     <h1>Trade Pulse</h1>
-    <p class="sub">Metals, food and what drives food prices, with decades of history for context.</p>
+    <p class="sub">What's moving in food, energy and metals, and what to watch in the months ahead.</p>
   </header>
 
   <main>
+    <section class="outlook" id="outlook" aria-labelledby="outlook-title" hidden>
+      <h2 class="section-title" id="outlook-title">Heads up</h2>
+      <p class="section-lede" id="outlook-summary"></p>
+      <div class="signals" id="signals"></div>
+      <p class="calm" id="calm"></p>
+      <div class="card for-you">
+        <h3 class="card-title">What it could mean for you</h3>
+        <ul id="for-you"></ul>
+      </div>
+      <p class="filter-note">These are signals, not predictions: conditions that came before price rises in past years. They update automatically as new data comes in.</p>
+    </section>
+
     <section class="hero card" aria-labelledby="hero-title">
       <div class="hero-head">
         <h2 id="hero-title">Silver right now</h2>
@@ -110,5 +122,6 @@
   <div id="error" class="error" hidden></div>
   <script src="app.js"></script>
   <script src="trade.js"></script>
+  <script src="outlook.js"></script>
 </body>
 </html>

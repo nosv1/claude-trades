@@ -7,6 +7,9 @@ Live at **<https://nosv1.github.io/claude-trades/>**.
 
 ## What's on it
 
+- **Heads up:** the signals worth watching in the coming months (oil, El Niño, food prices,
+  cooking oils, fertilizer, copper, single-seller pressure points), rated Alert / Watch / Easing
+  and recomputed from the data every day.
 - **Silver right now:** live spot price, what your ounces are worth, and where today's price ranks
   against the last 1, 5 and 10 years and all history since 1960.
 - **Metals:** silver, gold, the gold/silver ratio, copper.
@@ -24,6 +27,7 @@ Live at **<https://nosv1.github.io/claude-trades/>**.
 | [FAO Food Price Index](https://www.fao.org/worldfoodsituation/foodpricesindex/en/) | Monthly food price indices since 1990 | Early each month |
 | [FRED CPIAUCSL](https://fred.stlouisfed.org/series/CPIAUCSL) | US consumer prices, for inflation adjustment | Monthly |
 | [gold-api.com](https://gold-api.com) | Live silver and gold spot price | Live, in the browser |
+| [NOAA CPC](https://www.cpc.ncep.noaa.gov/products/analysis_monitoring/enso_advisory/) | El Niño / La Niña status and ocean-temperature index | Monthly |
 | [UN Comtrade](https://comtradeplus.un.org/) (public preview API) | Imports by country and supplier | Annual; refetched monthly by `scripts/fetch_trade.py` |
 
 ## How it works
