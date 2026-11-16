@@ -28,10 +28,15 @@ via the weekly-read workflow); sync worker auto-deploys on changes under `worker
 1. **Google sign-in is on** (client ID added 2026-11-16, button live). Not yet confirmed: a real
    sign-in on his phone, cross-device sync, and the dark-mode fix for a white box behind the
    Google button on iPhone (`color-scheme: light` on `.gbtn iframe`; couldn't reproduce in Edge).
-2. **Check Monday's routine run** (2026-11-23 is the first with the new rules: facts, quotes,
-   `--sources`, claude-log calls). `RemoteTrigger list_runs`/`get_run_log`, then read what it
-   published and whether the checker caught anything.
-3. Early Jan 2027: first graded calls (Dec FAO up, Dec Brent down) appear on the track record.
+2. **Check today's routine run** (2026-11-16, 14:05 UTC / 8am Central; prompt updated that morning
+   to the three-file flow). First run with facts, quotes, `--sources`, `summary_facts` /
+   `lookback_facts` and claude-log calls; the number matching is strict, so a failure may be the
+   checker being too picky rather than the read being wrong. `RemoteTrigger list_runs` /
+   `get_run_log`, then read what it published.
+3. **Resume the code review** on commit 24f7453 (standard review round 1: shared `TP.getJSON`,
+   per-file shape checks, frozen shared data). Stopped there to end the session; keep going until
+   findings are nitpicks. Run `/code-review` before merging from now on, not after.
+4. Early Jan 2027: first graded calls (Dec FAO up, Dec Brent down) appear on the track record.
 
 **Roadmap, in order (Claude's call as domain expert, 2026-11-15):**
 
