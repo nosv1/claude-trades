@@ -20,6 +20,8 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      claims: ${{ steps.claims.outcome }}
     steps:
       - uses: actions/checkout@v7
 
@@ -33,8 +35,13 @@ jobs:
           python scripts/fetch_data.py
           # Annual trade data: refreshes only when trade.json is 30+ days old (~5 min, rate-limited API).
           python scripts/fetch_trade.py || echo "::warning::Trade data fetch failed; keeping the previous trade.json."
-          # The page's fixed-period dollar claims (scripts/check_claims.py): warn if revised data breaks one.
-          python scripts/check_claims.py || echo "::warning title=Page claim no longer true::scripts/check_claims.py failed; fix the sentence in site/index.html or site/quiz.js"
+
+      # The page's fixed-period dollar claims, against the fresh data. A failure doesn't block the
+      # deploy, but the deploy job then fails the run so it shows red and emails.
+      - name: Check page claims
+        id: claims
+        continue-on-error: true
+        run: python scripts/check_claims.py
 
       - name: Commit refreshed data
         run: |
@@ -71,3 +78,9 @@ jobs:
     steps:
       - id: deployment
         uses: actions/deploy-pages@v5
+
+      - name: Fail if a page claim broke
+        if: needs.build.outputs.claims != 'success'
+        run: |
+          echo "::error title=Page claim no longer true::scripts/check_claims.py failed on the fresh data; fix the sentence in site/index.html or site/quiz.js"
+          exit 1
