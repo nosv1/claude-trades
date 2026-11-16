@@ -33,6 +33,13 @@ Code review fixes merged 2026-11-15 (CPI gap interpolation, workflow push retry,
 
 ## Log
 
+- **2026-11-16:** He asked for it to read like it's for a high-schooler, not a graduate. Plain-words
+  pass over every page string, the scenarios, this week's read and the routine's style rules (now
+  "write for a high-school student", with a word list). Jargon swapped or explained: FAO index ->
+  world food price index, Brent -> oil, maize -> corn, 5-year average -> usual price, exports ->
+  sells abroad, "Pressure point" -> "Weak spot", "Early trend" -> "Early rise". Measured on the page's
+  prose: ~13.4 -> ~11.8 words per sentence, and "5-year average" 16 -> 0, "maize" 17 -> 5. The
+  formula grade was already ~6; the real problem was jargon and assumed background.
 - **2026-11-16:** He wants to actually remember it. Added **Check yourself** (`site/quiz.js`, nav
   "Quiz"): 4 questions per visit mixing live-data questions (oil and food vs a year ago, urea 6
   months, El Niño, top seller per crop, which item is in an early trend) with "how it works" ones;

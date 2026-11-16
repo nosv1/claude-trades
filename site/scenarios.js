@@ -10,7 +10,7 @@
   };
   const NAME = {
     brent: 'Oil', fao_food: 'World food prices', fao_oils: 'Cooking oils', fao_sugar: 'Sugar',
-    fao_cereals: 'Cereals', rice: 'Rice', wheat: 'Wheat', maize: 'Maize', soybeans: 'Soybeans',
+    fao_cereals: 'Cereals', rice: 'Rice', wheat: 'Wheat', maize: 'Corn', soybeans: 'Soybeans',
     urea: 'Fertilizer (urea)', copper: 'Copper', gold: 'Gold', silver: 'Silver',
   };
   const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -101,11 +101,12 @@
     const body = el('div', { class: 'step-body' });
     body.append(el('span', { class: 'step-text' }, st.text));
     const meta = el('span', { class: 'step-meta' });
-    const status = st.state === 'seen' ? 'Showing in the data'
+    const status = st.state === 'seen' ? 'Happening now'
       : st.state === 'open' ? 'Not yet'
-        : st.state === 'after' ? 'Waits on the step above'
+        : st.state === 'after' ? 'Waiting on the step above'
           : 'Watch the news';
-    meta.append(el('strong', {}, status), ` · ${st.lag}`);
+    meta.append(el('strong', {}, status));
+    if (!(st.state === 'seen' && /^now$/i.test(st.lag))) meta.append(` · ${st.lag}`);
     body.append(meta);
     if (st.now) body.append(el('span', { class: 'step-now' }, 'Now: ' + st.now));
     else if (st.watch) {
@@ -146,7 +147,7 @@
     marks.append(...sc.steps.map((st) => el('span', { class: 'mk m-' + st.state })));
     const next = sc.steps.find((st) => st.state !== 'seen');
     strip.append(marks, el('span', { class: 'strip-txt' }, sc.checked
-      ? `${sc.seen} of ${sc.checked} measurable steps in the data` : 'No measurable steps yet'));
+      ? `${sc.seen} of ${sc.checked} trackable steps have happened` : 'No trackable steps yet'));
     sum.append(strip);
     if (next) {
       const n = el('p', { class: 'scn-next' });
@@ -190,11 +191,11 @@
       (LIKELY[a.likelihood] || LIKELY.possible).rank - (LIKELY[b.likelihood] || LIKELY.possible).rank
       || b.seen / (b.checked || 1) - a.seen / (a.checked || 1));
     const far = list.reduce((x, s) => (s.seen / (s.checked || 1) > x.seen / (x.checked || 1) ? s : x), list[0]);
-    $('scn-summary').textContent = `${list.length} chains of events that have played out before, starting from where things stand now. `
+    $('scn-summary').textContent = `${list.length} "if this happens, then that" chains. Each one has happened before, and each starts from where things are today. `
       + `Furthest along: “${far.title}” (${far.seen} of ${far.checked} steps).`;
     $('scenarios').replaceChildren(...list.map(cardEl));
-    $('scn-byline').textContent = `Written by ${S.by || 'Claude'}, ${dateLabel(S.updated)}, from the price history on this page. `
-      + 'The steps light up on their own as new data comes in; the likelihoods are judgment calls, not odds.';
+    $('scn-byline').textContent = `Written by ${S.by || 'Claude'}, ${dateLabel(S.updated)}, using the price history on this page. `
+      + 'Steps light up by themselves when new numbers show they happened. "Likely" and "Possible" are best guesses, not exact odds.';
     $('whatnext').hidden = false;
   }
 

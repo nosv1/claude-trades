@@ -4,14 +4,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Trade Pulse</title>
-  <meta name="description" content="What's moving in food, energy and metals, and what to watch in the months ahead.">
+  <meta name="description" content="What's happening to the prices of food, fuel and metals, and what to watch for next.">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M3 22 L10 14 L16 18 L23 8 L29 12' fill='none' stroke='%232a78d6' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header class="top">
     <h1>Trade Pulse</h1>
-    <p class="sub">What's moving in food, energy and metals, and what to watch in the months ahead.</p>
+    <p class="sub">What's happening to the prices of food, fuel and metals, and what to watch for next.</p>
   </header>
 
   <nav class="jump" id="jump" aria-label="Sections">
@@ -47,7 +47,7 @@
         <h3 class="card-title">What it could mean for you</h3>
         <ul id="for-you"></ul>
       </div>
-      <p class="filter-note">These are signals, not predictions: conditions that came before price rises in past years. They update automatically as new data comes in.</p>
+      <p class="filter-note">These are warning signs, not predictions. In the past, prices often rose after signs like these. They update on their own when new numbers come out.</p>
     </section>
 
     <section class="whatnext" id="whatnext" aria-labelledby="wn-title" hidden>
@@ -59,10 +59,10 @@
 
     <section class="trendvalue" id="trendvalue" aria-labelledby="tv-title" hidden>
       <h2 class="section-title" id="tv-title">Trend and value</h2>
-      <p class="section-lede">Two ways to look for what might keep going up. <strong>Trend:</strong> things that rose over the past year tend to keep rising for a while. <strong>Value:</strong> things far below their 5-year average tend to recover eventually. Both hold up over decades across many markets, but they're weak for any single item, and they often disagree.</p>
+      <p class="section-lede">Two simple ways to spot what might keep going up. <strong>Trend:</strong> things that went up over the past year often keep going up for a while. <strong>Value:</strong> things much cheaper than their usual price (their average over the last 5 years) often bounce back someday. Both rules have worked on average for decades. But they often fail for any one thing, and they often disagree.</p>
       <p class="insight" id="radar-summary"></p>
       <div class="card"><div class="radar" id="radar"></div></div>
-      <p class="filter-note">Not a buy list. Public information like this is already in the price, so treat it as a way to notice things, not to time them. If you invest, most of these trade through ETFs, and commodity funds can lag the price they track over time. Broad stock index funds already own the companies that produce and use them.</p>
+      <p class="filter-note">This is not a shopping list. Everyone can see these same numbers, so prices already reflect them. Use this to notice things, not to pick the perfect time to buy. Funds that track these prices often do worse than the price itself over time. A broad stock fund already owns companies that make and use all of these.</p>
     </section>
 
     <section class="hero card" id="silver" aria-labelledby="hero-title">
@@ -71,7 +71,7 @@
         <span class="live" id="live-status">loading</span>
       </div>
       <p class="hero-figure" id="silver-price">-</p>
-      <p class="hero-unit">per troy ounce, spot price</p>
+      <p class="hero-unit">per ounce, at today's market price</p>
 
       <div class="stash">
         <label for="oz">Your silver</label>
@@ -82,7 +82,7 @@
       <ul class="verdict" id="verdict"></ul>
 
       <h3 class="mini-title">Where today's price sits</h3>
-      <p class="mini-note">Ranked against every monthly average in each window. Far left means cheaper than all of them, far right means pricier than all of them.</p>
+      <p class="mini-note">Compared with every month in each time span. Far left: cheaper than all of them. Far right: pricier than all of them.</p>
       <div class="ranges" id="silver-ranges"></div>
     </section>
 
@@ -104,29 +104,29 @@
 
     <section aria-labelledby="metals-title">
       <h2 class="section-title" id="metals-title">Metals</h2>
-      <p class="section-lede">Silver is half money, half industrial metal (solar panels, electronics), so it swings harder than gold. Copper goes into wiring, buildings and EVs, which makes it a rough gauge of how busy the world's factories are.</p>
+      <p class="section-lede">People buy gold when they're worried. Silver is half that and half a factory metal (it's in solar panels and electronics), so its price swings more. Copper goes into wires, buildings and electric cars, so its price shows roughly how busy the world's factories are.</p>
       <div class="grid" id="metals"></div>
     </section>
 
     <section aria-labelledby="food-title">
       <h2 class="section-title" id="food-title">Food</h2>
-      <p class="section-lede">The FAO Food Price Index is the world's grocery bill: what a basket of internationally traded food costs, compared with 2014-2016 (= 100). Wheat, maize, rice and soybeans feed most people, either directly or as animal feed.</p>
+      <p class="section-lede">The world food price index is like a grocery bill for the whole planet. The UN's food agency (FAO) tracks what a basket of food sold between countries costs. 100 means the same as the 2014-2016 average. Wheat, corn (maize), rice and soybeans feed most people, either as food or as feed for farm animals.</p>
       <div class="grid" id="food"></div>
       <h3 class="mini-title">Inside the food index</h3>
-      <p class="mini-note">Each group's index now, change over the past year, and its last 12 months.</p>
+      <p class="mini-note">Each food group now, how much it changed in a year, and its last 12 months.</p>
       <div class="tiles" id="fao-parts"></div>
     </section>
 
     <section aria-labelledby="drivers-title">
       <h2 class="section-title" id="drivers-title">What drives food prices</h2>
-      <p class="section-lede">Food is made from energy. Diesel runs the tractors and ships, and natural gas is the raw material for nitrogen fertilizer like urea. When oil and fertilizer spike, food usually follows a few months later. From early 2021 to spring 2022, as natural gas prices soared and then Russia invaded Ukraine, urea went up about 3.5 times and the food index hit its all-time record.</p>
+      <p class="section-lede">Growing and moving food takes a lot of energy. Diesel fuel runs tractors, trucks and ships. Fertilizer (like urea) is made from natural gas. When oil and fertilizer get expensive, food usually gets more expensive a few months later. For example, from 2021 to 2022 gas prices soared and Russia invaded Ukraine. Fertilizer ended up costing 3.5 times as much, and world food prices hit their all-time high.</p>
       <div class="grid" id="drivers"></div>
     </section>
     </div>
 
     <section class="trade" id="trade" aria-labelledby="trade-title" hidden>
       <h2 class="section-title" id="trade-title">Who feeds whom</h2>
-      <p class="section-lede">A handful of countries grow most of the food the world trades. Pick a crop to see who sells it and who relies on them. Then pick a seller to see who would be hit hardest if it stopped exporting, the way Russia and Ukraine's grain was cut off in 2022.</p>
+      <p class="section-lede">A few countries grow most of the food that gets sold from one country to another. Pick a crop to see who sells it and who buys it. Then tap a seller to see who would be hurt most if it stopped selling. That really happened in 2022, when Russia and Ukraine's grain got cut off.</p>
       <div class="filters local" role="group" aria-label="Crop">
         <div class="seg" id="crop" role="radiogroup" aria-label="Crop"></div>
       </div>
@@ -151,7 +151,7 @@
     </section>
     <section class="check" id="check" aria-labelledby="check-title" hidden>
       <h2 class="section-title" id="check-title">Check yourself</h2>
-      <p class="section-lede">A minute of recall makes this stick better than rereading it. Answers come from today's data, so they change as the world does.</p>
+      <p class="section-lede">Answering questions helps you remember more than rereading does. Some answers come from today's numbers, so they change as the world does.</p>
       <div class="grid2">
         <article class="card">
           <h3 class="card-title">Quick quiz</h3>
@@ -170,7 +170,7 @@
 
   <footer class="foot">
     <p><strong>Sources.</strong> <span id="sources"></span> <span id="trade-source"></span></p>
-    <p>Charts show monthly average prices. The silver and gold "now" points are the live spot price from gold-api.com. Inflation adjustment uses US consumer prices and shows past prices in today's dollars. Data refreshes daily.</p>
+    <p>Charts show each month's average price. The silver and gold "now" prices are live, from gold-api.com. "Adjust for inflation" shows old prices in today's dollars, using US consumer prices. The numbers update every day.</p>
     <p>Not financial advice. Just a way to see where things stand.</p>
   </footer>
 

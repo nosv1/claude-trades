@@ -55,9 +55,9 @@
     }
     const food = series(D, 'fao_food');
     if (food && food.yoy != null) {
-      qs.push({ id: 'food-year', q: 'World food prices (the FAO index) compared with a year ago?',
+      qs.push({ id: 'food-year', q: 'World food prices compared with a year ago?',
         ...bucket(food.yoy, [-5, 5, 15], ['Down more than 5%', 'About flat (within 5%)', 'Up 5% to 15%', 'Up more than 15%']),
-        why: `The index was ${food.last.v.toFixed(1)} in ${mlabel(food.last.m)}, ${signed(food.yoy)} in a year.`, link: 'card-fao_food' });
+        why: `The world food price index was ${food.last.v.toFixed(1)} in ${mlabel(food.last.m)}, ${signed(food.yoy)} in a year.`, link: 'card-fao_food' });
     }
     const urea = series(D, 'urea');
     if (urea && urea.ch6 != null) {
@@ -85,23 +85,23 @@
       }
     }
     // Trend and value: rising >= 10% in a year but no more than 15% above the 5-year average
-    const names = { silver: 'Silver', gold: 'Gold', copper: 'Copper', brent: 'Oil', wheat: 'Wheat', maize: 'Maize', rice: 'Rice', soybeans: 'Soybeans', urea: 'Fertilizer' };
+    const names = { silver: 'Silver', gold: 'Gold', copper: 'Copper', brent: 'Oil', wheat: 'Wheat', maize: 'Corn', rice: 'Rice', soybeans: 'Soybeans', urea: 'Fertilizer' };
     const rows = Object.keys(names).map((id) => ({ id, s: series(D, id) })).filter((r) => r.s && r.s.yoy != null)
       .map((r) => ({ id: r.id, early: r.s.yoy >= 10 && (r.s.last.v / r.s.avg5 - 1) * 100 <= 15 }));
     const early = rows.filter((r) => r.early), rest = rows.filter((r) => !r.early);
     if (early.length && rest.length >= 3) {
       const pick = early[Math.floor(Math.random() * early.length)];
       const opts = shuffle([pick, ...shuffle(rest.slice()).slice(0, 3)]);
-      qs.push({ id: 'early-trend', q: 'Which of these is in an "early trend": rising, but not yet expensive?',
+      qs.push({ id: 'early-trend', q: 'Which of these is in an "early rise": going up, but still near its usual price?',
         options: opts.map((r) => names[r.id]), answer: opts.indexOf(pick),
-        why: `Early trend right now: ${early.map((r) => names[r.id].toLowerCase()).join(', ')}.`, link: 'trendvalue' });
+        why: `In an early rise right now: ${early.map((r) => names[r.id].toLowerCase()).join(', ')}.`, link: 'trendvalue' });
     }
     return qs;
   }
 
   // ---- questions about how things work (the part worth remembering for years) ----
   const CONCEPTS = [
-    { id: 'c-gas', q: 'Natural gas is the main raw material for which farm input?',
+    { id: 'c-gas', q: 'Natural gas is the main ingredient in which farm supply?',
       options: ['Nitrogen fertilizer, like urea', 'Tractor diesel', 'Pesticides', 'Seed'], answer: 0,
       why: 'Urea is made from natural gas, so a gas price spike shows up in fertilizer and then in crop prices a season later.' },
     { id: 'c-oilfood', q: 'How does expensive oil reach your grocery bill?',
@@ -117,11 +117,11 @@
       options: ['It\'s half money, half industrial metal', 'It\'s rarer than gold', 'It\'s mostly used for jewelry', 'Governments set its price'], answer: 0,
       why: 'Solar panels and electronics use a lot of silver, so it moves with factories as well as with fear.' },
     { id: 'c-ban', q: 'What usually happens when a big food exporter bans exports?',
-      options: ['Buyers scramble and world prices jump', 'World prices fall', 'Nothing much', 'Only that country\'s prices rise'], answer: 0,
+      options: ['Buyers panic and world prices jump', 'World prices fall', 'Nothing much', 'Only that country\'s prices rise'], answer: 0,
       why: '2008: rice nearly tripled in six months after India and Vietnam limited exports.' },
-    { id: 'c-late', q: 'In "Trend and value", what does "late trend" mean?',
-      options: ['Rising, and already well above its 5-year average', 'Rising, but still near its average', 'Falling from a high', 'Cheap and still falling'], answer: 0,
-      why: 'Late trends can keep going, but more of the move has already happened.' },
+    { id: 'c-late', q: 'In "Trend and value", what does "late rise" mean?',
+      options: ['Going up, and already well above its usual price', 'Going up, but still near its usual price', 'Falling from a high', 'Cheap and still falling'], answer: 0,
+      why: 'A late rise can keep going, but more of the jump has already happened.' },
     { id: 'c-cure', q: 'After big oil spikes since 1970, where was oil a year later?',
       options: ['Higher about half the time, lower about half', 'Almost always higher', 'Almost always lower', 'Always back to where it started'], answer: 0,
       why: 'Higher after 5 of 9 spikes, lower after 4. High prices cut demand and bring more supply, but not on a schedule.' },
@@ -245,7 +245,7 @@
       });
       rec.append(lastFew.join('; ') + '.');
     } else {
-      rec.textContent = 'Guess before the data comes in; the page scores your calls when it does. Experts are right only a little more than half the time, so it\'s about noticing, not winning.';
+      rec.textContent = 'Guess before the new numbers come out. The page checks your guess when they do. Even experts are right only a bit more than half the time, so this is about paying attention, not winning.';
     }
 
     // banner near the top when a call has just been scored

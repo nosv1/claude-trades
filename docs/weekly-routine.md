@@ -20,7 +20,15 @@ non-experts who want to know what to look out for in the coming months.
   supply and prices, citing sources. No opinions on parties, candidates or policies; when outcomes
   are uncertain, give both directions (e.g. what each election result would likely mean for
   tariffs or exports) without favoring one.
-- Plain words. Short sentences. No jargon without a one-line explanation. No em dashes.
+- **Write for a high-school student**, in this file and in scenarios.json:
+  - Short sentences, about 15 words or fewer, one idea each. Split anything with "and" doing two jobs.
+  - Everyday words: "sells abroad" not "exports", "grain in storage" not "stocks", "crop size" not
+    "yield", "goes up" not "appreciates", "corn" not "maize".
+  - Explain every name or term the first time it appears, in a few words: "the Fed (the US central
+    bank)", "OPEC (the big oil countries' group)", "the IEA (the world's energy watchdog)", "El Niño
+    (the Pacific running warm)". No unexplained acronyms.
+  - Say why it matters to a regular person when you can: gas, groceries, prices at the store.
+  - Round numbers unless the exact one matters. No em dashes.
 - Edit only `site/data/briefing.json` and `site/data/scenarios.json`. Don't touch code, other data
   files or docs.
 

@@ -1,48 +1,66 @@
 {
   "date": "2026-11-16",
   "by": "Claude",
-  "headline": "Oil fell hard in early November on hopes the US-Iran war is winding down, but the Strait of Hormuz is still not safe.",
-  "summary": "Brent averaged $125 a barrel in October, its highest month since 2008, then dropped sharply in November as the US signaled no new strikes on Iran. Gold and silver slid as traders bet the Fed will raise rates in December. In food, sugar keeps climbing on El Niño while grain prices eased.",
+  "headline": "Oil prices fell fast in early November as the US-Iran war seemed to cool, but ships near Iran still aren't safe.",
+  "summary": "Oil averaged $125 a barrel in October, the highest since 2008. Then it dropped in November after the US signaled no new strikes on Iran. Gold and silver slid because traders expect US interest rates to go up. In food, sugar keeps rising because of El Niño, while grain prices eased.",
   "items": [
     {
       "tag": "Energy",
       "title": "Oil drops about a fifth in November as war fears ease",
-      "text": "Oil's October average of $125 a barrel was 93% above a year earlier. In November it fell about 20% after President Trump said new attacks on Iran were unlikely and the US kept its blockade instead, CNBC reported. The IEA's new report points to a growing oil surplus. The risk has not gone away: both sides reported ships hit near the Strait of Hormuz, and talks are stuck on Iran's nuclear material. A deal could push oil lower; renewed fighting could send it back up.",
+      "text": "In October, oil averaged $125 a barrel, 93% more than a year before. In November it fell about 20%. President Trump said new attacks on Iran were unlikely, and the US kept its blockade of Iran in place instead, CNBC reported. The world's energy watchdog (IEA) expects more oil than buyers need. But the danger isn't over. Both sides said ships were hit near the Strait of Hormuz, the narrow sea lane a lot of the world's oil passes through. A peace deal could push oil lower. More fighting could send it back up.",
       "sources": [
-        { "name": "CNBC", "url": "https://www.cnbc.com/2026/11/12/oil-prices-jump-after-trump-says-no-iran-deal-needed-weve-got-their-strait.html" },
-        { "name": "CNBC", "url": "https://www.cnbc.com/2026/11/13/oil-prices-set-for-second-weekly-decline-as-trump-to-stay-with-iran-blockade.html" }
+        {
+          "name": "CNBC",
+          "url": "https://www.cnbc.com/2026/11/12/oil-prices-jump-after-trump-says-no-iran-deal-needed-weve-got-their-strait.html"
+        },
+        {
+          "name": "CNBC",
+          "url": "https://www.cnbc.com/2026/11/13/oil-prices-set-for-second-weekly-decline-as-trump-to-stay-with-iran-blockade.html"
+        }
       ]
     },
     {
       "tag": "Metals",
-      "title": "Gold and silver slide as a Fed rate rise looks likely",
-      "text": "On 16 November gold was $3,876 an ounce and silver $47.42. Both are well off their monthly highs this year: gold averaged $5,020 in February, silver $92.10 in January. A hot US inflation report and tough talk from Fed officials have traders pricing an 85% chance of a December rate rise, and the dollar hit a near 19-month high, CNBC reported. Higher rates make metals that pay no interest less attractive.",
+      "title": "Gold and silver slide as US interest rates look set to rise",
+      "text": "On 16 November, gold was $3,876 an ounce and silver $47.42. Both are far below their highs this year: gold averaged $5,020 in February, and silver $92.10 in January. US prices rose faster than expected, and officials at the Fed (the US central bank) talked tough. Traders now see an 85% chance the Fed raises interest rates in December, CNBC reported. Higher rates make gold and silver less attractive, because they don't pay interest.",
       "sources": [
-        { "name": "CNBC", "url": "https://www.cnbc.com/2026/11/12/gold-falls-to-over-one-week-low-on-firm-dollar-fed-rate-hike-bets.html" }
+        {
+          "name": "CNBC",
+          "url": "https://www.cnbc.com/2026/11/12/gold-falls-to-over-one-week-low-on-firm-dollar-fed-rate-hike-bets.html"
+        }
       ]
     },
     {
       "tag": "Food",
       "title": "World food prices dip again, but sugar keeps rising",
-      "text": "The FAO Food Price Index fell for a third month in October, to 133.9, still 5.9% above a year earlier. Sugar went the other way: up 6.6% in the month and 28% in three months, its highest since December 2024. El Niño is the main worry. NOAA says it is still strengthening, with about a 60% chance it becomes one of the strongest on record this winter. Dry weather in Asia hits sugar first; palm oil usually feels it 6 to 12 months later.",
+      "text": "World food prices fell for the third month in a row in October, says the UN's food agency (FAO). They're still 6% higher than a year ago. Sugar went the other way: up 6.6% in a month and 28% in three months. El Niño is the main worry. NOAA, the US weather agency, says there's about a 60% chance it becomes one of the strongest on record this winter. Dry weather in Asia hurts sugar first. Palm oil usually feels it 6 to 12 months later.",
       "sources": [
-        { "name": "FAO", "url": "https://www.fao.org/worldfoodsituation/foodpricesindex/en/" },
-        { "name": "NOAA", "url": "https://www.cpc.ncep.noaa.gov/products/analysis_monitoring/enso_advisory/ensodisc.shtml" }
+        {
+          "name": "FAO",
+          "url": "https://www.fao.org/worldfoodsituation/foodpricesindex/en/"
+        },
+        {
+          "name": "NOAA",
+          "url": "https://www.cpc.ncep.noaa.gov/products/analysis_monitoring/enso_advisory/ensodisc.shtml"
+        }
       ]
     },
     {
       "tag": "Farming",
-      "title": "USDA trims the US corn crop, raises world wheat stocks",
-      "text": "The USDA's November report cut the US corn yield and lowered corn and soybean stocks, which tends to support those prices. It raised world wheat stocks, partly on a bigger world harvest. Wheat averaged $317 a tonne in October, down 8.6% from September but still 37% above a year earlier. Ample grain in storage is one reason food prices have stayed calmer than oil this year.",
+      "title": "The US expects less corn, but the world has plenty of wheat",
+      "text": "In its November report, the US farm department (USDA) lowered its guess for the US corn crop. It also lowered how much corn and soybeans will be left in storage. That usually pushes those prices up. It raised its guess for the world's stored wheat, partly thanks to a bigger world harvest. Wheat averaged $317 a ton in October: 8.6% less than in September, but still 37% more than a year ago. Plenty of stored grain is one reason food prices have stayed calmer than oil this year.",
       "sources": [
-        { "name": "DTN", "url": "https://www.dtnpf.com/agriculture/web/AG/news/article/2026/11/10/usda-releases-november-crop-wasde" }
+        {
+          "name": "DTN",
+          "url": "https://www.dtnpf.com/agriculture/web/AG/news/article/2026/11/10/usda-releases-november-crop-wasde"
+        }
       ]
     }
   ],
   "watch": [
-    "OPEC+ meets to set 2027 output targets, Sun 29 Nov",
-    "FAO Food Price Index for November, Fri 4 Dec",
+    "OPEC+ (the big oil countries) meets to set 2027 output, Sun 29 Nov",
+    "World food prices for November (FAO), Fri 4 Dec",
     "NOAA El Niño update, Thu 10 Dec",
-    "Any US-Iran deal, or new attacks on ships near the Strait of Hormuz"
+    "Any US-Iran deal, or new attacks on ships near Iran"
   ]
 }

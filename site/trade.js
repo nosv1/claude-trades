@@ -1,8 +1,8 @@
 'use strict';
 // "Who feeds whom": reads data/trade.json (built by scripts/fetch_trade.py from UN Comtrade).
 (() => {
-  const WORD = { wheat: 'wheat', maize: 'maize', rice: 'rice', soybeans: 'soybeans', fertilizer: 'nitrogen fertilizer' };
-  const SHORT = { wheat: 'Wheat', maize: 'Maize', rice: 'Rice', soybeans: 'Soybeans', fertilizer: 'Fertilizer' };
+  const WORD = { wheat: 'wheat', maize: 'corn', rice: 'rice', soybeans: 'soybeans', fertilizer: 'fertilizer' };
+  const SHORT = { wheat: 'Wheat', maize: 'Corn', rice: 'Rice', soybeans: 'Soybeans', fertilizer: 'Fertilizer' };
   const FIRST = 12; // buyers shown before "show all"
 
   const store = {
@@ -66,7 +66,7 @@
       row.addEventListener('click', () => { st.supplier = st.supplier === p ? 'top' : p; st.all = false; render(); });
       return row;
     }));
-    $('sell-note').textContent = `Share of what the ${c.importers.length} biggest buyers imported in ${T.year}. Tap a seller to see who depends on it.`;
+    $('sell-note').textContent = `Each seller's share of what the ${c.importers.length} biggest buyers bought from abroad in ${T.year}. Tap a seller to see who relies on it.`;
   }
 
   function renderSupplierPicker(c) {
@@ -95,9 +95,9 @@
       ins.append(over.length
         ? `${over.length} of the ${n} biggest ${word} buyers get more than half of it from ${sup}. `
         : `No big buyer gets more than half its ${word} from ${sup}. `);
-      ins.append('Most dependent: ', el('strong', {}, `${name(h.c)} would lose ${pct(h.share)} of its ${word} imports`), '.');
+      ins.append('Hit hardest: ', el('strong', {}, `${name(h.c)} would lose ${pct(h.share)} of the ${word} it buys from abroad`), '.');
       if (big.c !== h.c) {
-        ins.append(' Most at stake: ', el('strong', {}, `${name(big.c)}, ${money(big.value)} a year`),
+        ins.append(' Most money on the line: ', el('strong', {}, `${name(big.c)}, ${money(big.value)} a year`),
           ` (${pct(big.share)} of its ${word}).`);
       }
     }
@@ -110,7 +110,7 @@
       f.style.width = (r.share * 100).toFixed(1) + '%';
       m.append(f);
       row.append(el('span', { class: 'nm' }, name(r.c)), el('span', { class: 'fig' }, pct(r.share)), m,
-        el('span', { class: 'sub' }, `${st.supplier === 'top' ? 'from ' + inText(r.from) + ', its biggest supplier' : 'from ' + inText(r.from)} · imports ${money(r.total)} of ${word} a year`));
+        el('span', { class: 'sub' }, `${st.supplier === 'top' ? 'from ' + inText(r.from) + ', its biggest supplier' : 'from ' + inText(r.from)} · buys ${money(r.total)} of ${word} a year from abroad`));
       return row;
     }));
     const more = $('more-buyers');
@@ -127,8 +127,8 @@
     renderSellers(c);
     renderSupplierPicker(c);
     renderBuyers(c);
-    $('trade-note').textContent = `${T.year} data from UN Comtrade, as reported by the buying countries (Russia stopped publishing its own trade data in 2022). `
-      + `The ${c.importers.length} biggest buyers shown account for ${pct(c.covered / c.world)} of world ${WORD[c.id] || c.name.toLowerCase()} imports. Values in US dollars.`;
+    $('trade-note').textContent = `${T.year} numbers from the UN's trade database, as reported by the buying countries (Russia stopped sharing its own numbers in 2022). `
+      + `The ${c.importers.length} biggest buyers shown make up ${pct(c.covered / c.world)} of all the ${WORD[c.id] || c.name.toLowerCase()} bought from abroad. In US dollars.`;
   }
 
   async function init() {
