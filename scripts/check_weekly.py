@@ -13,7 +13,7 @@ import re
 import sys
 
 DATA = pathlib.Path(__file__).resolve().parent.parent / "site" / "data"
-TAGS = {"Energy", "Food", "Weather", "Metals", "Trade", "Farming", "Money"}
+TAGS = {"Energy", "Food", "Weather", "Metals", "Trade", "Farming", "Money", "Politics"}
 LIKELY = {"likely", "possible", "longshot"}
 METRICS = {"last", "yoy", "ch3", "ch6", "fromPeak"}
 OPS = {">=", "<="}

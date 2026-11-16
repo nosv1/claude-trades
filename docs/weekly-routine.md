@@ -16,6 +16,10 @@ non-experts who want to know what to look out for in the coming months.
 - Not financial advice: describe what's happening and what to watch; never say to buy or sell.
 - Every factual claim about the news needs a source you actually opened this run. Claims about
   prices must match `site/data/` (quote the numbers from there, not from memory).
+- **Politics stays neutral.** Report what governments did or promised and what it could do to
+  supply and prices, citing sources. No opinions on parties, candidates or policies; when outcomes
+  are uncertain, give both directions (e.g. what each election result would likely mean for
+  tariffs or exports) without favoring one.
 - Plain words. Short sentences. No jargon without a one-line explanation. No em dashes.
 - Edit only `site/data/briefing.json` and `site/data/scenarios.json`. Don't touch code, other data
   files or docs.
@@ -31,6 +35,11 @@ non-experts who want to know what to look out for in the coming months.
    or taxes (India rice, Russia wheat), fertilizer and natural gas, shipping chokepoints (Red Sea,
    Black Sea, Panama), FAO and USDA reports, copper, gold and silver. Prefer primary or well-known
    sources: FAO, USDA, NOAA, IEA, OPEC, World Bank, Reuters, AP, Bloomberg, FT.
+   Also search **politics that moves supply**: wars and ceasefires, sanctions (Russian and Iranian
+   oil, Russian fertilizer), tariffs and trade deals, export bans, OPEC+ decisions, central-bank and
+   dollar moves, and elections or leadership changes in big producers and buyers (US, China, India,
+   Russia, Brazil, Argentina, Indonesia, Saudi Arabia, the EU). Upcoming elections and summits with
+   a date go in `watch`.
 3. Write `site/data/briefing.json`:
 
    ```json
@@ -41,7 +50,7 @@ non-experts who want to know what to look out for in the coming months.
      "summary": "2-3 sentences tying it together (40-600 chars)",
      "items": [
        {
-         "tag": "Energy | Food | Weather | Metals | Trade | Farming | Money",
+         "tag": "Energy | Food | Weather | Metals | Trade | Farming | Money | Politics",
          "title": "What happened (5-100 chars)",
          "text": "What happened, why it matters, and what it could lead to in the coming months (40-700 chars)",
          "sources": [{ "name": "Reuters", "url": "https://..." }]
