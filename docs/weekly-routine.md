@@ -72,7 +72,8 @@ non-experts who want to know what to look out for in the coming months.
      "by": "Claude",
      "headline": "One sentence: the single most important thing this week (10-140 chars)",
      "summary": "2-3 sentences tying it together (40-600 chars)",
-     "lookback": "Since last week: what happened to last week's main points and watch items, and anything we got wrong (40-600 chars)",
+     "lookback": "What happened to last week's main points and watch items, and anything we got wrong. The page adds the \"Since last week:\" label, so don't start with it (40-600 chars)",
+     "facts": [{ "s": "brent", "m": "last", "v": 125, "month": "2026-10" }],
      "items": [
        {
          "tag": "Energy | Food | Weather | Metals | Trade | Farming | Money | Politics",
@@ -89,7 +90,9 @@ non-experts who want to know what to look out for in the coming months.
    2 to 5 items, most important first. If it was a quiet week, say so; don't inflate small news.
    `facts`: one entry per number in the text that comes from `site/data` (`m` is `last`, `yoy`,
    `ch3`, `ch6` or `fromPeak`; percentages as written, e.g. 93 for +93%; `month` defaults to the
-   latest). An empty list is fine if the item quotes no data numbers.
+   latest). An empty list is fine if the item quotes no data numbers. The top-level `facts` does the
+   same for numbers in `summary` and `lookback`; the checker fails a summary or lookback that has a
+   `%` or `$` number but no top-level facts.
 5. **Verify before you go on.** For each item, re-read its claims against the quotes you saved. If
    a claim isn't in a quote or in `site/data`, fix it or cut it.
 6. Update `site/data/scenarios.json` (the "What could happen next" chains). Keep the format exactly

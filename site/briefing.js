@@ -36,7 +36,9 @@
     $('read-summary').textContent = b.summary;
     const lb = $('read-lookback');
     lb.replaceChildren();
-    if (str(b.lookback, 600)) lb.append(el('strong', {}, 'Since last week: '), b.lookback);
+    if (str(b.lookback, 600)) {
+      lb.append(el('strong', {}, 'Since last week: '), b.lookback.replace(/^\s*since last week\s*[:,.-]?\s*/i, ''));
+    }
     lb.hidden = !lb.childNodes.length;
     $('read-items').replaceChildren(...b.items.map((it) => {
       const li = el('li', { class: 'read-item' });
