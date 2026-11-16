@@ -1,24 +1,43 @@
 {
   "date": "2026-11-16",
   "by": "Claude",
-  "headline": "Oil prices fell fast in early November as the US-Iran war seemed to cool, but ships near Iran still aren't safe.",
-  "summary": "Oil averaged $125 a barrel in October, the highest since 2008. Then it dropped in November after the US signaled no new strikes on Iran. Gold and silver slid because traders expect US interest rates to go up. In food, sugar keeps rising because of El Niño and weather, while grain prices eased.",
-  "summary_facts": [{ "s": "brent", "m": "last", "v": 125, "month": "2026-10" }],
+  "headline": "Tankers caught fire near Iran again, a reminder that cheaper oil could still flip back up.",
+  "summary": "Oil averaged $125 a barrel in October, then fell for two weeks as war fears eased. But six tankers caught fire near Iran over the weekend. Gold hit its lowest price in more than a year, because a US rate rise in December now looks nearly certain. Palm oil is piling up in storage for now, even with El Niño on the way.",
+  "lookback": "The last read came out earlier today, so the monthly price data hasn't changed. Since then, the risk it flagged near Iran showed up: more tankers were hit in the Strait of Hormuz. Gold slipped further, and bets on a December rate rise grew a little. None of the dated things on the watch list has happened yet.",
+  "summary_facts": [
+    {
+      "s": "brent",
+      "m": "last",
+      "v": 125,
+      "month": "2026-10"
+    }
+  ],
+  "lookback_facts": [],
   "items": [
     {
       "tag": "Energy",
-      "title": "Oil drops about a fifth in November as war fears ease",
-      "text": "In October, oil averaged $125 a barrel, 93% more than a year before. In November it fell about 20%. President Trump said new attacks on Iran were unlikely, and the US kept its blockade of Iran in place instead, CNBC reported. The world's energy watchdog (IEA) expects more oil than buyers need. But the danger isn't over. Both sides said ships were hit near the Strait of Hormuz, the narrow sea lane a lot of the world's oil passes through. A peace deal could push oil lower. More fighting could send it back up.",
+      "title": "Tankers burn near Iran, even as oil keeps easing",
+      "text": "Six tankers caught fire near the Strait of Hormuz on Sunday and Monday, CNBC reported. That's the narrow sea lane a lot of the world's oil passes through. Iran's Revolutionary Guards (a branch of its military) said two of them hit mines. Oil had already fallen for two weeks in a row. The US plans to keep its blockade of Iran, which makes big new fighting less likely. The IEA (the world's energy watchdog) expects more oil than buyers need in the last three months of this year. October's average was $125 a barrel, 93% more than a year before. More attacks could push gas prices back up.",
       "sources": [
         {
           "name": "CNBC",
-          "url": "https://www.cnbc.com/2026/11/12/oil-prices-jump-after-trump-says-no-iran-deal-needed-weve-got-their-strait.html",
-          "quote": "WTI is down 16% in November, and Brent has lost 20%."
+          "url": "https://www.cnbc.com/2026/11/16/oil-prices-brent-wti-latest.html",
+          "quote": "Six tankers caught fire in similar incidents on Sunday and Monday."
         },
         {
           "name": "CNBC",
           "url": "https://www.cnbc.com/2026/11/13/oil-prices-set-for-second-weekly-decline-as-trump-to-stay-with-iran-blockade.html",
-          "quote": "an International Energy Agency report pointing to a rise in the global oil surplus"
+          "quote": "Oil weakened on Friday, notching a second straight weekly decline."
+        },
+        {
+          "name": "CNBC",
+          "url": "https://www.cnbc.com/2026/11/13/oil-prices-set-for-second-weekly-decline-as-trump-to-stay-with-iran-blockade.html",
+          "quote": "the U.S. plans to continue its Iranian blockade, reducing the chance of renewed large-scale fighting"
+        },
+        {
+          "name": "CNBC",
+          "url": "https://www.cnbc.com/2026/11/16/oil-prices-brent-wti-latest.html",
+          "quote": "The world oil market will return to a surplus in the fourth quarter"
         }
       ],
       "facts": [
@@ -37,14 +56,24 @@
       ]
     },
     {
-      "tag": "Metals",
-      "title": "Gold and silver slide as US interest rates look set to rise",
-      "text": "On 16 November, gold was about $3,870 an ounce and silver about $47. Both are far below their highs this year: gold averaged $5,020 in February, and silver $92.10 in January. US prices rose faster than expected, and officials at the Fed (the US central bank) talked tough. Traders now see an 85% chance the Fed raises interest rates in December, CNBC reported. Higher rates make gold and silver less attractive, because they don't pay interest.",
+      "tag": "Money",
+      "title": "Gold hits its lowest in more than a year",
+      "text": "Gold fell to its lowest price in more than a year on Monday, CNBC reported. It was about $3,880 an ounce, down from a $5,020 average in February. Traders now see a 91% chance that the Fed (the US central bank) raises interest rates in December. Higher rates make gold less attractive, because gold pays no interest. Traders are waiting to hear from the Fed's boss, Kevin Warsh. His words could move gold either way.",
       "sources": [
         {
           "name": "CNBC",
-          "url": "https://www.cnbc.com/2026/11/12/gold-falls-to-over-one-week-low-on-firm-dollar-fed-rate-hike-bets.html",
-          "quote": "Markets see an 85% chance of a 25-basis-point rate hike in December"
+          "url": "https://www.cnbc.com/2026/11/16/gold-holds-steady-as-investors-await-warsh-remarks-for-rate-signals.html",
+          "quote": "Gold prices fell to their lowest level in more than a year on Monday"
+        },
+        {
+          "name": "CNBC",
+          "url": "https://www.cnbc.com/2026/11/16/gold-holds-steady-as-investors-await-warsh-remarks-for-rate-signals.html",
+          "quote": "Markets are pricing in a 91% chance of a 25-basis-point rate hike in December"
+        },
+        {
+          "name": "CNBC",
+          "url": "https://www.cnbc.com/2026/11/16/gold-holds-steady-as-investors-await-warsh-remarks-for-rate-signals.html",
+          "quote": "awaited remarks from Fed Chair Kevin Warsh for further clues on the US interest-rate outlook"
         }
       ],
       "facts": [
@@ -53,83 +82,44 @@
           "m": "last",
           "v": 5020,
           "month": "2026-02"
-        },
-        {
-          "s": "silver",
-          "m": "last",
-          "v": 92.1,
-          "month": "2026-01"
         }
       ]
     },
     {
       "tag": "Food",
-      "title": "World food prices dip, but sugar keeps rising",
-      "text": "The FAO Food Price Index dipped in October, after rising through the summer. It's still 6% higher than a year ago. Sugar went the other way: up 6.6% in a month and 28% in three months. El Niño is the main worry. NOAA, the US weather agency, says there's about a 60% chance it becomes the strongest since records began in 1950. Dry weather in Asia hurts sugar first. Palm oil usually feels it 6 to 12 months later.",
+      "title": "Palm oil piles up for now, before El Niño bites",
+      "text": "Malaysia, a big palm oil grower, had a record amount in storage at the end of October. Its farm board (MPOB) put it at 3.62 million tonnes, the most it has ever held. That is keeping palm oil prices in check for now. Cooking oils overall cost 18% more in October than a year before, by the FAO's count. El Niño (the Pacific running warm) is still getting stronger. Dry weather usually cuts palm harvests many months later. So the squeeze, if it comes, is more likely in 2027 than now.",
       "sources": [
         {
-          "name": "FAO",
-          "url": "https://www.fao.org/worldfoodsituation/foodpricesindex/en/",
-          "quote": "The FAO Sugar Price Index averaged 121.3 points in October, up 7.5 points (6.6 percent) from September"
+          "name": "MPOB",
+          "url": "https://prestasisawit.mpob.gov.my/en/palmnews/news/40202",
+          "quote": "By the end of October, stocks reached 3.62 mln tons, up 3.16% from the previous month."
+        },
+        {
+          "name": "MPOB",
+          "url": "https://prestasisawit.mpob.gov.my/en/palmnews/news/40200",
+          "quote": "although record-high inventories could cap further upside"
         },
         {
           "name": "NOAA",
           "url": "https://www.cpc.ncep.noaa.gov/products/analysis_monitoring/enso_advisory/ensodisc.shtml",
-          "quote": "are now ~60% for the October-December and November-January periods"
+          "quote": "El Niño continues to strengthen"
         }
       ],
       "facts": [
         {
-          "s": "fao_food",
-          "m": "last",
-          "v": 133.9,
-          "month": "2026-10"
-        },
-        {
-          "s": "fao_food",
+          "s": "fao_oils",
           "m": "yoy",
-          "v": 6,
-          "month": "2026-10"
-        },
-        {
-          "s": "fao_sugar",
-          "m": "ch3",
-          "v": 28,
-          "month": "2026-10"
-        }
-      ]
-    },
-    {
-      "tag": "Farming",
-      "title": "The US expects less corn, but the world has plenty of wheat",
-      "text": "In its November report, the US farm department (USDA) lowered its guess for the US corn crop. It also lowered how much corn and soybeans will be left in storage. That usually pushes those prices up. It raised its guess for the world's stored wheat, partly thanks to a bigger world harvest. Wheat averaged $317 a ton in October: 8.6% less than in September, but still 37% more than a year ago. Plenty of stored grain is one reason food prices have stayed calmer than oil this year.",
-      "sources": [
-        {
-          "name": "DTN",
-          "url": "https://www.dtnpf.com/agriculture/web/AG/news/article/2026/11/10/usda-releases-november-crop-wasde",
-          "quote": "Wheat world ending stocks were estimated at 280.82 million metric tons, up from 276.04 mmt in October."
-        }
-      ],
-      "facts": [
-        {
-          "s": "wheat",
-          "m": "last",
-          "v": 317,
-          "month": "2026-10"
-        },
-        {
-          "s": "wheat",
-          "m": "yoy",
-          "v": 37,
+          "v": 18,
           "month": "2026-10"
         }
       ]
     }
   ],
   "watch": [
+    "Fed boss Kevin Warsh's next remarks, for clues on a December rate rise",
     "OPEC+ (the big oil countries) meets to set 2027 output, Sun 29 Nov",
     "World food prices for November (FAO), Fri 4 Dec",
-    "NOAA El Niño update, Thu 10 Dec",
-    "Any US-Iran deal, or new attacks on ships near Iran"
+    "More tanker attacks near Iran, or a US-Iran deal"
   ]
 }
