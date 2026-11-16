@@ -22,8 +22,9 @@ Claude).
   said to make the calls. Pick what to show and explain it in plain words on the page; check claims
   against the data before writing them.
 - **Audience: a high-schooler** (his call, 2026-11-16). All page text, scenarios and the weekly read
-  use short sentences, everyday words ("sells abroad", "corn", "usual price") and explain any name or
-  term the first time ("the Fed (the US central bank)"). Rules in
+  use short sentences, everyday words ("sells abroad", "usual price") and explain any name or
+  term the first time ("the Fed (the US central bank)"). Keep real names (FAO Food Price Index,
+  Brent, maize, urea) rather than swapping them for plain ones (his call, 2026-11-16). Rules in
   [docs/weekly-routine.md](docs/weekly-routine.md).
 - **Commits:** authored as Claude (`--author="Claude <noreply@anthropic.com>"`), explicit paths
   only, never `git add -A` or `git add .`.

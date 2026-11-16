@@ -23,7 +23,9 @@ non-experts who want to know what to look out for in the coming months.
 - **Write for a high-school student**, in this file and in scenarios.json:
   - Short sentences, about 15 words or fewer, one idea each. Split anything with "and" doing two jobs.
   - Everyday words: "sells abroad" not "exports", "grain in storage" not "stocks", "crop size" not
-    "yield", "goes up" not "appreciates", "corn" not "maize".
+    "yield", "goes up" not "appreciates".
+  - Keep the real names people meet in the news: FAO Food Price Index, Brent crude, maize, urea.
+    Explain each one in a few words the first time, e.g. "urea (the most common fertilizer)".
   - Explain every name or term the first time it appears, in a few words: "the Fed (the US central
     bank)", "OPEC (the big oil countries' group)", "the IEA (the world's energy watchdog)", "El Niño
     (the Pacific running warm)". No unexplained acronyms.

@@ -1,8 +1,8 @@
 'use strict';
 // "Who feeds whom": reads data/trade.json (built by scripts/fetch_trade.py from UN Comtrade).
 (() => {
-  const WORD = { wheat: 'wheat', maize: 'corn', rice: 'rice', soybeans: 'soybeans', fertilizer: 'fertilizer' };
-  const SHORT = { wheat: 'Wheat', maize: 'Corn', rice: 'Rice', soybeans: 'Soybeans', fertilizer: 'Fertilizer' };
+  const WORD = { wheat: 'wheat', maize: 'maize', rice: 'rice', soybeans: 'soybeans', fertilizer: 'nitrogen fertilizer' };
+  const SHORT = { wheat: 'Wheat', maize: 'Maize', rice: 'Rice', soybeans: 'Soybeans', fertilizer: 'Fertilizer' };
   const FIRST = 12; // buyers shown before "show all"
 
   const store = {

@@ -98,7 +98,7 @@
           "watch": "crop news from Argentina and the US Great Plains"
         },
         {
-          "text": "Soybean or corn prices rise 20% or more in a year",
+          "text": "Soybean or maize prices rise 20% or more in a year",
           "lag": "Months after the dry spell",
           "check": {
             "any": [
@@ -120,7 +120,7 @@
       ],
       "up": [
         "Soybeans",
-        "Corn",
+        "Maize",
         "Wheat",
         "Meat (animal feed costs more)"
       ],
@@ -150,7 +150,7 @@
           "watch": "diesel and shipping prices in the news"
         },
         {
-          "text": "Crops that get turned into fuel (soybeans, corn, vegetable oil) get pricier",
+          "text": "Crops that get turned into fuel (soybeans, maize, vegetable oil) get pricier",
           "lag": "1 to 6 months",
           "check": {
             "any": [
@@ -315,7 +315,7 @@
       "id": "fertilizer",
       "title": "Cheap fertilizer means bigger harvests",
       "likelihood": "possible",
-      "why": "After 7 big fertilizer price crashes since 1975, corn was cheaper a year later 5 times. This pushes against El Niño and expensive oil.",
+      "why": "After 7 big fertilizer price crashes since 1975, maize was cheaper a year later 5 times. This pushes against El Niño and expensive oil.",
       "horizon": "2027 harvests",
       "steps": [
         {
@@ -361,11 +361,11 @@
       ],
       "up": [],
       "down": [
-        "Corn",
+        "Maize",
         "Wheat",
         "Soybeans"
       ],
-      "history": "Early 2023: fertilizer (urea) had dropped by two thirds from its 2022 high. A year later, corn was 33% cheaper and wheat 26% cheaper."
+      "history": "Early 2023: fertilizer (urea) had dropped by two thirds from its 2022 high. A year later, maize was 33% cheaper and wheat 26% cheaper."
     }
   ]
 }

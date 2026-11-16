@@ -96,8 +96,8 @@
         body: `${phase} means the Pacific Ocean near the equator is ${nino ? 'warmer' : 'cooler'} than normal, which shifts where rain falls around the world. Right now it's ${a.toFixed(1)}°C ${nino ? 'warmer' : 'cooler'} (${SEASON[season] || season} ${year}).`
           + ` (Source: NOAA, the US weather agency${E.issued ? ', ' + E.issued : ''}.)`,
         watch: nino
-          ? 'El Niño usually brings dry weather to Australia (wheat), India and Thailand (rice and sugar), Indonesia and Malaysia (palm oil) and southern Africa (corn). Damaged harvests show up in prices 6 to 12 months later.'
-          : 'La Niña usually brings dry weather to Argentina, the southern US (soybeans, corn, wheat) and East Africa. Watch soybean and corn prices over the next 6 to 12 months.',
+          ? 'El Niño usually brings dry weather to Australia (wheat), India and Thailand (rice and sugar), Indonesia and Malaysia (palm oil) and southern Africa (maize). Damaged harvests show up in prices 6 to 12 months later.'
+          : 'La Niña usually brings dry weather to Argentina, the southern US (soybeans, maize, wheat) and East Africa. Watch soybean and maize prices over the next 6 to 12 months.',
         link: E.url,
       });
     }
@@ -111,13 +111,13 @@
       const level = food.yoy >= 15 || food.rank10 >= 0.95 || maxGrain >= 40 ? 'alert'
         : food.yoy >= 5 || food.ch3 >= 3 || maxGrain >= 20 ? 'watch'
           : food.yoy <= -5 ? 'easing' : null;
-      const movers = grains.filter((g) => Math.abs(g.s.yoy) >= 10).map((g) => `${g.id === 'maize' ? 'corn' : g.id} ${signed(g.s.yoy)}`);
+      const movers = grains.filter((g) => Math.abs(g.s.yoy) >= 10).map((g) => `${g.id} ${signed(g.s.yoy)}`);
       add({
         level, short: 'world food prices', tag: 'Food', series: food, card: 'fao_food',
         title: `World food prices ${food.yoy >= 0 ? 'up' : 'down'} ${Math.abs(Math.round(food.yoy))}% in a year`,
         body: (movers.length ? `Grains moved the most this year: ${movers.join(', ')}. ` : '')
           + 'People eat grains, and so do farm animals, so grain prices spread to bread, meat, milk and more.',
-        watch: 'Whether world food prices keep rising when the next numbers come out early next month.',
+        watch: 'Whether the FAO Food Price Index keeps rising when the next numbers come out early next month.',
       });
     }
 
@@ -143,7 +143,7 @@
       add({
         level, short: 'fertilizer', tag: 'Farming', series: urea, card: 'urea',
         title: level === 'easing'
-          ? (drop >= 30 ? `Fertilizer is getting cheaper: down ${Math.round(drop)}% since ${mlabel(urea.peak6.m)}` : `Fertilizer down ${Math.round(-urea.yoy)}% in a year`)
+          ? (drop >= 30 ? `Urea fertilizer is getting cheaper: down ${Math.round(drop)}% since ${mlabel(urea.peak6.m)}` : `Urea fertilizer down ${Math.round(-urea.yoy)}% in a year`)
           : `Fertilizer up ${Math.round(urea.yoy)}% in a year`,
         body: level === 'easing'
           ? (drop >= 30 ? `Urea fertilizer jumped to ${usd(urea.peak6.v)} a ton in ${mlabel(urea.peak6.m)}. Now it's ${usd(urea.last.v)}. ` : '')
@@ -262,7 +262,7 @@
   // Both are documented long-run tendencies in commodity markets, weak and noisy for any one item.
   const RADAR = [
     ['silver', 'Silver', 'silver'], ['gold', 'Gold', 'gold'], ['copper', 'Copper', null],
-    ['brent', 'Oil', null], ['wheat', 'Wheat', null], ['maize', 'Corn', null], ['rice', 'Rice', null],
+    ['brent', 'Oil', null], ['wheat', 'Wheat', null], ['maize', 'Maize', null], ['rice', 'Rice', null],
     ['soybeans', 'Soybeans', null], ['urea', 'Fertilizer (urea)', null],
   ];
   const READS = {

@@ -10,8 +10,8 @@
   };
   const NAME = {
     brent: 'Oil', fao_food: 'World food prices', fao_oils: 'Cooking oils', fao_sugar: 'Sugar',
-    fao_cereals: 'Cereals', rice: 'Rice', wheat: 'Wheat', maize: 'Corn', soybeans: 'Soybeans',
-    urea: 'Fertilizer (urea)', copper: 'Copper', gold: 'Gold', silver: 'Silver',
+    fao_cereals: 'Cereals', rice: 'Rice', wheat: 'Wheat', maize: 'Maize', soybeans: 'Soybeans',
+    urea: 'Urea', copper: 'Copper', gold: 'Gold', silver: 'Silver',
   };
   const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
