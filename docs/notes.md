@@ -62,8 +62,13 @@ Code review fixes merged 2026-11-15 (CPI gap interpolation, workflow push retry,
   wheat, US grains and OPEC, and wants every topic checked every week, with a global view. Added
   a required news sweep: `briefing.json` now carries `checked`, one entry per topic in
   `TOPICS` (15, incl. China's buying and food-importing countries), each `covered`, `quiet` or
-  `unreached` with the page opened. `check_weekly.py` fails a read missing any topic (from the
-  2026-11-17 read on) and warns when over a third are unreached. Branch `checklist`, for review.
+  `unreached` with the page opened. `check_weekly.py` fails any new read missing a topic once
+  today is 2026-11-17 or later (whatever date the read gives itself; a fix to the published read
+  keeps its date and isn't held to it), and warns when over a third are unreached. A `covered`
+  topic must link one of the items' sources; a `quiet` page must exist (404 fails with
+  --sources). Three /code-review rounds on the branch (built in the routine's cloud session).
+  Seen while testing: CNBC rewrites live articles during the day (the gold page's "91% chance"
+  became "95%" by afternoon), so a quote can fail a later --sources run without being wrong.
   Next, his pick: widen network access (GDELT, AMIS, GEOGLAM, FEWS NET, WFP, IGC, IFPRI and some
   regional news). Not yet done: showing the checklist on the page.
 - **2026-11-16 (midday):** He asked to live up to NASA/JPL's coding standard. Wrote

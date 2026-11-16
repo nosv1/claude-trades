@@ -12,9 +12,10 @@ What it checks, beyond shape:
   summary and lookback need one entry in summary_facts / lookback_facts per number they quote.
 - A lookback (what happened since last week) is required unless this is the very first read.
 - With --sources, every source's "quote" appears on the page it links to (so news claims are
-  backed by something that page actually says), and every covered or quiet page exists.
+  backed by something that page actually says), and every quiet page exists.
 - Every topic in the news sweep (TOPICS) is reported in "checked" by every new read from 2026-11-17
-  on (whatever date it gives itself); a "covered" topic links one of the items' sources.
+  on (whatever date it gives itself); a "covered" topic links one of the items' sources. The
+  topic table in docs/weekly-routine.md lists the same ids.
 - Odd JSON (a list where text belongs, say) is reported as a problem, never a crash.
 - claude-log.json only grows: old entries can't be edited or removed, so misses stay visible.
 - Each scenario's likelihood matches its latest log entry (changes have to be logged).
@@ -249,12 +250,14 @@ def item_sources(b):
 
 
 def checklist_required(b, prev):
-    """Any new read once today is CHECKLIST_FROM or later (so a backdated date can't dodge it), a
-    read dated then or later, and always once the published read has one. Re-checking the published
-    read itself is fine. Fails closed: a missing or bad date requires it."""
+    """A read dated CHECKLIST_FROM or later; any new read (its date differs from the published one)
+    once today is that late, so a backdated date can't dodge it; and always once the published read
+    has one. A fix to the published read keeps its date and isn't held to it. Fails closed: a
+    missing or bad date requires it."""
     if isinstance(prev, dict) and "checked" in prev:
         return True
-    if b != prev and dt.date.today() >= CHECKLIST_FROM:
+    prev_date = prev.get("date") if isinstance(prev, dict) else None
+    if b.get("date") != prev_date and dt.date.today() >= CHECKLIST_FROM:
         return True
     try:
         return dt.date.fromisoformat(b.get("date")) >= CHECKLIST_FROM
@@ -282,10 +285,9 @@ def check_checklist(b, p, prev, warn):
         return
     if not p.need(isinstance(lst, list), f"briefing.checked: needs a list, one entry per topic: {', '.join(TOPICS)}"):
         return
-    if not p.need(len(lst) <= len(TOPICS), f"briefing.checked: {len(lst)} entries, but there are {len(TOPICS)} topics"):
-        return
+    p.need(len(lst) <= len(TOPICS), f"briefing.checked: {len(lst)} entries, but there are {len(TOPICS)} topics")
     seen, item_urls = set(), {url for _, url, _ in item_sources(b)}
-    for i, c in enumerate(lst):
+    for i, c in enumerate(lst[:2 * len(TOPICS)]):
         if p.need(isinstance(c, dict), f"briefing.checked[{i}]: not an object"):
             check_checked_entry(c, f"briefing.checked[{i}]", p, seen, item_urls)
     missing = [t for t in TOPICS if t not in seen]
@@ -293,6 +295,11 @@ def check_checklist(b, p, prev, warn):
     unreached = sum(1 for _, c in dicts(lst) if c.get("status") == "unreached")
     if unreached * 3 > len(TOPICS):
         warn.append(f"checked: {unreached} of {len(TOPICS)} topics unreached; the read's view is narrow")
+    quiet = [c["url"] for _, c in dicts(lst) if c.get("status") == "quiet" and https_url(c.get("url"))]
+    if len(set(quiet)) < len(quiet):
+        warn.append("checked: some quiet topics share one page; each should link the page that showed it was quiet")
+    if any(re.fullmatch(r"https://[^/]+/?", u) for u in quiet):
+        warn.append("checked: a quiet topic links a bare homepage; link the page that showed it was quiet")
 
 
 def check_fact(f, p, where, data):
@@ -349,16 +356,17 @@ def fetch_all(urls):
 
 
 def check_sources(b, p, warn):
-    """Each item source's quote is on its page, and each covered or quiet page exists. A checked page
-    that's gone (404/410) fails: it's the only proof the topic was looked at. Anything else that
-    can't be reached (blocked, timeout, too big, or an item source some site 404s to bots) warns."""
-    srcs = item_sources(b)
-    checked = [(f"checked[{i}]", c["url"], None) for i, c in dicts(b.get("checked"))
-               if c.get("status") in ("covered", "quiet") and https_url(c.get("url"))]
-    pages = fetch_all([u for _, u, _ in srcs + checked])
-    for where, url, quote in srcs + checked:
+    """Each item source's quote is on its page, and each quiet page exists (a covered page is one of
+    the item sources, checked with its quote). A quiet page that's gone (404/410) fails: it's the
+    only proof the topic was looked at. Anything else that can't be reached (blocked, timeout, too
+    big, or an item source some site 404s to bots) warns."""
+    srcs = [(where, url, quote, False) for where, url, quote in item_sources(b)]
+    quiet = [(f"checked[{i}]", c["url"], None, True) for i, c in dicts(b.get("checked"))
+             if c.get("status") == "quiet" and https_url(c.get("url"))]
+    pages = fetch_all([u for _, u, _, _ in srcs + quiet])
+    for where, url, quote, must_exist in srcs + quiet:
         page, why, gone = pages.get(url, (None, "not fetched: too many links", False))
-        if quote is None and not p.need(not gone, f"{where}: {url} doesn't exist ({why}); link the page you opened"):
+        if must_exist and not p.need(not gone, f"{where}: {url} doesn't exist ({why}); link the page you opened"):
             continue
         if page is None:
             warn.append(f"{where}: couldn't fetch {url} ({why}); not checked")
@@ -399,7 +407,8 @@ def check_scenarios(sc, p, data):
             continue
         p.need(isinstance(s.get("id"), str) and bool(SLUG.match(s["id"])) and s["id"] not in ids,
                f"{w}.id: unique lowercase slug")
-        ids.add(s.get("id"))
+        if isinstance(s.get("id"), str):
+            ids.add(s["id"])
         text(p, s.get("title"), w + ".title", 5, 70)
         p.need(one_of(s.get("likelihood"), LIKELY), f"{w}.likelihood: one of {sorted(LIKELY)}")
         text(p, s.get("why"), w + ".why", 20, 400)
@@ -425,7 +434,8 @@ def check_scenarios(sc, p, data):
                 check_cond(st["check"], p, sw + ".check", data)
             else:
                 text(p, st.get("watch"), sw + ".watch", 5, 160)
-            p.need("link" not in st or st["link"] in {"trade", "outlook", "trendvalue"}, f"{sw}.link: a section id")
+            p.need("link" not in st or one_of(st["link"], {"trade", "outlook", "trendvalue"}),
+                   f"{sw}.link: a section id")
         o = s.get("outcome")
         p.need(isinstance(o, int) and 0 <= o < len(steps) and isinstance(steps[o], dict) and "check" in steps[o],
                f"{w}.outcome: index of the step (with a check) that decides whether the chain happened")
@@ -435,6 +445,24 @@ def check_scenarios(sc, p, data):
 
 
 # ---- claude-log.json ----
+def check_calls(calls, p):
+    seen = set()
+    for i, c in enumerate(calls):
+        w = f"claude-log.calls[{i}]"
+        if not p.need(isinstance(c, dict), f"{w}: not an object"):
+            continue
+        p.need(one_of(c.get("s"), CALL_SERIES), f"{w}.s: one of {sorted(CALL_SERIES)}")
+        p.need(one_of(c.get("call"), {"up", "down"}), f"{w}.call: up or down")
+        made = date(p, c.get("made"), w + ".made")
+        if p.need(isinstance(c.get("target"), str) and bool(YM.match(c["target"])), f"{w}.target: YYYY-MM") and made:
+            p.need(ym(c["target"]) > month_of(made), f"{w}.target: must be a month that hasn't started yet")
+        text(p, c.get("why"), w + ".why", 10, 200)
+        key = (c.get("s"), c.get("target"))
+        if all(isinstance(k, str) for k in key):  # a bad s or target is reported above
+            p.need(key not in seen, f"{w}: a call for {key} already exists")
+            seen.add(key)
+
+
 def check_log(L, p, data, scenarios, base):
     if not p.need(isinstance(L, dict), "claude-log: not an object"):
         return
@@ -450,20 +478,7 @@ def check_log(L, p, data, scenarios, base):
             p.need(len(L[k]) >= len(old) and L[k][:len(old)] == old,
                    f"claude-log.{k}: old entries were changed or removed; only add new ones at the end")
     n_old = len((base or {}).get("likelihoods") or []) if isinstance(base, dict) else 0
-    seen = set()
-    for i, c in enumerate(calls):
-        w = f"claude-log.calls[{i}]"
-        if not p.need(isinstance(c, dict), f"{w}: not an object"):
-            continue
-        p.need(one_of(c.get("s"), CALL_SERIES), f"{w}.s: one of {sorted(CALL_SERIES)}")
-        p.need(one_of(c.get("call"), {"up", "down"}), f"{w}.call: up or down")
-        made = date(p, c.get("made"), w + ".made")
-        if p.need(isinstance(c.get("target"), str) and bool(YM.match(c["target"])), f"{w}.target: YYYY-MM") and made:
-            p.need(ym(c["target"]) > month_of(made), f"{w}.target: must be a month that hasn't started yet")
-        text(p, c.get("why"), w + ".why", 10, 200)
-        key = (c.get("s"), c.get("target"))
-        p.need(key not in seen, f"{w}: a call for {key} already exists")
-        seen.add(key)
+    check_calls(calls, p)
     latest = {}
     for i, x in enumerate(likes):
         w = f"claude-log.likelihoods[{i}]"
@@ -481,10 +496,11 @@ def check_log(L, p, data, scenarios, base):
         if i >= n_old and len(p) == before:
             p.need(not data.passes(x["check"]),
                    f"{w}: its check already passes in today's data, so it isn't a prediction")
-        latest[x.get("id")] = x
+        if isinstance(x.get("id"), str):
+            latest[x["id"]] = x
     for s in scenarios or []:
         if isinstance(s, dict):
-            x = latest.get(s.get("id"))
+            x = latest.get(s.get("id")) if isinstance(s.get("id"), str) else None
             p.need(x is not None and x.get("likelihood") == s.get("likelihood"),
                    f"scenario {s.get('id')!r}: its likelihood ({s.get('likelihood')}) needs a matching entry "
                    "at the end of claude-log.likelihoods")
@@ -518,7 +534,19 @@ def guarded(p, name, check, *args):
     try:
         check(*args)
     except (TypeError, AttributeError, KeyError, IndexError, ValueError) as e:
-        p.append(f"{name}: unexpected shape ({type(e).__name__}: {e}); fix the file's structure")
+        p.append(f"{name}: checks stopped at an unexpected value ({type(e).__name__}: {e}); look for a list or "
+                 "object where text or a number belongs, here or in site/data")
+
+
+def check_topic_table(p):
+    """The routine follows the table in docs/weekly-routine.md; its ids must be TOPICS, in order."""
+    try:
+        doc = (ROOT / "docs" / "weekly-routine.md").read_text(encoding="utf-8")
+    except OSError:
+        p.append("docs/weekly-routine.md: missing (it holds the topic table)")
+        return
+    ids = tuple(re.findall(r"^\s*\| `([a-z-]+)` \|", doc, re.M))
+    p.need(ids == TOPICS, f"docs/weekly-routine.md: topic table {list(ids)} doesn't match TOPICS {list(TOPICS)}")
 
 
 def main():
@@ -547,6 +575,7 @@ def main():
             docs[name] = json.loads(path.read_text(encoding="utf-8"))
         except ValueError as e:
             p.append(f"{name}: not valid JSON ({e})")
+    check_topic_table(p)
     b = docs.get("briefing.json")
     if "briefing.json" in docs:
         guarded(p, "briefing.json", check_briefing, b, p, data, git_base("site/data/briefing.json"), warn)

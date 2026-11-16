@@ -149,7 +149,8 @@ non-experts who want to know what to look out for in the coming months.
 8. Run `python scripts/check_weekly.py --sources`. It matches your facts against the data, fetches
    every source to find its quote, and checks the log is append-only. Fix every problem it lists
    and run it again until it passes. Never push files that fail it. ("Couldn't fetch" is a warning:
-   check that page is on the allowlist.)
+   check that page is on the allowlist. But a `quiet` page that doesn't exist (404) fails: link
+   the page you actually opened, or mark the topic `unreached` and say why.)
 9. Commit and push to the branch:
 
    ```sh
