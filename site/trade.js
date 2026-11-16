@@ -132,12 +132,8 @@
   }
 
   async function init() {
-    try {
-      const r = await fetch('data/trade.json', { cache: 'no-cache' });
-      if (!r.ok) return;
-      T = await r.json();
-    } catch { return; }
-    if (!T.commodities || !T.commodities.length) return;
+    T = await window.TP.getJSON('data/trade.json');
+    if (!T || !T.commodities.length) return;
     renderCrops();
     $('crop').addEventListener('click', (e) => {
       const b = e.target.closest('button');

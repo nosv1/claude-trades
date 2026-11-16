@@ -22,8 +22,7 @@
   }
 
   async function init() {
-    let b;
-    try { const r = await fetch('data/briefing.json', { cache: 'no-cache' }); if (!r.ok) return; b = await r.json(); } catch { return; }
+    const b = await window.TP.getJSON('data/briefing.json');
     if (!valid(b)) return;
     const [y, m, d] = b.date.split('-').map(Number);
     const when = new Date(y, m - 1, d);

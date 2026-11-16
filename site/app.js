@@ -492,24 +492,13 @@
     for (const c of cards) c._render();
   }
 
-  // ---- data loading ----
-  async function getJSON(url, ms = 15000) {
-    const ctl = new AbortController();
-    const t = setTimeout(() => ctl.abort(), ms);
-    try {
-      const r = await fetch(url, { signal: ctl.signal, cache: 'no-cache' });
-      if (!r.ok) throw new Error(`${url}: HTTP ${r.status}`);
-      return await r.json();
-    } finally { clearTimeout(t); }
-  }
-
+  // ---- data loading (window.TP.getJSON: timeout, size cap, shape checks) ----
   async function refreshLive() {
-    try {
-      const [s, g] = await Promise.all([getJSON(LIVE_URL + 'XAG', 8000), getJSON(LIVE_URL + 'XAU', 8000)]);
-      if (!(s.price > 0 && g.price > 0)) throw new Error('bad live price');
-      live = { silver: s.price, gold: g.price, at: new Date(s.updatedAt || Date.now()), isLive: true };
-      return true;
-    } catch { return false; }
+    const get = (sym) => window.TP.getJSON(LIVE_URL + sym, { timeout: 8000 });
+    const [s, g] = await Promise.all([get('XAG'), get('XAU')]);
+    if (!(s && g && s.price > 0 && g.price > 0)) return false;
+    live = { silver: s.price, gold: g.price, at: new Date(s.updatedAt || Date.now()), isLive: true };
+    return true;
   }
 
   function showError(msg) {
@@ -534,10 +523,8 @@
 
   async function init() {
     let spot;
-    try {
-      [D, spot] = await Promise.all([getJSON('data/series.json'), getJSON('data/spot.json').catch(() => null)]);
-      if (!window.TP.seriesOK(D)) throw new Error('series.json has the wrong shape');
-    } catch {
+    [D, spot] = await Promise.all([window.TP.getJSON('data/series.json'), window.TP.getJSON('data/spot.json')]);
+    if (!D) {
       showError('Could not load the data files. Try reloading the page.');
       return;
     }

@@ -4,6 +4,7 @@ name: Lint
 # update-and-deploy.yml so a lint failure never blocks the daily data refresh.
 on:
   push:
+    branches: [main]
   pull_request:
   workflow_dispatch:
 
