@@ -111,7 +111,8 @@ non-experts who want to know what to look out for in the coming months.
    `checked`: one entry per topic in step 3, every week. `covered` means it's in an item, and its
    `url` is one of that item's sources; `quiet` means you looked and nothing worth an item
    happened; `unreached` means no page could be opened. A good week is mostly `covered` and
-   `quiet`. The checker fetches every `covered` and `quiet` page and fails one that doesn't exist.
+   `quiet`. With `--sources` the checker fetches every `quiet` page and fails one that doesn't exist
+   (a `covered` page is an item source, checked with its quote).
 
    2 to 5 items, most important first. If it was a quiet week, say so; don't inflate small news.
    `facts`: one entry per number in the text that comes from `site/data` (`m` is `last`, `yoy`,

@@ -21,6 +21,7 @@ What it checks, beyond shape:
 - Each scenario's likelihood matches its latest log entry (changes have to be logged).
 - A newly logged likelihood can't already be true in the data (no free wins).
 """
+import contextlib
 import datetime as dt
 import html
 import json
@@ -46,6 +47,7 @@ TOPICS = ("oil", "gas-fertilizer", "enso", "southeast-asia", "south-asia", "blac
           "australia", "china", "importers", "shipping", "reports", "metals", "money", "politics")
 STATUSES = {"covered", "quiet", "unreached"}
 CHECKLIST_FROM = dt.date(2026, 11, 17)  # reads dated before this were written without a checklist
+FIX_WINDOW_DAYS = 3  # a same-date change this soon after the read is a fix, not a new read
 FETCH_CAP = 5_000_000  # bytes read per page; a bigger page counts as "couldn't check"
 FETCH_WORKERS = 8
 MAX_FETCHES = 60  # 5 items x 4 sources + 15 topics is 35; anything past this isn't fetched
@@ -250,15 +252,23 @@ def item_sources(b):
 
 
 def checklist_required(b, prev):
-    """A read dated CHECKLIST_FROM or later; any new read (its date differs from the published one)
-    once today is that late, so a backdated date can't dodge it; and always once the published read
-    has one. A fix to the published read keeps its date and isn't held to it. Fails closed: a
-    missing or bad date requires it."""
+    """A read dated CHECKLIST_FROM or later; once today is that late, any new read (its date differs
+    from the published one, or matches it but is over FIX_WINDOW_DAYS old), so a stale or backdated
+    date can't dodge it; and always once the published read has one. A recent fix to the published
+    read keeps its date and isn't held to it. Fails closed: a missing or bad date requires it."""
+    if b == prev:  # re-checking the published read itself
+        return False
     if isinstance(prev, dict) and "checked" in prev:
         return True
-    prev_date = prev.get("date") if isinstance(prev, dict) else None
-    if b.get("date") != prev_date and dt.date.today() >= CHECKLIST_FROM:
-        return True
+    if dt.date.today() >= CHECKLIST_FROM:
+        prev_date = prev.get("date") if isinstance(prev, dict) else None
+        if b.get("date") != prev_date:
+            return True
+        try:  # same date: a fix if it's recent, a stale-dated new read if not
+            if (dt.date.today() - dt.date.fromisoformat(b.get("date"))).days > FIX_WINDOW_DAYS:
+                return True
+        except (TypeError, ValueError):
+            return True
     try:
         return dt.date.fromisoformat(b.get("date")) >= CHECKLIST_FROM
     except (TypeError, ValueError):
@@ -287,7 +297,7 @@ def check_checklist(b, p, prev, warn):
         return
     p.need(len(lst) <= len(TOPICS), f"briefing.checked: {len(lst)} entries, but there are {len(TOPICS)} topics")
     seen, item_urls = set(), {url for _, url, _ in item_sources(b)}
-    for i, c in enumerate(lst[:2 * len(TOPICS)]):
+    for i, c in enumerate(lst):  # bounded: the file is capped at 60 KB in main()
         if p.need(isinstance(c, dict), f"briefing.checked[{i}]: not an object"):
             check_checked_entry(c, f"briefing.checked[{i}]", p, seen, item_urls)
     missing = [t for t in TOPICS if t not in seen]
@@ -295,6 +305,9 @@ def check_checklist(b, p, prev, warn):
     unreached = sum(1 for _, c in dicts(lst) if c.get("status") == "unreached")
     if unreached * 3 > len(TOPICS):
         warn.append(f"checked: {unreached} of {len(TOPICS)} topics unreached; the read's view is narrow")
+    covered = [c["url"] for _, c in dicts(lst) if c.get("status") == "covered" and https_url(c.get("url"))]
+    if any(covered.count(u) > 3 for u in covered):
+        warn.append("checked: one page is marked as covering more than 3 topics; is each really in that item?")
     quiet = [c["url"] for _, c in dicts(lst) if c.get("status") == "quiet" and https_url(c.get("url"))]
     if len(set(quiet)) < len(quiet):
         warn.append("checked: some quiet topics share one page; each should link the page that showed it was quiet")
@@ -341,6 +354,8 @@ def fetch_text(url):
                 return None, f"page over {FETCH_CAP:,} bytes", False
             t = raw.decode(r.headers.get_content_charset() or "utf-8", "ignore")
     except urllib.error.HTTPError as e:
+        with contextlib.suppress(Exception):  # closing a bodiless error can itself raise
+            e.close()
         return None, str(e), e.code in (404, 410)
     except Exception as e:  # noqa: BLE001 - any other failure (an unknown charset too) means "couldn't check"
         return None, str(e), False
@@ -360,7 +375,7 @@ def check_sources(b, p, warn):
     the item sources, checked with its quote). A quiet page that's gone (404/410) fails: it's the
     only proof the topic was looked at. Anything else that can't be reached (blocked, timeout, too
     big, or an item source some site 404s to bots) warns."""
-    srcs = [(where, url, quote, False) for where, url, quote in item_sources(b)]
+    srcs = [(where, url, quote, False) for where, url, quote in item_sources(b) if isinstance(quote, str)]
     quiet = [(f"checked[{i}]", c["url"], None, True) for i, c in dicts(b.get("checked"))
              if c.get("status") == "quiet" and https_url(c.get("url"))]
     pages = fetch_all([u for _, u, _, _ in srcs + quiet])
@@ -533,20 +548,20 @@ def guarded(p, name, check, *args):
     becomes a listed problem instead of a traceback. Fails closed: the read is rejected."""
     try:
         check(*args)
-    except (TypeError, AttributeError, KeyError, IndexError, ValueError) as e:
+    except (TypeError, AttributeError, KeyError, IndexError, ValueError, RecursionError) as e:
         p.append(f"{name}: checks stopped at an unexpected value ({type(e).__name__}: {e}); look for a list or "
                  "object where text or a number belongs, here or in site/data")
 
 
 def check_topic_table(p):
-    """The routine follows the table in docs/weekly-routine.md; its ids must be TOPICS, in order."""
+    """The routine follows the table in docs/weekly-routine.md; its ids must be the TOPICS ids."""
     try:
         doc = (ROOT / "docs" / "weekly-routine.md").read_text(encoding="utf-8")
     except OSError:
         p.append("docs/weekly-routine.md: missing (it holds the topic table)")
         return
-    ids = tuple(re.findall(r"^\s*\| `([a-z-]+)` \|", doc, re.M))
-    p.need(ids == TOPICS, f"docs/weekly-routine.md: topic table {list(ids)} doesn't match TOPICS {list(TOPICS)}")
+    ids = set(re.findall(r"^\s*\| `([a-z0-9-]+)` \| ", doc, re.M))
+    p.need(ids == set(TOPICS), f"docs/weekly-routine.md: topic table and TOPICS differ: {sorted(ids ^ set(TOPICS))}")
 
 
 def main():
@@ -573,7 +588,7 @@ def main():
             continue
         try:
             docs[name] = json.loads(path.read_text(encoding="utf-8"))
-        except ValueError as e:
+        except (ValueError, RecursionError) as e:
             p.append(f"{name}: not valid JSON ({e})")
     check_topic_table(p)
     b = docs.get("briefing.json")
