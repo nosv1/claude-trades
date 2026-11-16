@@ -6,7 +6,7 @@ compatibility_date = "2025-09-01"
 
 [vars]
 # Public values (an OAuth client ID is not a secret).
-GOOGLE_CLIENT_ID = ""
+GOOGLE_CLIENT_ID = "1074274731984-e6kn7qddpu7hvjunapft3clkde8e2iht.apps.googleusercontent.com"
 ALLOWED_ORIGINS = "https://nosv1.github.io,http://localhost:8000,http://127.0.0.1:8765"
 
 [[durable_objects.bindings]]
