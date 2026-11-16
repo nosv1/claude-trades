@@ -1,0 +1,59 @@
+# Publish the weekly read: the Claude routine (docs/weekly-routine.md) pushes briefing.json and
+# scenarios.json to a claude/weekly-read-YYYY-MM-DD branch. This checks them, copies only those two files to
+# main, deletes the branch and starts a deploy.
+name: Publish weekly read
+
+on:
+  push:
+    branches: ["claude/weekly-read-*"]
+
+permissions:
+  contents: write # commit to main, delete the branch
+  actions: write # start the deploy workflow
+
+concurrency:
+  group: weekly-read
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Take the two files from the branch
+        run: git checkout "origin/$GITHUB_REF_NAME" -- site/data/briefing.json site/data/scenarios.json
+
+      - name: Check them
+        run: python scripts/check_weekly.py
+
+      - name: Commit to main
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898388+github-actions[bot]@users.noreply.github.com"
+          git add site/data/briefing.json site/data/scenarios.json
+          if git diff --cached --quiet; then
+            echo "Nothing new."
+          else
+            git commit -m "This week's read (from $GITHUB_REF_NAME)"
+            ok=0
+            for attempt in 1 2 3; do
+              git push origin HEAD:main && { ok=1; break; }
+              git pull --rebase origin main
+            done
+            [ "$ok" = 1 ] || { echo "::error::Could not push to main; leaving the branch for a rerun."; exit 1; }
+          fi
+          git push origin --delete "$GITHUB_REF_NAME"
+
+      # Pushes made with GITHUB_TOKEN don't trigger other workflows, so start the deploy directly.
+      - name: Deploy
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run update-and-deploy.yml --ref main

@@ -7,6 +7,8 @@ Live at **<https://nosv1.github.io/claude-trades/>**.
 
 ## What's on it
 
+- **This week's read:** a short briefing on the week's news, written by Claude every Monday
+  with sources (see [docs/weekly-routine.md](docs/weekly-routine.md)).
 - **Heads up:** the signals worth watching in the coming months (oil, El Niño, food prices,
   cooking oils, fertilizer, copper, single-seller pressure points), rated Alert / Watch / Easing
   and recomputed from the data every day.
@@ -40,7 +42,10 @@ Live at **<https://nosv1.github.io/claude-trades/>**.
 A static site in `site/`, no build step. A GitHub Action
 ([.github/workflows/update-and-deploy.yml](.github/workflows/update-and-deploy.yml)) runs daily:
 it runs `scripts/fetch_data.py`, commits any new data in `site/data/`, and publishes `site/` to
-GitHub Pages. The page also asks gold-api.com for the live silver and gold price when it loads.
+GitHub Pages. Every Monday a scheduled Claude Code routine writes `site/data/briefing.json` and
+updates `site/data/scenarios.json` on a `claude/weekly-read-*` branch; the
+[weekly-read workflow](.github/workflows/weekly-read.yml) checks them with
+`scripts/check_weekly.py`, copies them to `main` and redeploys. The page also asks gold-api.com for the live silver and gold price when it loads.
 
 ## Run it locally
 
