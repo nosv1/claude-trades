@@ -45,7 +45,12 @@ non-experts who want to know what to look out for in the coming months.
    (live silver and gold), `site/data/enso.json` (El Niño), `site/data/trade.json` (who sells to whom),
    and the current `briefing.json`, `scenarios.json` and `claude-log.json`. Work out each item's
    change over 1, 3, 6 and 12 months with a short Python script rather than by eye.
-2. Search the news from the past 7-10 days: oil and OPEC, El Niño and crop weather (Southeast Asia
+2. **Look back first.** Before you overwrite `briefing.json`, read last week's version: its items
+   and its `watch` list. For each main point and each watch item, find out what actually happened.
+   You'll write this up as `lookback` (step 4): honest and specific, including anything last week's
+   read got wrong or that didn't happen. Also glance at `claude-log.json` for any call or
+   likelihood that was decided this week.
+3. Search the news from the past 7-10 days: oil and OPEC, El Niño and crop weather (Southeast Asia
    palm oil, India monsoon and rice, Australia wheat, Argentina and Brazil soybeans), food export bans
    or taxes (India rice, Russia wheat), fertilizer and natural gas, shipping chokepoints (Red Sea,
    Black Sea, Panama), FAO and USDA reports, copper, gold and silver. Prefer primary or well-known
@@ -59,7 +64,7 @@ non-experts who want to know what to look out for in the coming months.
    dollar moves, and elections or leadership changes in big producers and buyers (US, China, India,
    Russia, Brazil, Argentina, Indonesia, Saudi Arabia, the EU). Upcoming elections and summits with
    a date go in `watch`.
-3. Write `site/data/briefing.json`:
+4. Write `site/data/briefing.json`:
 
    ```json
    {
@@ -67,6 +72,7 @@ non-experts who want to know what to look out for in the coming months.
      "by": "Claude",
      "headline": "One sentence: the single most important thing this week (10-140 chars)",
      "summary": "2-3 sentences tying it together (40-600 chars)",
+     "lookback": "Since last week: what happened to last week's main points and watch items, and anything we got wrong (40-600 chars)",
      "items": [
        {
          "tag": "Energy | Food | Weather | Metals | Trade | Farming | Money | Politics",
@@ -84,9 +90,9 @@ non-experts who want to know what to look out for in the coming months.
    `facts`: one entry per number in the text that comes from `site/data` (`m` is `last`, `yoy`,
    `ch3`, `ch6` or `fromPeak`; percentages as written, e.g. 93 for +93%; `month` defaults to the
    latest). An empty list is fine if the item quotes no data numbers.
-4. **Verify before you go on.** For each item, re-read its claims against the quotes you saved. If
+5. **Verify before you go on.** For each item, re-read its claims against the quotes you saved. If
    a claim isn't in a quote or in `site/data`, fix it or cut it.
-5. Update `site/data/scenarios.json` (the "What could happen next" chains). Keep the format exactly
+6. Update `site/data/scenarios.json` (the "What could happen next" chains). Keep the format exactly
    as it is; read the current file and [site/scenarios.js](../site/scenarios.js) for how checks work.
    - Set `updated` to today.
    - Change a `likelihood` (`likely`, `possible`, `longshot`) or its `why` only when the news or the
@@ -99,7 +105,7 @@ non-experts who want to know what to look out for in the coming months.
      the page warns readers when it's under 10).
    - Checks: `{"s": series id or "oni", "m": "last|yoy|ch3|ch6|fromPeak", "op": ">=|<=", "v": number}`,
      or `{"any": [up to 4 of those]}`. Steps without a check need a `watch` text.
-6. Update `site/data/claude-log.json` (append only):
+7. Update `site/data/claude-log.json` (append only):
    - **Likelihoods:** for every chain you added or whose `likelihood` changed, append
      `{"id", "made": today, "likelihood", "claim": the outcome step's text, "check": the outcome
      step's check, "deadline"}`. The checker rejects a claim whose check is already true today.
@@ -107,11 +113,11 @@ non-experts who want to know what to look out for in the coming months.
      that hasn't started), unless one already exists:
      `{"s", "target": "YYYY-MM", "call": "up" | "down", "made": today, "why": "one short reason"}`.
      Make your honest best guess; a coin flip gets about half right, and that's the bar to beat.
-7. Run `python scripts/check_weekly.py --sources`. It matches your facts against the data, fetches
+8. Run `python scripts/check_weekly.py --sources`. It matches your facts against the data, fetches
    every source to find its quote, and checks the log is append-only. Fix every problem it lists
    and run it again until it passes. Never push files that fail it. ("Couldn't fetch" is a warning:
    check that page is on the allowlist.)
-8. Commit and push to the branch:
+9. Commit and push to the branch:
 
    ```sh
    git checkout -B claude/weekly-read-YYYY-MM-DD   # today's date
@@ -122,5 +128,5 @@ non-experts who want to know what to look out for in the coming months.
 
    If the push is rejected, add `-2` to the branch name and push again (don't force-push). The
    workflow publishes any `claude/weekly-read-*` branch, then deletes it.
-9. End with a 4-line summary: the headline, what changed in the scenarios, your two calls, and
+10. End with a 4-line summary: the headline, what changed in the scenarios, your two calls, and
    anything that didn't work (including anything the checker caught).

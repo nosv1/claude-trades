@@ -34,6 +34,10 @@
       + (age > 13 ? ' · a newer one is overdue' : '');
     $('read-headline').textContent = b.headline;
     $('read-summary').textContent = b.summary;
+    const lb = $('read-lookback');
+    lb.replaceChildren();
+    if (str(b.lookback, 600)) lb.append(el('strong', {}, 'Since last week: '), b.lookback);
+    lb.hidden = !lb.childNodes.length;
     $('read-items').replaceChildren(...b.items.map((it) => {
       const li = el('li', { class: 'read-item' });
       const fold = el('details', { class: 'fold' });

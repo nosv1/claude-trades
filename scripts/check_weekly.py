@@ -122,6 +122,9 @@ def check_briefing(b, p, data):
     text(p, b.get("by"), "briefing.by", 2, 40)
     text(p, b.get("headline"), "briefing.headline", 10, 140)
     text(p, b.get("summary"), "briefing.summary", 40, 600)
+    # Required from the second weekly read on (the first one had no "last week" to look back on).
+    if "lookback" in b or str(b.get("date", "")) > "2026-11-16":
+        text(p, b.get("lookback"), "briefing.lookback (what happened since last week)", 40, 600)
     items = b.get("items")
     if p.need(isinstance(items, list) and 2 <= len(items) <= 5, "briefing.items: needs 2-5 items"):
         for i, it in enumerate(items):

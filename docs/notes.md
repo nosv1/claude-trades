@@ -41,11 +41,18 @@ via the weekly-read workflow); sync worker auto-deploys on changes under `worker
    shipping chokepoints (Red Sea, Panama). Prices only show a shortage after it starts.
 3. Daily spot chart: `site/data/spot.json` already logs one silver/gold price a day.
 4. Price alert when silver crosses a price he picks.
+5. **Currencies** (he asked 2026-11-16): add the US dollar index (FRED `DTWEXBGS`, broad, daily;
+   same plain-UA fetch as CPI) as a driver chart and a Heads-up signal. A strong dollar makes
+   dollar-priced food and fuel dearer for everyone else and tends to push commodity prices down in
+   dollars. Maybe also the currencies of big food importers (Egypt, Nigeria, Pakistan), where a
+   falling currency is what turns world prices into local food crises.
 
 Code review fixes merged 2026-11-15 (CPI gap interpolation, workflow push retry, etc.).
 
 ## Log
 
+- **2026-11-16:** Weekly read now looks back: a required `lookback` ("Since last week", shown in a
+  shaded box) on what happened to last week's points and watch items, including what we got wrong.
 - **2026-11-16:** "How are we making sure we're not confidently wrong?" Built three guards:
   (1) **Claude's track record** (`site/scoreboard.js`, `site/data/claude-log.json`): append-only log
   of Claude's monthly higher/lower calls (fao_food, brent; next unstarted month) and every scenario
