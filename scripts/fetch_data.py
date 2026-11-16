@@ -183,21 +183,31 @@ def fetch_cpi() -> tuple[dict, dict]:
 def fetch_dollar() -> tuple[dict, dict]:
     """Broad trade-weighted US dollar index (Jan 2006 = 100), daily -> monthly averages.
     Only finished months, so it lines up with the other monthly series. FRED posts this about once
-    a week with a lag, so a month counts as finished only once a reading from a later month exists;
-    otherwise early in a month the previous month would be averaged from part of its days."""
+    a week with a lag, so a month counts only once FRED has a row (holidays are ".") for its last
+    weekday; otherwise early in a month the previous month would be averaged from part of its days."""
     print(f"FRED: {USD_CSV}")
     rows = list(csv.reader(io.StringIO(get(USD_CSV).decode())))
     days: dict[str, list[float]] = {}
+    last_row = ""
     for r in rows[1:]:
+        if len(r) < 2 or len(r[0]) != 10:
+            continue
+        last_row = max(last_row, r[0])
         try:
-            v = float(r[1])
-        except (ValueError, IndexError):
+            days.setdefault(r[0][:7], []).append(float(r[1]))
+        except ValueError:
             continue  # holidays are "."
-        days.setdefault(r[0][:7], []).append(v)
-    if len(days) < 2:
+    if not days:
         raise RuntimeError("no dollar index rows")
-    newest = max(days)  # still being posted
-    pts = {m: round(sum(v) / len(v), 2) for m, v in days.items() if m < newest}
+
+    def last_weekday(m: str) -> str:
+        y, mo = map(int, m.split("-"))
+        d = dt.date(y + mo // 12, mo % 12 + 1, 1) - dt.timedelta(days=1)
+        while d.weekday() > 4:
+            d -= dt.timedelta(days=1)
+        return d.isoformat()
+
+    pts = {m: round(sum(v) / len(v), 2) for m, v in days.items() if last_row >= last_weekday(m)}
     return (
         {"usd": {"name": "US dollar index", "unit": "against a broad basket of 26 currencies, Jan 2006 = 100",
                  "source": "fred_usd", **to_series(pts)}},

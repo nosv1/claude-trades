@@ -162,8 +162,8 @@
         level: up || down ? 'watch' : null, short: 'the dollar', tag: 'Money', series: dollar, card: 'usd',
         title: `The US dollar is ${up ? 'up' : 'down'} ${Math.abs(Math.round(dollar.yoy))}% in a year`,
         body: up
-          ? 'Oil, grain and metals are priced in dollars. A stronger dollar makes them cost more for everyone else, which pushes their dollar prices down. It\'s a push, not a rule: in 2022 a war pushed harder the other way.'
-          : 'A weaker dollar makes dollar-priced food, fuel and metals cheaper for the rest of the world. Since 2006, their dollar prices rose every time the dollar fell this much.',
+          ? 'Oil and grain are priced in dollars. A stronger dollar makes them cost more for everyone else, which usually pushes their dollar prices down. It\'s a push, not a rule: in 2022 a war pushed oil and food up anyway. Gold often holds up too, because people buy it when they\'re worried.'
+          : 'A weaker dollar makes dollar-priced food, fuel and metals cheaper for the rest of the world, which pushes their dollar prices up. Since 2006, oil rose every time the dollar fell this much, and food almost every time.',
         watch: up
           ? 'Food import bills in countries with weak currencies, like Egypt, Nigeria and Pakistan. A falling local currency is often how world prices turn into local food crises.'
           : 'Whether gold, oil and grain keep climbing.',

@@ -120,7 +120,7 @@
       why: 'Solar panels and electronics use a lot of silver, so it moves with factories as well as with fear.' },
     { id: 'c-dollar', q: 'When the US dollar gets stronger, what usually happens to the dollar price of oil and grain?',
       options: ['It tends to fall', 'It tends to rise', "Nothing; they're unrelated", 'Only gold changes'], answer: 0,
-      why: "They're priced in dollars, so a stronger dollar makes them cost more for everyone else, and buyers pull back. In 2008-09 and 2014-16 the dollar jumped and oil roughly halved. It's a push, not a rule: in 2022 the dollar jumped and oil rose anyway, because of the war in Ukraine." },
+      why: "They're priced in dollars, so a stronger dollar makes them cost more for everyone else, and buyers pull back. In 2008-09 and 2014-16 the dollar jumped and oil fell by as much as half. It's a push, not a rule: in 2022 the dollar jumped and oil rose anyway, because of the war in Ukraine." },
     { id: 'c-ban', q: 'What usually happens when a big food exporter bans exports?',
       options: ['Buyers panic and world prices jump', 'World prices fall', 'Nothing much', 'Only that country\'s prices rise'], answer: 0,
       why: '2008: rice nearly tripled in six months after India and Vietnam limited exports.' },

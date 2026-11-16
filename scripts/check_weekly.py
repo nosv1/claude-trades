@@ -115,6 +115,10 @@ class Data:
 
 
 # ---- briefing.json ----
+# A number that probably came from the data: a percent, a dollar amount or a decimal.
+NUMBER = re.compile(r"\d\s*%|\$\s*\d|\d\.\d")
+
+
 def check_briefing(b, p, data, prev=None):
     if not p.need(isinstance(b, dict), "briefing: not an object"):
         return
@@ -122,19 +126,25 @@ def check_briefing(b, p, data, prev=None):
     text(p, b.get("by"), "briefing.by", 2, 40)
     text(p, b.get("headline"), "briefing.headline", 10, 140)
     text(p, b.get("summary"), "briefing.summary", 40, 600)
-    # Required whenever there's an earlier published read to look back on.
-    earlier = isinstance(prev, dict) and str(prev.get("date", "")) < str(b.get("date", ""))
-    if "lookback" in b or earlier:
+    # Required unless the published read is from the same day and had none (only the very first
+    # read). Fails closed: if the published read can't be found, a lookback is required.
+    same_day_first = (isinstance(prev, dict) and prev.get("date") == b.get("date")
+                      and "lookback" not in prev)
+    if "lookback" in b or not same_day_first:
         text(p, b.get("lookback"), "briefing.lookback (what happened since last week)", 40, 600)
-    # Numbers in the summary and lookback get checked too.
-    top = b.get("facts", [])
-    if p.need(isinstance(top, list) and len(top) <= 12, "briefing.facts: needs a list of the numbers in summary/lookback"):
-        for j, f in enumerate(top):
-            check_fact(f, p, f"briefing.facts[{j}]", data)
-        for k in ("summary", "lookback"):
-            t = b.get(k)
-            if isinstance(t, str) and re.search(r"\d\s*%|\$\s*\d", t):
-                p.need(bool(top), f"briefing.{k}: has a % or $ number, so add it to the top-level facts")
+    # Numbers in the summary and lookback get checked too, each against its own list.
+    for k in ("summary", "lookback"):
+        fl = b.get(k + "_facts", [])
+        if not p.need(isinstance(fl, list) and len(fl) <= 12, f"briefing.{k}_facts: needs a list"):
+            continue
+        for j, f in enumerate(fl):
+            check_fact(f, p, f"briefing.{k}_facts[{j}]", data)
+        t = b.get(k)
+        if isinstance(t, str) and NUMBER.search(t):
+            p.need(bool(fl), f"briefing.{k}: has a %, $ or decimal number, so list it in {k}_facts")
+    if isinstance(b.get("lookback"), str):
+        p.need(not re.match(r"\s*since last week", b["lookback"], re.I),
+               "briefing.lookback: don't start with \"Since last week\"; the page adds that label")
     items = b.get("items")
     if p.need(isinstance(items, list) and 2 <= len(items) <= 5, "briefing.items: needs 2-5 items"):
         for i, it in enumerate(items):
@@ -326,13 +336,18 @@ def check_log(L, p, data, scenarios, base):
 
 
 def git_base(rel):
-    """The published version of a file (git HEAD), or None if there isn't one."""
-    try:
-        out = subprocess.run(["git", "show", f"HEAD:{rel}"], cwd=ROOT, capture_output=True, text=True,
-                             encoding="utf-8", timeout=20)
-        return json.loads(out.stdout) if out.returncode == 0 else None
-    except (OSError, ValueError, subprocess.SubprocessError):
-        return None
+    """The published version of a file: origin/main if we have it, else HEAD; None if neither.
+    origin/main first, so a rerun after committing to the weekly branch still compares with what's
+    actually live."""
+    for ref in ("origin/main", "HEAD"):
+        try:
+            out = subprocess.run(["git", "show", f"{ref}:{rel}"], cwd=ROOT, capture_output=True,
+                                 text=True, encoding="utf-8", timeout=20)
+            if out.returncode == 0:
+                return json.loads(out.stdout)
+        except (OSError, ValueError, subprocess.SubprocessError):
+            return None
+    return None
 
 
 def main():

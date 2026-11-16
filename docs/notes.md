@@ -67,7 +67,10 @@ Code review fixes merged 2026-11-15 (CPI gap interpolation, workflow push retry,
   copper, FAO food, wheat, maize, soybeans correlate -0.47 to -0.73; in dollar-up-8%+ years Brent's
   median y/y was -45% and FAO food -19%, but that's really 2008-09 and 2014-16 (2012 was one
   month); in 2022 the dollar rose 9-12% and Brent was +11% to +46%, FAO food 0 to +14% (the war).
-  So the page says "a push, not a rule". Dollar-down-8%+ months: oil and food rose in every one. Dollar now: 121.5, +0.6% y/y. Not done: importer currencies (Egypt, Nigeria, Pakistan);
+  So the page says "a push, not a rule". Dollar-down-8%+ months (17): Brent rose in all 17, FAO
+  food in 16 (2018-01 was -1%), wheat and maize fell in 4. Strong-dollar months outside 2022: Brent
+  and FAO food fell in every one; gold fell in 23 of 30 overall. Words like "every" or "always" go
+  on the page only after a script asserts them. Dollar now: 121.5, +0.6% y/y. Not done: importer currencies (Egypt, Nigeria, Pakistan);
   FRED doesn't carry them daily, needs a source.
 - **2026-11-16:** Weekly read now looks back: a required `lookback` ("Since last week", shown in a
   shaded box) on what happened to last week's points and watch items, including what we got wrong.
