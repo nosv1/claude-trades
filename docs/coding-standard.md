@@ -22,8 +22,9 @@ zero warnings.
 5. **Check data where it comes in.** Anything from outside (APIs, `site/data/*.json`, files Claude
    writes, the Worker's request bodies) is checked for shape and range at the edge, once, and the
    code after that can trust it. Bad input gives a clear message, not a half-drawn page.
-   `check_weekly.py` does this for the weekly files; `TP.getJSON` (site/common.js) does it for the
-   page's data files, and a damaged `series.json` shows the page's error box.
+   `check_weekly.py` does this for the weekly files before they publish. On the page, every JSON
+   fetch goes through `TP.getJSON` (site/common.js): a timeout, a size cap, and a shape check per
+   data file; a file that fails counts as missing, and a damaged `series.json` shows the error box.
 6. **Smallest scope.** `const` by default, `let` only when reassigned, never `var`. No new
    globals beyond `window.TP`, `window.TP_SYNC`. No name that hides an outer one.
    *(lint: `no-var`, `prefer-const`, `no-shadow`, `no-implicit-globals`)*

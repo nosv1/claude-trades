@@ -73,7 +73,7 @@
   }
 
   // "Said Likely: X of Y happened" per label, then the monthly calls line
-  function summaryRows(calls, likes) {
+  function summaryRows(calls, likes, graded, right) {
     const rows = el('div', { class: 'sb-rows' });
     for (const lv of ['likely', 'possible', 'longshot']) {
       const xs = likes.filter((x) => x.likelihood === lv);
@@ -86,8 +86,6 @@
         `, ${xs.length - decided.length} still open. ${HOPE[lv]}`);
       rows.append(row);
     }
-    const graded = calls.filter((x) => x.g.state !== 'waiting');
-    const right = graded.filter((x) => x.g.state === 'right').length;
     const first = calls.length ? 'result comes in early ' + mlabel(Math.min(...calls.map((x) => ym(x.target))) + 1) : 'call comes with the next weekly read';
     const cr = el('p', { class: 'sb-row' });
     cr.append(el('strong', {}, 'Monthly higher/lower calls: '), graded.length
@@ -112,7 +110,9 @@
     const box = $('scoreboard');
     box.replaceChildren(el('h3', { class: 'card-title' }, 'Claude\'s track record'));
     box.append(el('p', { class: 'mini-note' }, 'Every call and "Likely / Possible" rating is logged with a date and graded by the data later. Old entries can\'t be edited, so misses stay visible.'));
-    box.append(summaryRows(calls, likes));
+    const graded = calls.filter((x) => x.g.state !== 'waiting');
+    const right = graded.filter((x) => x.g.state === 'right').length;
+    box.append(summaryRows(calls, likes, graded, right));
 
     // every entry
     const all = el('details', { class: 'tbl' });
@@ -124,8 +124,6 @@
     box.hidden = false;
 
     // a one-line version next to the reader's own calls
-    const graded = calls.filter((x) => x.g.state !== 'waiting');
-    const right = graded.filter((x) => x.g.state === 'right').length;
     const mini = $('claude-record');
     if (mini) mini.textContent = graded.length ? `Claude's monthly calls so far: ${right} of ${graded.length} right.` : '';
   }
