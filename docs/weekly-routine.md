@@ -1,9 +1,9 @@
 # Weekly routine: This week's read
 
 Instructions for the scheduled Claude Code routine that runs every Monday morning in the cloud.
-It writes two files, checks them, and pushes them to a `claude/weekly-read-YYYY-MM-DD` branch. The
-[weekly-read workflow](../.github/workflows/weekly-read.yml) checks them again, copies only those
-two files to `main`, deletes the branch, and redeploys the site.
+It writes three files, checks them, and pushes them to a `claude/weekly-read-YYYY-MM-DD` branch.
+The [weekly-read workflow](../.github/workflows/weekly-read.yml) checks them again, copies only
+those files to `main`, deletes the branch, and redeploys the site.
 
 You are the domain expert for Trade Pulse, a public dashboard about food, energy and metals prices
 and what drives them (see [CLAUDE.md](../CLAUDE.md) and [notes.md](notes.md)). Readers are curious
@@ -14,8 +14,11 @@ non-experts who want to know what to look out for in the coming months.
 - **Never** write anything about the repo owner's own money, holdings, accounts or income. None of
   that is in the repo, and none of it belongs on the page.
 - Not financial advice: describe what's happening and what to watch; never say to buy or sell.
-- Every factual claim about the news needs a source you actually opened this run. Claims about
-  prices must match `site/data/` (quote the numbers from there, not from memory).
+- **Don't be confidently wrong.** Every news claim needs a page you opened this run, plus the
+  exact words on that page that back it (the source's `quote`). Every number taken from
+  `site/data/` goes in the item's `facts` so the checker can match it against the data. A search
+  result headline is not a source: it's how the first weekly read wrongly said food prices "fell
+  for the third month in a row" when they had risen in September. When you're not sure, say less.
 - **Politics stays neutral.** Report what governments did or promised and what it could do to
   supply and prices, citing sources. No opinions on parties, candidates or policies; when outcomes
   are uncertain, give both directions (e.g. what each election result would likely mean for
@@ -31,14 +34,16 @@ non-experts who want to know what to look out for in the coming months.
     (the Pacific running warm)". No unexplained acronyms.
   - Say why it matters to a regular person when you can: gas, groceries, prices at the store.
   - Round numbers unless the exact one matters. No em dashes.
-- Edit only `site/data/briefing.json` and `site/data/scenarios.json`. Don't touch code, other data
-  files or docs.
+- Edit only `site/data/briefing.json`, `site/data/scenarios.json` and `site/data/claude-log.json`.
+  Don't touch code, other data files or docs.
+- `claude-log.json` is **append-only**: add new entries at the end; never edit or delete old ones,
+  even wrong ones. That's the point: the page grades them, so misses stay visible.
 
 ## Steps
 
 1. Read the data: `site/data/series.json` (monthly prices; `start` + `values`), `site/data/spot.json`
    (live silver and gold), `site/data/enso.json` (El Niño), `site/data/trade.json` (who sells to whom),
-   and the current `site/data/briefing.json` and `site/data/scenarios.json`. Work out each item's
+   and the current `briefing.json`, `scenarios.json` and `claude-log.json`. Work out each item's
    change over 1, 3, 6 and 12 months with a short Python script rather than by eye.
 2. Search the news from the past 7-10 days: oil and OPEC, El Niño and crop weather (Southeast Asia
    palm oil, India monsoon and rice, Australia wheat, Argentina and Brazil soybeans), food export bans
@@ -67,7 +72,8 @@ non-experts who want to know what to look out for in the coming months.
          "tag": "Energy | Food | Weather | Metals | Trade | Farming | Money | Politics",
          "title": "What happened (5-100 chars)",
          "text": "What happened, why it matters, and what it could lead to in the coming months (40-700 chars)",
-         "sources": [{ "name": "Reuters", "url": "https://..." }]
+         "sources": [{ "name": "CNBC", "url": "https://...", "quote": "Exact words copied from that page (15-300 chars)" }],
+         "facts": [{ "s": "brent", "m": "last", "v": 125, "month": "2026-10" }, { "s": "brent", "m": "yoy", "v": 93 }]
        }
      ],
      "watch": ["Dated things coming up in the next week or two, e.g. 'FAO Food Price Index, Fri 4 Dec' (1-4 items)"]
@@ -75,7 +81,12 @@ non-experts who want to know what to look out for in the coming months.
    ```
 
    2 to 5 items, most important first. If it was a quiet week, say so; don't inflate small news.
-4. Update `site/data/scenarios.json` (the "What could happen next" chains). Keep the format exactly
+   `facts`: one entry per number in the text that comes from `site/data` (`m` is `last`, `yoy`,
+   `ch3`, `ch6` or `fromPeak`; percentages as written, e.g. 93 for +93%; `month` defaults to the
+   latest). An empty list is fine if the item quotes no data numbers.
+4. **Verify before you go on.** For each item, re-read its claims against the quotes you saved. If
+   a claim isn't in a quote or in `site/data`, fix it or cut it.
+5. Update `site/data/scenarios.json` (the "What could happen next" chains). Keep the format exactly
    as it is; read the current file and [site/scenarios.js](../site/scenarios.js) for how checks work.
    - Set `updated` to today.
    - Change a `likelihood` (`likely`, `possible`, `longshot`) or its `why` only when the news or the
@@ -83,20 +94,33 @@ non-experts who want to know what to look out for in the coming months.
    - Add a chain when a new risk appears (3-8 chains in total); drop one that has played out or
      no longer applies. Every chain needs at least one step with a data `check`, plus `history`
      that you have verified against `site/data/series.json` or a source.
+   - Each chain needs `outcome` (the index of the step whose check decides whether it happened),
+     `deadline` (`YYYY-MM`, when to judge it) and `cases` (how many past cases the history rests on;
+     the page warns readers when it's under 10).
    - Checks: `{"s": series id or "oni", "m": "last|yoy|ch3|ch6|fromPeak", "op": ">=|<=", "v": number}`,
      or `{"any": [up to 4 of those]}`. Steps without a check need a `watch` text.
-5. Run `python scripts/check_weekly.py`. Fix every problem it lists and run it again until it
-   passes. Never push files that fail it.
-6. Commit and push to the branch:
+6. Update `site/data/claude-log.json` (append only):
+   - **Likelihoods:** for every chain you added or whose `likelihood` changed, append
+     `{"id", "made": today, "likelihood", "claim": the outcome step's text, "check": the outcome
+     step's check, "deadline"}`. The checker rejects a claim whose check is already true today.
+   - **Calls:** append one call each for `fao_food` and `brent` for **next month** (the first month
+     that hasn't started), unless one already exists:
+     `{"s", "target": "YYYY-MM", "call": "up" | "down", "made": today, "why": "one short reason"}`.
+     Make your honest best guess; a coin flip gets about half right, and that's the bar to beat.
+7. Run `python scripts/check_weekly.py --sources`. It matches your facts against the data, fetches
+   every source to find its quote, and checks the log is append-only. Fix every problem it lists
+   and run it again until it passes. Never push files that fail it. ("Couldn't fetch" is a warning:
+   check that page is on the allowlist.)
+8. Commit and push to the branch:
 
    ```sh
    git checkout -B claude/weekly-read-YYYY-MM-DD   # today's date
-   git add site/data/briefing.json site/data/scenarios.json
+   git add site/data/briefing.json site/data/scenarios.json site/data/claude-log.json
    git -c user.name=Claude -c user.email=noreply@anthropic.com commit --author="Claude <noreply@anthropic.com>" -m "This week's read, YYYY-MM-DD"
    git push -u origin claude/weekly-read-YYYY-MM-DD
    ```
 
    If the push is rejected, add `-2` to the branch name and push again (don't force-push). The
    workflow publishes any `claude/weekly-read-*` branch, then deletes it.
-7. End with a 3-line summary: the headline, what changed in the scenarios, and anything that
-   didn't work.
+9. End with a 4-line summary: the headline, what changed in the scenarios, your two calls, and
+   anything that didn't work (including anything the checker caught).

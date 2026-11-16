@@ -84,8 +84,10 @@ export default {
       }
       if (path === '/progress' && req.method === 'PUT') {
         const text = await req.text();
-        if (text.length > MAX_BYTES) return json({ error: 'too big' }, 413);
-        const p = clean(JSON.parse(text));
+        if (new TextEncoder().encode(text).length > MAX_BYTES) return json({ error: 'too big' }, 413);
+        let parsed;
+        try { parsed = JSON.parse(text); } catch { return json({ error: 'bad data' }, 400); }
+        const p = clean(parsed);
         if (!p) return json({ error: 'bad data' }, 400);
         return (await stub.putProgress(auth.sid, p)) ? json({ ok: true }) : json({ error: 'not signed in' }, 401);
       }
@@ -142,8 +144,8 @@ const num = (x) => (typeof x === 'number' && Number.isFinite(x) ? x : 0);
 
 // ---- Google ID token check (RS256 JWT signed with Google's published keys) ----
 let jwks = null, jwksAt = 0;
-async function googleKeys() {
-  if (jwks && Date.now() - jwksAt < 3600e3) return jwks;
+async function googleKeys(force = false) {
+  if (!force && jwks && Date.now() - jwksAt < 3600e3) return jwks;
   const r = await fetch('https://www.googleapis.com/oauth2/v3/certs');
   if (!r.ok) throw new Error('jwks');
   jwks = (await r.json()).keys;
@@ -162,7 +164,9 @@ async function verifyGoogle(token, clientId) {
     payload = JSON.parse(new TextDecoder().decode(b64url(parts[1])));
   } catch { return null; }
   if (header.alg !== 'RS256') return null;
-  const jwk = (await googleKeys()).find((k) => k.kid === header.kid);
+  // Google rotates keys: on an unknown key ID, refetch once before giving up
+  let jwk = (await googleKeys()).find((k) => k.kid === header.kid);
+  if (!jwk) jwk = (await googleKeys(true)).find((k) => k.kid === header.kid);
   if (!jwk) return null;
   const key = await crypto.subtle.importKey('jwk', jwk, { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' }, false, ['verify']);
   const ok = await crypto.subtle.verify('RSASSA-PKCS1-v1_5', key, b64url(parts[2]), new TextEncoder().encode(parts[0] + '.' + parts[1]));

@@ -2,7 +2,7 @@
   "date": "2026-11-16",
   "by": "Claude",
   "headline": "Oil prices fell fast in early November as the US-Iran war seemed to cool, but ships near Iran still aren't safe.",
-  "summary": "Oil averaged $125 a barrel in October, the highest since 2008. Then it dropped in November after the US signaled no new strikes on Iran. Gold and silver slid because traders expect US interest rates to go up. In food, sugar keeps rising because of El Niño, while grain prices eased.",
+  "summary": "Oil averaged $125 a barrel in October, the highest since 2008. Then it dropped in November after the US signaled no new strikes on Iran. Gold and silver slid because traders expect US interest rates to go up. In food, sugar keeps rising because of El Niño and weather, while grain prices eased.",
   "items": [
     {
       "tag": "Energy",
@@ -11,37 +11,90 @@
       "sources": [
         {
           "name": "CNBC",
-          "url": "https://www.cnbc.com/2026/11/12/oil-prices-jump-after-trump-says-no-iran-deal-needed-weve-got-their-strait.html"
+          "url": "https://www.cnbc.com/2026/11/12/oil-prices-jump-after-trump-says-no-iran-deal-needed-weve-got-their-strait.html",
+          "quote": "WTI is down 16% in November, and Brent has lost 20%."
         },
         {
           "name": "CNBC",
-          "url": "https://www.cnbc.com/2026/11/13/oil-prices-set-for-second-weekly-decline-as-trump-to-stay-with-iran-blockade.html"
+          "url": "https://www.cnbc.com/2026/11/13/oil-prices-set-for-second-weekly-decline-as-trump-to-stay-with-iran-blockade.html",
+          "quote": "an International Energy Agency report pointing to a rise in the global oil surplus"
+        }
+      ],
+      "facts": [
+        {
+          "s": "brent",
+          "m": "last",
+          "v": 125,
+          "month": "2026-10"
+        },
+        {
+          "s": "brent",
+          "m": "yoy",
+          "v": 93,
+          "month": "2026-10"
         }
       ]
     },
     {
       "tag": "Metals",
       "title": "Gold and silver slide as US interest rates look set to rise",
-      "text": "On 16 November, gold was $3,876 an ounce and silver $47.42. Both are far below their highs this year: gold averaged $5,020 in February, and silver $92.10 in January. US prices rose faster than expected, and officials at the Fed (the US central bank) talked tough. Traders now see an 85% chance the Fed raises interest rates in December, CNBC reported. Higher rates make gold and silver less attractive, because they don't pay interest.",
+      "text": "On 16 November, gold was about $3,870 an ounce and silver about $47. Both are far below their highs this year: gold averaged $5,020 in February, and silver $92.10 in January. US prices rose faster than expected, and officials at the Fed (the US central bank) talked tough. Traders now see an 85% chance the Fed raises interest rates in December, CNBC reported. Higher rates make gold and silver less attractive, because they don't pay interest.",
       "sources": [
         {
           "name": "CNBC",
-          "url": "https://www.cnbc.com/2026/11/12/gold-falls-to-over-one-week-low-on-firm-dollar-fed-rate-hike-bets.html"
+          "url": "https://www.cnbc.com/2026/11/12/gold-falls-to-over-one-week-low-on-firm-dollar-fed-rate-hike-bets.html",
+          "quote": "Markets see an 85% chance of a 25-basis-point rate hike in December"
+        }
+      ],
+      "facts": [
+        {
+          "s": "gold",
+          "m": "last",
+          "v": 5020,
+          "month": "2026-02"
+        },
+        {
+          "s": "silver",
+          "m": "last",
+          "v": 92.1,
+          "month": "2026-01"
         }
       ]
     },
     {
       "tag": "Food",
-      "title": "World food prices dip again, but sugar keeps rising",
-      "text": "World food prices fell for the third month in a row in October, says the UN's food agency (FAO). They're still 6% higher than a year ago. Sugar went the other way: up 6.6% in a month and 28% in three months. El Niño is the main worry. NOAA, the US weather agency, says there's about a 60% chance it becomes one of the strongest on record this winter. Dry weather in Asia hurts sugar first. Palm oil usually feels it 6 to 12 months later.",
+      "title": "World food prices dip, but sugar keeps rising",
+      "text": "The FAO Food Price Index dipped in October, after rising through the summer. It's still 6% higher than a year ago. Sugar went the other way: up 6.6% in a month and 28% in three months. El Niño is the main worry. NOAA, the US weather agency, says there's about a 60% chance it becomes the strongest since records began in 1950. Dry weather in Asia hurts sugar first. Palm oil usually feels it 6 to 12 months later.",
       "sources": [
         {
           "name": "FAO",
-          "url": "https://www.fao.org/worldfoodsituation/foodpricesindex/en/"
+          "url": "https://www.fao.org/worldfoodsituation/foodpricesindex/en/",
+          "quote": "The FAO Sugar Price Index averaged 121.3 points in October, up 7.5 points (6.6 percent) from September"
         },
         {
           "name": "NOAA",
-          "url": "https://www.cpc.ncep.noaa.gov/products/analysis_monitoring/enso_advisory/ensodisc.shtml"
+          "url": "https://www.cpc.ncep.noaa.gov/products/analysis_monitoring/enso_advisory/ensodisc.shtml",
+          "quote": "are now ~60% for the October-December and November-January periods"
+        }
+      ],
+      "facts": [
+        {
+          "s": "fao_food",
+          "m": "last",
+          "v": 133.9,
+          "month": "2026-10"
+        },
+        {
+          "s": "fao_food",
+          "m": "yoy",
+          "v": 6,
+          "month": "2026-10"
+        },
+        {
+          "s": "fao_sugar",
+          "m": "ch3",
+          "v": 28,
+          "month": "2026-10"
         }
       ]
     },
@@ -52,7 +105,22 @@
       "sources": [
         {
           "name": "DTN",
-          "url": "https://www.dtnpf.com/agriculture/web/AG/news/article/2026/11/10/usda-releases-november-crop-wasde"
+          "url": "https://www.dtnpf.com/agriculture/web/AG/news/article/2026/11/10/usda-releases-november-crop-wasde",
+          "quote": "Wheat world ending stocks were estimated at 280.82 million metric tons, up from 276.04 mmt in October."
+        }
+      ],
+      "facts": [
+        {
+          "s": "wheat",
+          "m": "last",
+          "v": 317,
+          "month": "2026-10"
+        },
+        {
+          "s": "wheat",
+          "m": "yoy",
+          "v": 37,
+          "month": "2026-10"
         }
       ]
     }

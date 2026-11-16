@@ -55,6 +55,7 @@
       <p class="section-lede" id="scn-summary"></p>
       <div class="scenarios" id="scenarios"></div>
       <p class="filter-note" id="scn-byline"></p>
+      <div class="card scoreboard" id="scoreboard" hidden></div>
     </section>
 
     <section class="trendvalue" id="trendvalue" aria-labelledby="tv-title" hidden>
@@ -162,10 +163,11 @@
         <article class="card">
           <h3 class="card-title">Make a call</h3>
           <p class="mini-note" id="calls-record"></p>
+          <p class="mini-note" id="claude-record"></p>
           <div class="qlist" id="calls"></div>
         </article>
       </div>
-      <p class="filter-note">Your answers and calls are saved in this browser. If you sign in, a copy is also saved to your account so it works on your other devices.</p>
+      <p class="filter-note" id="check-note">Your answers and calls are saved in this browser.</p>
     </section>
   </main>
 
@@ -181,6 +183,8 @@
   <script src="trade.js"></script>
   <script src="outlook.js"></script>
   <script src="scenarios.js"></script>
+  <script src="common.js"></script>
+  <script src="scoreboard.js"></script>
   <script src="quiz.js"></script>
   <script src="sync-config.js"></script>
   <script src="sync.js"></script>
