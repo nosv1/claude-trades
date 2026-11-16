@@ -25,10 +25,9 @@ next (+ Claude's track record), Trend and value, Silver, Charts, Who feeds whom,
 via the weekly-read workflow); sync worker auto-deploys on changes under `worker/`.
 
 **Next session, first:**
-1. **Google sign-in:** he still needs to create the Google OAuth client (Web, origin
-   `https://nosv1.github.io`) and send the client ID. Then set it in `worker/wrangler.toml`
-   (`GOOGLE_CLIENT_ID`) and `site/sync-config.js` (`googleClientId`); `api` is already set to
-   `https://trade-pulse-sync.nosv1.workers.dev`. Test a real sign-in on the live site.
+1. **Google sign-in is on** (client ID added 2026-11-16, button live). Not yet confirmed: a real
+   sign-in on his phone, cross-device sync, and the dark-mode fix for a white box behind the
+   Google button on iPhone (`color-scheme: light` on `.gbtn iframe`; couldn't reproduce in Edge).
 2. **Check Monday's routine run** (2026-11-23 is the first with the new rules: facts, quotes,
    `--sources`, claude-log calls). `RemoteTrigger list_runs`/`get_run_log`, then read what it
    published and whether the checker caught anything.
