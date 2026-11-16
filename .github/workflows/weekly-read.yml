@@ -31,7 +31,8 @@ jobs:
       - name: Take the Claude-written files from the branch
         run: git checkout "origin/$GITHUB_REF_NAME" -- site/data/briefing.json site/data/scenarios.json site/data/claude-log.json
 
-      # Compares claude-log.json with the published one (git HEAD) so old entries can't change.
+      # Compares with the published files (origin/main, else HEAD): old log entries can't change,
+      # and a lookback is required once there's an earlier read.
       - name: Check them
         run: python scripts/check_weekly.py
 

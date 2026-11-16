@@ -8,7 +8,9 @@ Run by the weekly routine (with --sources) before it pushes, and by the GitHub A
 news sites block some cloud runners) before it publishes. Exits 1 with a list of problems.
 
 What it checks, beyond shape:
-- Every number in a briefing item's "facts" matches site/data (so quoted prices are real).
+- Every number in a briefing item's "facts" matches site/data (so quoted prices are real), and the
+  summary and lookback need one entry in summary_facts / lookback_facts per number they quote.
+- A lookback (what happened since last week) is required unless this is the very first read.
 - With --sources, every source's "quote" appears on the page it links to (so news claims are
   backed by something that page actually says).
 - claude-log.json only grows: old entries can't be edited or removed, so misses stay visible.
@@ -116,7 +118,8 @@ class Data:
 
 # ---- briefing.json ----
 # A number that probably came from the data: a percent, a dollar amount or a decimal.
-NUMBER = re.compile(r"\d\s*%|\$\s*\d|\d\.\d")
+NUMBER = re.compile(r"\$\s*\d[\d,]*(?:\.\d+)?|\d[\d,]*(?:\.\d+)?\s*(?:%|percent\b|per cent\b|dollars?\b|points?\b)"
+                    r"|\d+\.\d+", re.I)
 
 
 def check_briefing(b, p, data, prev=None):
@@ -140,10 +143,12 @@ def check_briefing(b, p, data, prev=None):
         for j, f in enumerate(fl):
             check_fact(f, p, f"briefing.{k}_facts[{j}]", data)
         t = b.get(k)
-        if isinstance(t, str) and NUMBER.search(t):
-            p.need(bool(fl), f"briefing.{k}: has a %, $ or decimal number, so list it in {k}_facts")
+        nums = sorted({re.sub(r"\s+", " ", n.lower()) for n in NUMBER.findall(t)}) if isinstance(t, str) else []
+        p.need(len(fl) >= len(nums),
+               f"briefing.{k}: quotes {len(nums)} number(s) ({', '.join(nums)}) but {k}_facts has {len(fl)}; "
+               "add one per number, or write news numbers in words")
     if isinstance(b.get("lookback"), str):
-        p.need(not re.match(r"\s*since last week", b["lookback"], re.I),
+        p.need(not re.match(r"\s*since last week\b", b["lookback"], re.I),
                "briefing.lookback: don't start with \"Since last week\"; the page adds that label")
     items = b.get("items")
     if p.need(isinstance(items, list) and 2 <= len(items) <= 5, "briefing.items: needs 2-5 items"):
@@ -291,8 +296,9 @@ def check_log(L, p, data, scenarios, base):
     calls, likes = L.get("calls"), L.get("likelihoods")
     if not p.need(isinstance(calls, list) and isinstance(likes, list), "claude-log: needs calls and likelihoods lists"):
         return
-    # append-only against the version already published
-    if isinstance(base, dict):
+    # append-only against the version already published; fail closed if we can't find it
+    if p.need(isinstance(base, dict), "claude-log: can't read the published claude-log.json "
+              "(needs git with origin/main or HEAD), so can't check that old entries are unchanged"):
         for k in ("calls", "likelihoods"):
             old = base.get(k) or []
             p.need(len(L[k]) >= len(old) and L[k][:len(old)] == old,
@@ -346,7 +352,7 @@ def git_base(rel):
             if out.returncode == 0:
                 return json.loads(out.stdout)
         except (OSError, ValueError, subprocess.SubprocessError):
-            return None
+            continue
     return None
 
 

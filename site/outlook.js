@@ -158,12 +158,24 @@
     if (usdP.length > 24) {
       const dollar = stats(usdP);
       const up = dollar.yoy >= 8, down = dollar.yoy <= -8;
+      // Count earlier months like this one from the data, so the text stays true as months are added
+      const yoyOf = (id) => {
+        const at = new Map(pts(D, id).map((q) => [q.m, q.v]));
+        return (m) => (at.has(m) && at.has(m - 12) ? at.get(m) / at.get(m - 12) - 1 : null);
+      };
+      const dY = yoyOf('usd'), oY = yoyOf('brent'), fY = yoyOf('fao_food');
+      const like = usdP.map((q) => q.m).filter((m) => m < dollar.last.m && dY(m) != null
+        && (up ? dY(m) >= 0.08 : dY(m) <= -0.08) && oY(m) != null && fY(m) != null);
+      const went = (y) => like.filter((m) => (up ? y(m) < 0 : y(m) > 0)).length;
+      const tally = like.length
+        ? ` In the ${like.length} earlier months since 2006 when the dollar moved this much, oil ${up ? 'fell' : 'rose'} in ${went(oY)} and world food prices in ${went(fY)}.`
+        : '';
       add({
         level: up || down ? 'watch' : null, short: 'the dollar', tag: 'Money', series: dollar, card: 'usd',
         title: `The US dollar is ${up ? 'up' : 'down'} ${Math.abs(Math.round(dollar.yoy))}% in a year`,
         body: up
-          ? 'Oil and grain are priced in dollars. A stronger dollar makes them cost more for everyone else, which usually pushes their dollar prices down. It\'s a push, not a rule: in 2022 a war pushed oil and food up anyway. Gold often holds up too, because people buy it when they\'re worried.'
-          : 'A weaker dollar makes dollar-priced food, fuel and metals cheaper for the rest of the world, which pushes their dollar prices up. Since 2006, oil rose every time the dollar fell this much, and food almost every time.',
+          ? 'Oil and grain are priced in dollars. A stronger dollar makes them cost more for everyone else, which usually pushes their dollar prices down.' + tally + ' It\'s a push, not a rule: in 2022 a war pushed oil and food up anyway.'
+          : 'A weaker dollar makes dollar-priced food, fuel and metals cheaper for the rest of the world, which usually pushes their dollar prices up.' + tally,
         watch: up
           ? 'Food import bills in countries with weak currencies, like Egypt, Nigeria and Pakistan. A falling local currency is often how world prices turn into local food crises.'
           : 'Whether gold, oil and grain keep climbing.',

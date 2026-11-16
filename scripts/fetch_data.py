@@ -208,6 +208,8 @@ def fetch_dollar() -> tuple[dict, dict]:
         return d.isoformat()
 
     pts = {m: round(sum(v) / len(v), 2) for m, v in days.items() if last_row >= last_weekday(m)}
+    if not pts:
+        raise RuntimeError("no finished month in the dollar index")
     return (
         {"usd": {"name": "US dollar index", "unit": "against a broad basket of 26 currencies, Jan 2006 = 100",
                  "source": "fred_usd", **to_series(pts)}},
