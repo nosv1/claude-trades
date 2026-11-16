@@ -25,27 +25,27 @@
   // ---- card definitions ----
   const CARDS = {
     metals: [
-      { id: 'silver', kind: 'usd', live: 'silver' },
-      { id: 'gold', kind: 'usd', live: 'gold',
-        blurb: 'The classic safe haven: it tends to rise when people are worried about money or war.' },
+      { id: 'silver', kind: 'usd', live: 'silver', unit: '$ per ounce' },
+      { id: 'gold', kind: 'usd', live: 'gold', unit: '$ per ounce',
+        blurb: 'What people buy when they\'re scared: it tends to rise when people worry about money or war.' },
       { id: 'ratio', kind: 'ratio', live: 'ratio', name: 'Gold/silver ratio', unit: 'oz of silver per oz of gold',
         blurb: 'How many ounces of silver one ounce of gold buys. Higher means silver is cheaper next to gold.' },
       { id: 'copper', kind: 'usd' },
     ],
     food: [
-      { id: 'fao_food', kind: 'index' },
-      { id: 'wheat', kind: 'usd', name: 'Wheat (US hard red winter)',
-        blurb: 'Russia is the biggest exporter, followed by the EU, Canada, Australia and the US.' },
-      { id: 'maize', kind: 'usd',
-        blurb: 'The US, Brazil, Argentina and Ukraine ship most of it. Most maize feeds animals.' },
-      { id: 'rice', kind: 'usd', name: 'Rice (Thai 5% broken)',
-        blurb: 'Only about a tenth of the world\'s rice is traded, so export bans (India, 2023) move the price fast.' },
+      { id: 'fao_food', kind: 'index', name: 'World food price index', unit: '100 = the 2014-2016 average' },
+      { id: 'wheat', kind: 'usd', name: 'Wheat',
+        blurb: 'Russia sells the most, then the EU, Canada, Australia and the US.' },
+      { id: 'maize', kind: 'usd', name: 'Corn (maize)',
+        blurb: 'The US, Brazil, Argentina and Ukraine sell most of it. Most corn feeds farm animals.' },
+      { id: 'rice', kind: 'usd', name: 'Rice (from Thailand)',
+        blurb: 'Only about a tenth of the world\'s rice is sold abroad. So when a big seller like India stops selling (2023), the price jumps fast.' },
       { id: 'soybeans', kind: 'usd',
         blurb: 'Brazil and the US grow most of it, and China buys most of it, mainly to feed pigs.' },
     ],
     drivers: [
-      { id: 'brent', kind: 'usd', blurb: 'The global benchmark for oil prices.' },
-      { id: 'urea', kind: 'usd', blurb: 'The most widely used nitrogen fertilizer, made from natural gas.' },
+      { id: 'brent', kind: 'usd', name: 'Oil', unit: '$ per barrel ("Brent", the main world price)', blurb: 'A barrel is 42 gallons. Gas, diesel and jet fuel are made from it.' },
+      { id: 'urea', kind: 'usd', name: 'Fertilizer (urea)', blurb: 'The most common fertilizer. It\'s made from natural gas.' },
     ],
     parts: ['fao_cereals', 'fao_oils', 'fao_dairy', 'fao_meat', 'fao_sugar'],
   };
@@ -359,7 +359,7 @@
       const all = pointsFor({ id, kind: 'index' }, state.real);
       const pts = all.slice(-13);
       const last = pts[pts.length - 1], ago = yearAgo(all);
-      tile.replaceChildren(el('div', { class: 'name' }, s.name), el('div', { class: 'val' }, fmt(last.v, 'index')));
+      tile.replaceChildren(el('div', { class: 'name' }, { fao_cereals: 'Grains', fao_oils: 'Cooking oils' }[id] || s.name), el('div', { class: 'val' }, fmt(last.v, 'index')));
       tile.append(el('div', { class: 'delta' }, ago ? `${fmtDelta(last.v, ago.v)} vs a year ago` : last.label));
       const W = 140, H = 32, vs = pts.map((p) => p.v), lo = Math.min(...vs), hi = Math.max(...vs) || 1;
       const sx = (i) => 4 + i / (pts.length - 1) * (W - 8);
@@ -396,26 +396,26 @@
     const items = [];
     const fromPeak = pct(price, peak.v);
     items.push(fromPeak >= 0
-      ? `Record territory: above its highest monthly average ever, ${fmt(peak.v, 'usd')} (${peak.label}).`
+      ? `This is a record: higher than any month ever (the old record was ${fmt(peak.v, 'usd')}, ${peak.label}).`
       : fromPeak < -5
-        ? `Down ${Math.round(-fromPeak)}% from its record monthly average of ${fmt(peak.v, 'usd')} (${peak.label}).`
-        : `Within ${Math.max(1, Math.round(-fromPeak))}% of its record monthly average of ${fmt(peak.v, 'usd')} (${peak.label}).`);
+        ? `${Math.round(-fromPeak)}% below its record month, ${fmt(peak.v, 'usd')} in ${peak.label}.`
+        : `Within ${Math.max(1, Math.round(-fromPeak))}% of its record month, ${fmt(peak.v, 'usd')} in ${peak.label}.`);
     const since = nominal[0].label.split(' ')[1];
     const share = Math.round(shareBelow(nominal, price) * 100);
     items.push(share >= 50
-      ? `Still higher than ${share}% of all months since ${since}, before adjusting for inflation.`
-      : `Lower than ${100 - share}% of all months since ${since}, before adjusting for inflation.`);
+      ? `Higher than ${share}% of all months since ${since} (not counting inflation).`
+      : `Lower than ${100 - share}% of all months since ${since} (not counting inflation).`);
     if (rpeak.m !== peak.m) {
       const fromReal = pct(price, rpeak.v);
       items.push(fromReal >= 0
-        ? `Even adjusted for inflation this beats the old record, ${fmt(rpeak.v, 'usd')} in today's dollars (${rpeak.label}).`
-        : `In today's dollars the record is ${rpeak.label}, at ${fmt(rpeak.v, 'usd')}. Today's price is ${Math.max(1, Math.round(-fromReal))}% below that.`);
+        ? `Even counting inflation, this beats the old record of ${fmt(rpeak.v, 'usd')} in today's dollars (${rpeak.label}).`
+        : `Counting inflation, the record was ${rpeak.label}, at ${fmt(rpeak.v, 'usd')} in today's dollars. Today's price is ${Math.max(1, Math.round(-fromReal))}% below that.`);
     }
     const ratioNow = live.gold / live.silver;
     const med = median(ratioMonthly().map((p) => p.v));
     const verdict = ratioNow > med * 1.1 ? 'silver is cheap compared with gold'
       : ratioNow < med * 0.9 ? 'silver is expensive compared with gold' : 'silver is about normally priced against gold';
-    items.push(`One ounce of gold buys ${nf(0).format(ratioNow)} ounces of silver. The median since ${since} is ${nf(0).format(med)}, so ${verdict}.`);
+    items.push(`One ounce of gold buys ${nf(0).format(ratioNow)} ounces of silver. Usually (since ${since}) it buys about ${nf(0).format(med)}, so ${verdict}.`);
     const ul = document.getElementById('verdict');
     ul.replaceChildren(...items.map((t) => el('li', {}, t)));
 

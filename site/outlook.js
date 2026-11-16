@@ -9,7 +9,7 @@
   const LEVELS = {
     alert: { label: 'Alert', icon: '▲', rank: 0 },
     watch: { label: 'Watch', icon: '●', rank: 1 },
-    point: { label: 'Pressure point', icon: '◆', rank: 2 },
+    point: { label: 'Weak spot', icon: '◆', rank: 2 },
     easing: { label: 'Easing', icon: '▼', rank: 3 },
   };
   const THE = new Set(['United States', 'United Kingdom', 'UAE', 'Netherlands', 'Philippines']);
@@ -73,10 +73,10 @@
           ? `Oil down ${Math.round(-oil.yoy)}% in a year, to ${usd(oil.last.v)} a barrel`
           : `Oil at ${usd(oil.last.v)} a barrel, up ${Math.round(oil.yoy)}% in a year${oil.rank10 >= 0.99 ? ', the highest in 10 years' : ''}`,
         body: level === 'easing'
-          ? 'Cheaper energy takes pressure off transport, fertilizer and food costs over the next few months.'
-          : 'Energy is the hidden ingredient in food: diesel for tractors and trucks, fuel for cargo ships, and natural gas for fertilizer. Big oil moves usually reach gas and grocery prices within a few months.',
-        watch: level === 'easing' ? 'Whether the drop holds; gas prices should follow.'
-          : `Whether oil stays ${oil.last.v >= 100 ? 'above $100' : 'this high'} through the winter. If it does, expect transport and food costs to keep rising into next year.`,
+          ? 'Cheaper energy makes shipping, fertilizer and food cheaper over the next few months.'
+          : 'Energy is a hidden ingredient in food. Tractors and trucks run on diesel, ships burn fuel, and fertilizer is made from natural gas. Big changes in oil usually show up at the gas pump and the grocery store within a few months.',
+        watch: level === 'easing' ? 'Whether the drop lasts. Gas prices should follow it down.'
+          : `Whether oil stays ${oil.last.v >= 100 ? 'above $100' : 'this high'} through the winter. If it does, shipping and food will likely keep getting pricier into next year.`,
       });
     }
 
@@ -93,11 +93,11 @@
       add({
         level: nino || nina ? level : null, short: 'El Niño / La Niña', tag: 'Weather',
         title: `A ${strength} ${phase} is under way`,
-        body: `The tropical Pacific is ${a.toFixed(1)}°C ${nino ? 'warmer' : 'cooler'} than normal (${SEASON[season] || season} ${year}).`
-          + (E.synopsis ? ` NOAA${E.issued ? ', ' + E.issued : ''}: “${E.synopsis}”` : ''),
+        body: `${phase} means the Pacific Ocean near the equator is ${nino ? 'warmer' : 'cooler'} than normal, which shifts where rain falls around the world. Right now it's ${a.toFixed(1)}°C ${nino ? 'warmer' : 'cooler'} (${SEASON[season] || season} ${year}).`
+          + ` (Source: NOAA, the US weather agency${E.issued ? ', ' + E.issued : ''}.)`,
         watch: nino
-          ? 'El Niño tends to bring drought to Australia (wheat), India and Thailand (rice, sugar), Indonesia and Malaysia (palm oil) and southern Africa (maize), and more rain to Argentina and the southern US. Harvest damage shows up in prices over the next 6 to 12 months.'
-          : 'La Niña tends to bring drought to Argentina, the southern US (soybeans, maize, wheat) and East Africa, and more rain to Australia and Southeast Asia. Watch soybean and maize prices over the next 6 to 12 months.',
+          ? 'El Niño usually brings dry weather to Australia (wheat), India and Thailand (rice and sugar), Indonesia and Malaysia (palm oil) and southern Africa (corn). Damaged harvests show up in prices 6 to 12 months later.'
+          : 'La Niña usually brings dry weather to Argentina, the southern US (soybeans, corn, wheat) and East Africa. Watch soybean and corn prices over the next 6 to 12 months.',
         link: E.url,
       });
     }
@@ -111,13 +111,13 @@
       const level = food.yoy >= 15 || food.rank10 >= 0.95 || maxGrain >= 40 ? 'alert'
         : food.yoy >= 5 || food.ch3 >= 3 || maxGrain >= 20 ? 'watch'
           : food.yoy <= -5 ? 'easing' : null;
-      const movers = grains.filter((g) => Math.abs(g.s.yoy) >= 10).map((g) => `${g.id} ${signed(g.s.yoy)}`);
+      const movers = grains.filter((g) => Math.abs(g.s.yoy) >= 10).map((g) => `${g.id === 'maize' ? 'corn' : g.id} ${signed(g.s.yoy)}`);
       add({
         level, short: 'world food prices', tag: 'Food', series: food, card: 'fao_food',
         title: `World food prices ${food.yoy >= 0 ? 'up' : 'down'} ${Math.abs(Math.round(food.yoy))}% in a year`,
-        body: (movers.length ? `Grains are moving most over the past year: ${movers.join(', ')}. ` : '')
-          + 'Grains feed people directly and feed livestock, so they ripple into bread, rice, meat and dairy.',
-        watch: 'Whether the FAO Food Price Index keeps rising when it updates early next month.',
+        body: (movers.length ? `Grains moved the most this year: ${movers.join(', ')}. ` : '')
+          + 'People eat grains, and so do farm animals, so grain prices spread to bread, meat, milk and more.',
+        watch: 'Whether world food prices keep rising when the next numbers come out early next month.',
       });
     }
 
@@ -129,9 +129,9 @@
       add({
         level, short: 'cooking oils', tag: 'Food', series: oils, card: 'fao_food',
         title: `Cooking oils ${high ? 'near a 10-year high' : 'rising'}, up ${Math.round(oils.yoy)}% in a year`,
-        body: 'Palm, soy, sunflower and rapeseed oil go into cooking oil and most processed food.'
-          + (elNinoStrong ? ' Indonesia and Malaysia grow most of the world\'s palm oil, and El Niño droughts there tend to cut output about a year later.' : ''),
-        watch: 'Prices of cooking oil, snacks and baked goods.',
+        body: 'Palm, soy, sunflower and canola oil are in cooking oil and most packaged food.'
+          + (elNinoStrong ? ' Most palm oil comes from Indonesia and Malaysia. El Niño droughts there usually shrink the harvest about a year later.' : ''),
+        watch: 'Prices of cooking oil, chips, snacks and baked goods.',
       });
     }
 
@@ -143,13 +143,13 @@
       add({
         level, short: 'fertilizer', tag: 'Farming', series: urea, card: 'urea',
         title: level === 'easing'
-          ? (drop >= 30 ? `Fertilizer easing: urea down ${Math.round(drop)}% since ${mlabel(urea.peak6.m)}` : `Fertilizer down ${Math.round(-urea.yoy)}% in a year`)
+          ? (drop >= 30 ? `Fertilizer is getting cheaper: down ${Math.round(drop)}% since ${mlabel(urea.peak6.m)}` : `Fertilizer down ${Math.round(-urea.yoy)}% in a year`)
           : `Fertilizer up ${Math.round(urea.yoy)}% in a year`,
         body: level === 'easing'
-          ? (drop >= 30 ? `Urea spiked to ${usd(urea.peak6.v)} a ton in ${mlabel(urea.peak6.m)} and is now ${usd(urea.last.v)}. ` : '')
-            + 'Cheaper fertilizer lowers the cost of next season\'s crops, a counterweight to expensive oil.'
+          ? (drop >= 30 ? `Urea fertilizer jumped to ${usd(urea.peak6.v)} a ton in ${mlabel(urea.peak6.m)}. Now it's ${usd(urea.last.v)}. ` : '')
+            + 'Cheaper fertilizer makes next season\'s crops cheaper to grow. That pushes against expensive oil.'
           : 'Farmers buy fertilizer months before harvest, so today\'s price shows up in food prices 6 to 12 months from now.',
-        watch: level === 'easing' ? 'Whether it stays down into the spring planting season.' : 'Urea and natural gas prices.',
+        watch: level === 'easing' ? 'Whether it stays low until farmers plant in the spring.' : 'Fertilizer and natural gas prices.',
       });
     }
 
@@ -159,7 +159,7 @@
       add({
         level: 'watch', short: 'copper', tag: 'Metals', series: copper, card: 'copper',
         title: `Copper ${copper.record ? 'at a record high' : 'near a 10-year high'}, up ${Math.round(copper.yoy)}% in a year`,
-        body: 'Copper goes into wiring, motors, power grids and electronics. A price this high points to tight supply and strong industrial demand.',
+        body: 'Copper goes into wires, motors, power lines and electronics. A price this high means factories want more copper than mines are digging up.',
         watch: 'Prices of anything electrical, from appliances to cars.',
       });
     } else calm.push('copper');
@@ -182,10 +182,10 @@
         const black = nm === 'Russia' || nm === 'Ukraine';
         add({
           level: 'point', short: id, tag: 'Trade', card: null, anchor: 'trade',
-          title: `${nm} sells ${Math.round(share * 100)}% of the world's traded ${id}`,
-          body: `${over} of the ${c.importers.length} biggest ${id} buyers get more than half of it from ${THE.has(nm) ? 'the ' + nm : nm}, `
-            + `and ${T.names[String(big.c)]} has the most at stake (${money(big.value)} a year, ${Math.round(big.share * 100)}% of its ${id}).`,
-          watch: black ? 'News of Black Sea shipping trouble or Russian export limits.' : `News of export limits or a poor harvest in ${nm}.`,
+          title: `${nm} sells ${Math.round(share * 100)}% of all the ${id} sold between countries`,
+          body: `${over} of the ${c.importers.length} biggest ${id} buyers get more than half their ${id} from ${THE.has(nm) ? 'the ' + nm : nm}. `
+            + `${T.names[String(big.c)]} has the most to lose: it buys ${money(big.value)} a year from ${THE.has(nm) ? 'the ' + nm : nm}, ${Math.round(big.share * 100)}% of its ${id}.`,
+          watch: black ? 'News of ships blocked in the Black Sea, or Russia limiting what it sells abroad.' : `News of ${nm} limiting what it sells abroad, or a bad harvest there.`,
         });
       }
     }
@@ -249,11 +249,11 @@
   function forYou(list) {
     const on = (short) => list.some((s) => s.short === short && (s.level === 'alert' || s.level === 'watch'));
     const items = [];
-    if (on('oil')) items.push(['Fuel', 'gas and delivery costs are likely to stay high for a while. Budget a little extra this winter.']);
+    if (on('oil')) items.push(['Fuel', 'gas and delivery costs will likely stay high for a while. Plan for a little extra this winter.']);
     if (on('world food prices') || on('cooking oils') || on('El Niño / La Niña')) {
-      items.push(['Groceries', 'rice, bread, cooking oil, sugar and meat are the items most exposed. A few extra weeks of shelf-stable staples you already use is a cheap hedge; there\'s no need to stockpile beyond that.']);
+      items.push(['Groceries', 'rice, bread, cooking oil, sugar and meat are the most likely to cost more. A few extra weeks of shelf-stable food you already eat is cheap insurance. There\'s no need to stockpile more than that.']);
     }
-    items.push(['Long-term money', 'news like this is hard to trade on. It\'s a reason to keep an emergency fund, not to change a long-term plan.']);
+    items.push(['Long-term money', 'it\'s hard to make money off news like this. It\'s a good reason to keep emergency savings, not to change long-term plans.']);
     return items;
   }
 
@@ -262,15 +262,15 @@
   // Both are documented long-run tendencies in commodity markets, weak and noisy for any one item.
   const RADAR = [
     ['silver', 'Silver', 'silver'], ['gold', 'Gold', 'gold'], ['copper', 'Copper', null],
-    ['brent', 'Oil', null], ['wheat', 'Wheat', null], ['maize', 'Maize', null], ['rice', 'Rice', null],
+    ['brent', 'Oil', null], ['wheat', 'Wheat', null], ['maize', 'Corn', null], ['rice', 'Rice', null],
     ['soybeans', 'Soybeans', null], ['urea', 'Fertilizer (urea)', null],
   ];
   const READS = {
-    early: { label: 'Early trend', rank: 0, text: 'rising, but still near its 5-year average' },
-    turning: { label: 'Out of favor, turning up', rank: 1, text: 'well below average and starting to rise' },
-    late: { label: 'Late trend', rank: 2, text: 'rising, and already well above average' },
-    cooling: { label: 'Cooling from a high', rank: 3, text: 'falling back, but still above average' },
-    cheap: { label: 'Out of favor', rank: 4, text: 'well below average and still falling' },
+    early: { label: 'Early rise', rank: 0, text: 'going up, but still near its usual price' },
+    turning: { label: 'Cheap, turning up', rank: 1, text: 'well below its usual price and starting to climb' },
+    late: { label: 'Late rise', rank: 2, text: 'going up, and already well above its usual price' },
+    cooling: { label: 'Cooling off', rank: 3, text: 'falling back, but still above its usual price' },
+    cheap: { label: 'Cheap, still falling', rank: 4, text: 'well below its usual price and still dropping' },
     none: { label: 'No clear signal', rank: 5, text: null },
   };
   function radar(D, spot) {
@@ -313,18 +313,18 @@
       const head = el('div', { class: 'rhead' });
       head.append(el('span', { class: 'nm' }, r.label), el('span', { class: 'rchip r-' + r.read }, rd.label));
       const nums = el('div', { class: 'rnums' });
-      nums.append(el('span', {}, `12 months: ${signed(r.trend)}`), el('span', {}, `vs 5-year average: ${signed(r.value)}`));
+      nums.append(el('span', {}, `Past year: ${signed(r.trend)}`), el('span', {}, `vs usual price: ${signed(r.value)}`));
       if (r.fromPeak <= -20) nums.append(el('span', {}, `from 2-year high: ${signed(r.fromPeak)}`));
-      const pos = Math.abs(r.value) <= 15 ? 'near its 5-year average'
-        : `${Math.round(Math.abs(r.value))}% ${r.value > 0 ? 'above' : 'below'} its 5-year average`;
-      const text = rd.text || `No strong trend either way; ${pos}`;
+      const pos = Math.abs(r.value) <= 15 ? 'near its usual price'
+        : `${Math.round(Math.abs(r.value))}% ${r.value > 0 ? 'above' : 'below'} its usual price`;
+      const text = rd.text || `Not moving much either way, and ${pos}`;
       row.append(head, nums, el('p', { class: 'rtext' }, text.charAt(0).toUpperCase() + text.slice(1) + '.'));
       return row;
     }));
     const early = rows.filter((r) => r.read === 'early').map((r) => r.label.toLowerCase());
     $('radar-summary').textContent = early.length
-      ? `Rising but not yet expensive: ${early.join(', ')}. That's the "early in a move" pattern; the others are either late, cooling, or quiet.`
-      : 'Nothing is in the "rising but not yet expensive" spot right now.';
+      ? `Going up but still near their usual price: ${early.join(', ')}. That's the "early rise" pattern. The rest are late in a rise, cooling off, or quiet.`
+      : 'Nothing is in the "going up but still near its usual price" spot right now.';
   }
 
   async function init() {
