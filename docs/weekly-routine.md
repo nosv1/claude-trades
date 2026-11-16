@@ -53,32 +53,33 @@ non-experts who want to know what to look out for in the coming months.
 3. **Sweep every topic below. Don't skip any**, even on a quiet week or a second run the same
    day. Search the news from the past 7-10 days for each one, open at least one page, and note
    what you found for the `checked` list (step 4). The ids match `TOPICS` in
-   `scripts/check_weekly.py`, which fails the read if any is missing.
+   `scripts/check_weekly.py`, which fails the read if any is missing. This table is the one place
+   that says what each topic covers.
 
    | id | Topic |
    |---|---|
-   | `oil` | Oil, OPEC+ and sanctions on oil (Russia, Iran) |
+   | `oil` | Oil, OPEC+ decisions and sanctions on oil (Russia, Iran) |
    | `gas-fertilizer` | Natural gas and fertilizer (urea, Russian fertilizer sanctions) |
    | `enso` | El Niño and La Niña (NOAA) |
-   | `southeast-asia` | Southeast Asia: palm oil (MPOB), rice (Thailand, Vietnam) |
-   | `south-asia` | India and South Asia: monsoon, rice, rules on selling abroad |
-   | `black-sea` | Russia and Ukraine: wheat, rules or taxes on selling abroad |
-   | `americas` | US, Brazil and Argentina: soybeans and maize |
+   | `southeast-asia` | Southeast Asia: palm oil (MPOB; Indonesia's export rules), rice (Thailand, Vietnam) |
+   | `south-asia` | India and South Asia: monsoon, rice, export bans and taxes |
+   | `black-sea` | Russia and Ukraine: wheat, export bans, quotas and taxes |
+   | `americas` | US, Brazil and Argentina: soybeans and maize, crop weather |
    | `australia` | Australia: wheat and dry weather |
    | `china` | China: what it buys, and from whom |
-   | `importers` | Countries that buy most of their food abroad (North Africa, Middle East, Africa) |
+   | `importers` | Countries that buy most of their food abroad (Egypt and North Africa, the Middle East, Africa south of the Sahara) |
    | `shipping` | Shipping routes: Red Sea, Strait of Hormuz, Black Sea, Panama Canal |
    | `reports` | FAO and USDA reports out this week |
    | `metals` | Gold, silver and copper |
    | `money` | Central banks (the Fed and others) and the dollar |
-   | `politics` | Tariffs, trade deals, wars, ceasefires and elections in big producers and buyers |
+   | `politics` | Wars and ceasefires, sanctions, tariffs and trade deals, export bans anywhere not above, and elections or leadership changes in big producers and buyers (US, China, India, Russia, Brazil, Argentina, Indonesia, Saudi Arabia, the EU) |
 
    Prefer primary or well-known sources: FAO, USDA, NOAA, IEA, OPEC, World Bank, Reuters, AP,
    Bloomberg, FT. The cloud environment only reaches allowlisted sites (Reuters, AP, BBC, CNBC,
    S&P Global, DTN, FAO, USDA, NOAA, EIA, IEA, OPEC, World Bank, IMF, MPOB). If a page fails with
-   ENOTFOUND or 403, don't retry it: find the same story on an allowed site. Search results alone
-   are not a source; open the page. If you can't open any page for a topic, mark it `unreached`
-   and say why. Never mark a topic `quiet` without opening a page.
+   ENOTFOUND or 403, don't retry it: find the same story on an allowed site, or leave the claim
+   out. Search results alone are not a source; open the page. If you can't open any page for a
+   topic, mark it `unreached` and say why. Never mark a topic `quiet` without opening a page.
    **Politics stays neutral** (see Rules). Upcoming elections and summits with a date go in `watch`.
 4. Write `site/data/briefing.json`:
 
@@ -107,9 +108,10 @@ non-experts who want to know what to look out for in the coming months.
    }
    ```
 
-   `checked`: one entry per topic in step 3, every week. `covered` means it's in an item;
-   `quiet` means you looked and nothing worth an item happened; `unreached` means no page could be
-   opened. A good week is mostly `covered` and `quiet`.
+   `checked`: one entry per topic in step 3, every week. `covered` means it's in an item, and its
+   `url` is one of that item's sources; `quiet` means you looked and nothing worth an item
+   happened; `unreached` means no page could be opened. A good week is mostly `covered` and
+   `quiet`. `date` is today's date: the checker fails a new read dated otherwise.
 
    2 to 5 items, most important first. If it was a quiet week, say so; don't inflate small news.
    `facts`: one entry per number in the text that comes from `site/data` (`m` is `last`, `yoy`,
