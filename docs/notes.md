@@ -72,7 +72,10 @@ Code review fixes merged 2026-11-15 (CPI gap interpolation, workflow push retry,
   Allowlist hosts suggested to him: api.gdeltproject.org (news search in ~65 languages),
   amis-outlook.org, cropmonitor.org, fews.net, wfp.org, igc.int, ifpri.org, aljazeera.com,
   thehindubusinessline.com, plus local: interfax.ru, kommersant.ru, kontan.co.id, bisnis.com,
-  conab.gov.br, bolsadecereales.com, bcr.com.ar, english.ahram.org.eg, apk-inform.com.
+  conab.gov.br, bolsadecereales.com, bcr.com.ar, english.ahram.org.eg, apk-inform.com; and from
+  the cloud session's list: ukmto.org (UK navy's shipping-attack alerts), bom.gov.au (Australia's
+  weather office), imd.gov.in (India's). Easiest route: in a cloud session, Claude can add exact
+  hosts with `update_environment` and he approves on a card; wildcards only he can add, in Settings.
 - **2026-11-16:** He noticed the second weekly run only searched oil, gold, palm oil, rice,
   wheat, US grains and OPEC, and wants every topic checked every week, with a global view. Added
   a required news sweep: `briefing.json` now carries `checked`, one entry per topic in
