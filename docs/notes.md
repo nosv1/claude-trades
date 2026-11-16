@@ -33,6 +33,13 @@ Code review fixes merged 2026-11-15 (CPI gap interpolation, workflow push retry,
 
 ## Log
 
+- **2026-11-16:** Option 3 wired: a weekly Claude Code routine (his subscription, no API key) runs
+  Mondays 14:00 UTC, follows [weekly-routine.md](weekly-routine.md), writes `site/data/briefing.json`
+  ("This week's read", top of the page) and updates `scenarios.json`, checks both with
+  `scripts/check_weekly.py`, and pushes a `claude/weekly-read-YYYY-MM-DD` branch. The
+  [weekly-read workflow](../.github/workflows/weekly-read.yml) re-checks, copies only those two files
+  to `main`, deletes the branch and starts a deploy. The page hides the section if the file is bad.
+  Next: mobile redesign for easier reading.
 - **2026-11-16:** He asked for "a sequence of probable events that could trigger outcomes". Added
   **What could happen next** (`site/scenarios.js`, `site/data/scenarios.json`): 6 event chains written
   by Claude (El Niño harvests, La Niña follows, oil into food, oil cures itself, export-ban scramble,
