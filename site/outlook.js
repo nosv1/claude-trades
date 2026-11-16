@@ -246,8 +246,78 @@
     return items;
   }
 
+  // ---- trend and value ----
+  // Trend = change over 12 months; value = today vs the average of the previous 5 years.
+  // Both are documented long-run tendencies in commodity markets, weak and noisy for any one item.
+  const RADAR = [
+    ['silver', 'Silver', 'silver'], ['gold', 'Gold', 'gold'], ['copper', 'Copper', null],
+    ['brent', 'Oil', null], ['wheat', 'Wheat', null], ['maize', 'Maize', null], ['rice', 'Rice', null],
+    ['soybeans', 'Soybeans', null], ['urea', 'Fertilizer (urea)', null],
+  ];
+  const READS = {
+    early: { label: 'Early trend', rank: 0, text: 'rising, but still near its 5-year average' },
+    turning: { label: 'Out of favor, turning up', rank: 1, text: 'well below average and starting to rise' },
+    late: { label: 'Late trend', rank: 2, text: 'rising, and already well above average' },
+    cooling: { label: 'Cooling from a high', rank: 3, text: 'falling back, but still above average' },
+    cheap: { label: 'Out of favor', rank: 4, text: 'well below average and still falling' },
+    none: { label: 'No clear signal', rank: 5, text: null },
+  };
+  function radar(D, spot) {
+    return RADAR.map(([id, label, live]) => {
+      const p = pts(D, id);
+      if (p.length < 70) return null;
+      let last = p[p.length - 1];
+      const liveV = live && spot && spot[live] && spot[live].price;
+      if (liveV) {
+        const d = new Date(spot.fetched || Date.now());
+        last = { m: d.getFullYear() * 12 + d.getMonth(), v: liveV };
+      }
+      const hist = p.filter((q) => q.m < last.m);
+      const at = (m) => (hist.find((q) => q.m === m) || {}).v;
+      const prev5 = hist.slice(-60);
+      const avg5 = prev5.reduce((a, q) => a + q.v, 0) / prev5.length;
+      const yo = at(last.m - 12), m3 = at(last.m - 3);
+      const peak2 = Math.max(...hist.slice(-24).map((q) => q.v), last.v);
+      const r = {
+        id, label,
+        trend: yo ? (last.v / yo - 1) * 100 : 0,
+        ch3: m3 ? (last.v / m3 - 1) * 100 : 0,
+        value: (last.v / avg5 - 1) * 100,
+        fromPeak: (last.v / peak2 - 1) * 100,
+      };
+      const rising = r.trend >= 10, falling = r.trend <= -10 || r.fromPeak <= -25;
+      r.read = rising && r.value <= 15 ? 'early'
+        : rising ? 'late'
+          : r.value <= -15 && r.ch3 >= 3 ? 'turning'
+            : r.value <= -15 && falling ? 'cheap'
+              : falling && r.value > 15 ? 'cooling'
+                : 'none';
+      return r;
+    }).filter(Boolean).sort((a, b) => READS[a.read].rank - READS[b.read].rank || b.trend - a.trend);
+  }
+  function renderRadar(rows) {
+    $('radar').replaceChildren(...rows.map((r) => {
+      const rd = READS[r.read];
+      const row = el('div', { class: 'rrow' });
+      const head = el('div', { class: 'rhead' });
+      head.append(el('span', { class: 'nm' }, r.label), el('span', { class: 'rchip r-' + r.read }, rd.label));
+      const nums = el('div', { class: 'rnums' });
+      nums.append(el('span', {}, `12 months: ${signed(r.trend)}`), el('span', {}, `vs 5-year average: ${signed(r.value)}`));
+      if (r.fromPeak <= -20) nums.append(el('span', {}, `from 2-year high: ${signed(r.fromPeak)}`));
+      const pos = Math.abs(r.value) <= 15 ? 'near its 5-year average'
+        : `${Math.round(Math.abs(r.value))}% ${r.value > 0 ? 'above' : 'below'} its 5-year average`;
+      const text = rd.text || `No strong trend either way; ${pos}`;
+      row.append(head, nums, el('p', { class: 'rtext' }, text.charAt(0).toUpperCase() + text.slice(1) + '.'));
+      return row;
+    }));
+    const early = rows.filter((r) => r.read === 'early').map((r) => r.label.toLowerCase());
+    $('radar-summary').textContent = early.length
+      ? `Rising but not yet expensive: ${early.join(', ')}. That's the "early in a move" pattern; the others are either late, cooling, or quiet.`
+      : 'Nothing is in the "rising but not yet expensive" spot right now.';
+  }
+
   async function init() {
-    const [D, E, T] = await Promise.all([getJSON('data/series.json'), getJSON('data/enso.json'), getJSON('data/trade.json')]);
+    const [D, E, T, SP] = await Promise.all([getJSON('data/series.json'), getJSON('data/enso.json'), getJSON('data/trade.json'), getJSON('data/spot.json')]);
     if (!D) return;
     const { out, calm } = signals(D, E, T);
     const n = (lv) => out.filter((s) => s.level === lv).length;
@@ -263,6 +333,8 @@
     $('calm').textContent = calm.length ? `Calm right now: ${calm.join(', ')}.` : '';
     $('for-you').replaceChildren(...forYou(out).map(([k, v]) => { const li = el('li'); li.append(el('strong', {}, k + ': '), v); return li; }));
     $('outlook').hidden = false;
+    renderRadar(radar(D, SP));
+    $('trendvalue').hidden = false;
   }
 
   init();

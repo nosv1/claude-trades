@@ -10,6 +10,8 @@ Live at **<https://nosv1.github.io/claude-trades/>**.
 - **Heads up:** the signals worth watching in the coming months (oil, El Niño, food prices,
   cooking oils, fertilizer, copper, single-seller pressure points), rated Alert / Watch / Easing
   and recomputed from the data every day.
+- **Trend and value:** for each commodity, its 12-month trend against its 5-year average, read as
+  early trend, late trend, cooling, out of favor or no clear signal.
 - **Silver right now:** live spot price, what your ounces are worth, and where today's price ranks
   against the last 1, 5 and 10 years and all history since 1960.
 - **Metals:** silver, gold, the gold/silver ratio, copper.
