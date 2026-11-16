@@ -119,6 +119,8 @@ def by_partner(hs: str, year: int, buyers: list[int]) -> dict[int, dict[int, flo
     """{buyer: {supplier: value}}, batching buyers and splitting a batch if it hits the row cap."""
     out: dict[int, dict[int, float]] = {}
     queue = [buyers[i:i + 4] for i in range(0, len(buyers), 4)]
+    # Ends: a batch of 2+ buyers is split at most once, into single-buyer batches that are never
+    # split, so there are at most len(buyers) / 4 + len(buyers) queries.
     while queue:
         batch = queue.pop(0)
         rows = query(hs, year, batch)

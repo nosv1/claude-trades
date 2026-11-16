@@ -16,9 +16,7 @@
   const { el } = window.TP;
   const ym = (s) => { const [y, m] = String(s).split('-').map(Number); return y * 12 + m - 1; };
   const mlabel = (m) => MONTHS[((m % 12) + 12) % 12] + ' ' + Math.floor(m / 12);
-  async function getJSON(url) {
-    try { const r = await fetch(url, { cache: 'no-cache' }); return r.ok ? await r.json() : null; } catch { return null; }
-  }
+  const getJSON = window.TP.getJSON;
 
   // ---- the data as it stood at the end of month M ----
   function seriesPts(D, id) {
@@ -74,14 +72,8 @@
     return { state: (x.call === 'up') === up ? 'right' : 'wrong', moved: up ? 'rose' : 'fell' };
   }
 
-  function render(L, D, E) {
-    const calls = (L.calls || []).map((x) => ({ ...x, g: gradeCall(D, x) }));
-    const likes = (L.likelihoods || []).map((x) => ({ ...x, g: gradeLikelihood(D, E, x) }));
-    const box = $('scoreboard');
-    box.replaceChildren(el('h3', { class: 'card-title' }, 'Claude\'s track record'));
-    box.append(el('p', { class: 'mini-note' }, 'Every call and "Likely / Possible" rating is logged with a date and graded by the data later. Old entries can\'t be edited, so misses stay visible.'));
-
-    // likelihoods, by label
+  // "Said Likely: X of Y happened" per label, then the monthly calls line
+  function summaryRows(calls, likes) {
     const rows = el('div', { class: 'sb-rows' });
     for (const lv of ['likely', 'possible', 'longshot']) {
       const xs = likes.filter((x) => x.likelihood === lv);
@@ -96,30 +88,44 @@
     }
     const graded = calls.filter((x) => x.g.state !== 'waiting');
     const right = graded.filter((x) => x.g.state === 'right').length;
+    const first = calls.length ? 'result comes in early ' + mlabel(Math.min(...calls.map((x) => ym(x.target))) + 1) : 'call comes with the next weekly read';
     const cr = el('p', { class: 'sb-row' });
     cr.append(el('strong', {}, 'Monthly higher/lower calls: '), graded.length
       ? `${right} of ${graded.length} right. A coin flip would get about half.`
-      : `none graded yet. The first ${calls.length ? 'result comes in early ' + mlabel(Math.min(...calls.map((x) => ym(x.target))) + 1) : 'call comes with the next weekly read'}.`);
+      : `none graded yet. The first ${first}.`);
     rows.append(cr);
-    box.append(rows);
+    return rows;
+  }
+
+  function likeLine(x) {
+    const st = x.g.state === 'happened' ? `✓ happened (${mlabel(x.g.when)})` : x.g.state === 'didnt' ? '✗ didn\'t happen by the deadline' : 'Still open';
+    return `${x.made}: "${LABEL[x.likelihood] || x.likelihood}" that ${x.claim.charAt(0).toLowerCase() + x.claim.slice(1)}, by ${mlabel(ym(x.deadline))}. ${st}.`;
+  }
+  function callLine(x) {
+    const st = x.g.state === 'waiting' ? 'Still open' : `${x.g.state === 'right' ? '✓ right' : '✗ wrong'} (it ${x.g.moved})`;
+    return `${x.made}: ${NAME[x.s] || x.s} in ${mlabel(ym(x.target))} will be ${x.call === 'up' ? 'higher' : 'lower'} than the month before. ${x.why ? 'Why: ' + x.why + ' ' : ''}${st}.`;
+  }
+
+  function render(L, D, E) {
+    const calls = (L.calls || []).map((x) => ({ ...x, g: gradeCall(D, x) }));
+    const likes = (L.likelihoods || []).map((x) => ({ ...x, g: gradeLikelihood(D, E, x) }));
+    const box = $('scoreboard');
+    box.replaceChildren(el('h3', { class: 'card-title' }, 'Claude\'s track record'));
+    box.append(el('p', { class: 'mini-note' }, 'Every call and "Likely / Possible" rating is logged with a date and graded by the data later. Old entries can\'t be edited, so misses stay visible.'));
+    box.append(summaryRows(calls, likes));
 
     // every entry
     const all = el('details', { class: 'tbl' });
     all.append(el('summary', {}, `See all ${calls.length + likes.length} entries`));
     const ul = el('ul', { class: 'sb-list' });
-    for (const x of likes) {
-      const st = x.g.state === 'happened' ? `✓ happened (${mlabel(x.g.when)})` : x.g.state === 'didnt' ? '✗ didn\'t happen by the deadline' : 'Still open';
-      ul.append(el('li', {}, `${x.made}: "${LABEL[x.likelihood] || x.likelihood}" that ${x.claim.charAt(0).toLowerCase() + x.claim.slice(1)}, by ${mlabel(ym(x.deadline))}. ${st}.`));
-    }
-    for (const x of calls) {
-      const st = x.g.state === 'waiting' ? 'Still open' : `${x.g.state === 'right' ? '✓ right' : '✗ wrong'} (it ${x.g.moved})`;
-      ul.append(el('li', {}, `${x.made}: ${NAME[x.s] || x.s} in ${mlabel(ym(x.target))} will be ${x.call === 'up' ? 'higher' : 'lower'} than the month before. ${x.why ? 'Why: ' + x.why + ' ' : ''}${st}.`));
-    }
+    ul.append(...likes.map((x) => el('li', {}, likeLine(x))), ...calls.map((x) => el('li', {}, callLine(x))));
     all.append(ul);
     box.append(all);
     box.hidden = false;
 
     // a one-line version next to the reader's own calls
+    const graded = calls.filter((x) => x.g.state !== 'waiting');
+    const right = graded.filter((x) => x.g.state === 'right').length;
     const mini = $('claude-record');
     if (mini) mini.textContent = graded.length ? `Claude's monthly calls so far: ${right} of ${graded.length} right.` : '';
   }

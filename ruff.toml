@@ -1,0 +1,14 @@
+# Lint for docs/coding-standard.md. Zero warnings allowed: uvx ruff@0.17.3 check .
+line-length = 120
+target-version = "py310"
+
+[lint]
+# E/W style, F pyflakes (unused names, undefined), B bugbear, BLE broad except [7],
+# C901 complexity and PLR0915 statements per function [4]
+select = ["E", "W", "F", "B", "BLE", "C901", "PLR0915"]
+
+[lint.mccabe]
+max-complexity = 15
+
+[lint.pylint]
+max-statements = 50

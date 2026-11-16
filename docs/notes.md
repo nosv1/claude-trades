@@ -53,6 +53,16 @@ Code review fixes merged 2026-11-15 (CPI gap interpolation, workflow push retry,
 
 ## Log
 
+- **2026-11-16 (midday):** He asked to live up to NASA/JPL's coding standard. Wrote
+  [coding-standard.md](coding-standard.md): Holzmann's "Power of Ten" adapted (rules 3, 8, 9 change
+  meaning in JS/Python; rule 11 is ours: claims are checked like code). Added `eslint.config.mjs`,
+  `ruff.toml` and a Lint workflow (zero warnings, separate from the deploy). Brought the code to it:
+  outlook `signals()` (148 lines, complexity 75) split into one function per signal; `lineChart`,
+  `renderHero`, quiz builders, `renderCalls`, the scoreboard and the Worker's router split up;
+  `TP.getJSON` + `seriesOK` check data where it comes in (common.js now loads first). Checked by
+  rendering the page before and after with a fixed random seed and clock: identical. The Worker:
+  21 route cases identical before/after on `wrangler dev`. The checker: 15 briefing cases identical.
+  Before that, four review-and-fix rounds on the claims and checker (see the commits).
 - **2026-11-16 (morning):** Weekly routine prompt updated to the three-file flow (it still said
   "only those two files", which clashed with the claude-log step). Code-review fixes: dollar claim
   reworded to match the data (above); `usd` in the scenario name map; dollar months kept only once

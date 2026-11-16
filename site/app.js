@@ -200,10 +200,8 @@
   }
 
   // ---- line chart (single series, crosshair tooltip, keyboard, table twin) ----
-  function lineChart(host, pts, def, meta) {
-    host.replaceChildren();
-    host._pts = pts;
-    if (pts.length < 2) { host.append(el('p', { class: 'context' }, 'Not enough data in this range.')); return; }
+  // Layout: plot size, y scale and the x/y mappings, shared by the drawing and hover parts below.
+  function chartFrame(host, pts, def) {
     const W = Math.max(240, Math.round(host.clientWidth || 320));
     const top = 10, PH = 170, AX = 24, H = top + PH + AX;
     const vs = pts.map((p) => p.v);
@@ -213,32 +211,49 @@
     const x0 = pts[0].x, x1 = pts[pts.length - 1].x;
     const sx = (x) => ml + (x - x0) / (x1 - x0) * (W - ml - mr);
     const sy = (v) => top + PH - (v - sc.lo) / (sc.hi - sc.lo) * PH;
+    return { W, H, top, PH, AX, sc, labels, ml, mr, x0, x1, sx, sy };
+  }
 
-    const svg = sv('svg', { viewBox: `0 0 ${W} ${H}`, width: W, height: H, tabindex: 0, role: 'img',
-      'aria-label': `${meta.name}: line chart of ${meta.rangeText}. Latest ${fmt(pts[pts.length - 1].v, def.kind)}. Use left and right arrow keys to read values.` });
-
-    sc.ticks.forEach((t, i) => {
-      const y = sy(t);
-      if (i > 0) svg.append(sv('line', { x1: ml, x2: W - mr, y1: y, y2: y }, { stroke: 'var(--grid)', strokeWidth: 1 }));
-      const tx = sv('text', { x: ml - 8, y: y + 4, 'text-anchor': 'end' });
-      tx.textContent = labels[i];
+  function drawAxes(svg, f) {
+    f.sc.ticks.forEach((t, i) => {
+      const y = f.sy(t);
+      if (i > 0) svg.append(sv('line', { x1: f.ml, x2: f.W - f.mr, y1: y, y2: y }, { stroke: 'var(--grid)', strokeWidth: 1 }));
+      const tx = sv('text', { x: f.ml - 8, y: y + 4, 'text-anchor': 'end' });
+      tx.textContent = f.labels[i];
       svg.append(tx);
     });
-    svg.append(sv('line', { x1: ml, x2: W - mr, y1: top + PH, y2: top + PH }, { stroke: 'var(--axis)', strokeWidth: 1 }));
-    for (const t of xTicks(x0, x1, Math.max(2, Math.floor((W - ml - mr) / 58)))) {
-      const x = sx(t.x);
-      if (x < ml + 12 || x > W - mr - 12) continue;
-      const tx = sv('text', { x, y: top + PH + 17, 'text-anchor': 'middle' });
+    svg.append(sv('line', { x1: f.ml, x2: f.W - f.mr, y1: f.top + f.PH, y2: f.top + f.PH }, { stroke: 'var(--axis)', strokeWidth: 1 }));
+    for (const t of xTicks(f.x0, f.x1, Math.max(2, Math.floor((f.W - f.ml - f.mr) / 58)))) {
+      const x = f.sx(t.x);
+      if (x < f.ml + 12 || x > f.W - f.mr - 12) continue;
+      const tx = sv('text', { x, y: f.top + f.PH + 17, 'text-anchor': 'middle' });
       tx.textContent = t.label;
       svg.append(tx);
     }
+  }
 
+  function drawLine(svg, pts, f) {
+    const { sx, sy, top, PH } = f;
     const line = pts.map((p, i) => `${i ? 'L' : 'M'}${sx(p.x).toFixed(1)},${sy(p.v).toFixed(1)}`).join('');
-    svg.append(sv('path', { d: `${line}L${sx(x1).toFixed(1)},${top + PH}L${sx(x0).toFixed(1)},${top + PH}Z` }, { fill: 'var(--series-wash)' }));
+    svg.append(sv('path', { d: `${line}L${sx(f.x1).toFixed(1)},${top + PH}L${sx(f.x0).toFixed(1)},${top + PH}Z` }, { fill: 'var(--series-wash)' }));
     svg.append(sv('path', { d: line }, { fill: 'none', stroke: 'var(--series)', strokeWidth: 2, strokeLinejoin: 'round', strokeLinecap: 'round' }));
     const last = pts[pts.length - 1];
     svg.append(sv('circle', { cx: sx(last.x), cy: sy(last.v), r: 4 }, { fill: 'var(--series)', stroke: 'var(--surface)', strokeWidth: 2 }));
+  }
 
+  // Index of the point nearest an x position on screen (binary search: about log2(n) steps)
+  function nearestIndex(svg, pts, f, clientX) {
+    const r = svg.getBoundingClientRect();
+    const x = (clientX - r.left) * (f.W / r.width);
+    const target = f.x0 + (x - f.ml) / (f.W - f.ml - f.mr) * (f.x1 - f.x0);
+    let lo = 0, hi = pts.length - 1;
+    while (hi - lo > 1) { const mid = (lo + hi) >> 1; if (pts[mid].x < target) lo = mid; else hi = mid; } // halves each step
+    return Math.abs(pts[lo].x - target) <= Math.abs(pts[hi].x - target) ? lo : hi;
+  }
+
+  // Crosshair, dot and tooltip that follow the pointer or the arrow keys
+  function attachHover(host, svg, pts, def, f) {
+    const { W, sx, sy, top, PH, AX, ml, mr } = f;
     const cross = sv('line', { y1: top, y2: top + PH }, { stroke: 'var(--axis-text)', strokeWidth: 1, display: 'none' });
     const hdot = sv('circle', { r: 5 }, { fill: 'var(--series)', stroke: 'var(--surface)', strokeWidth: 2, display: 'none' });
     const hit = sv('rect', { x: ml, y: top, width: W - ml - mr, height: PH + AX }, { fill: 'transparent', cursor: 'crosshair' });
@@ -263,16 +278,9 @@
       tip.style.left = (x > W / 2 ? Math.max(0, x - tw - 10) : Math.min(W - tw, x + 10)) + 'px';
     }
     function hide() { idx = -1; cross.style.display = 'none'; hdot.style.display = 'none'; tip.hidden = true; }
-    function nearest(clientX) {
-      const r = svg.getBoundingClientRect();
-      const x = (clientX - r.left) * (W / r.width);
-      const target = x0 + (x - ml) / (W - ml - mr) * (x1 - x0);
-      let lo = 0, hi = pts.length - 1;
-      while (hi - lo > 1) { const mid = (lo + hi) >> 1; if (pts[mid].x < target) lo = mid; else hi = mid; }
-      return Math.abs(pts[lo].x - target) <= Math.abs(pts[hi].x - target) ? lo : hi;
-    }
-    hit.addEventListener('pointermove', (e) => show(nearest(e.clientX)));
-    hit.addEventListener('pointerdown', (e) => show(nearest(e.clientX)));
+    const at = (e) => show(nearestIndex(svg, pts, f, e.clientX));
+    hit.addEventListener('pointermove', at);
+    hit.addEventListener('pointerdown', at);
     hit.addEventListener('pointerleave', (e) => { if (e.pointerType === 'mouse') hide(); });
     svg.addEventListener('blur', hide);
     svg.addEventListener('keydown', (e) => {
@@ -285,6 +293,18 @@
       else return;
       e.preventDefault();
     });
+  }
+
+  function lineChart(host, pts, def, meta) {
+    host.replaceChildren();
+    host._pts = pts;
+    if (pts.length < 2) { host.append(el('p', { class: 'context' }, 'Not enough data in this range.')); return; }
+    const f = chartFrame(host, pts, def);
+    const svg = sv('svg', { viewBox: `0 0 ${f.W} ${f.H}`, width: f.W, height: f.H, tabindex: 0, role: 'img',
+      'aria-label': `${meta.name}: line chart of ${meta.rangeText}. Latest ${fmt(pts[pts.length - 1].v, def.kind)}. Use left and right arrow keys to read values.` });
+    drawAxes(svg, f);
+    drawLine(svg, pts, f);
+    attachHover(host, svg, pts, def, f);
   }
 
   function fillTable(details, def) {
@@ -381,17 +401,8 @@
   }
 
   // ---- hero ----
-  function renderHero() {
-    const price = live.silver;
-    document.getElementById('silver-price').textContent = fmt(price, 'usd');
-    const status = document.getElementById('live-status');
-    status.textContent = live.isLive
-      ? 'Live · ' + live.at.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
-      : 'As of ' + shortDate(live.at) + ' (live price unavailable)';
-    status.classList.toggle('on', live.isLive);
-    renderStash();
-
-    const nominal = monthly('silver');
+  // The plain-words lines under the silver price: record, rank, inflation, and gold/silver ratio
+  function heroVerdict(price, nominal, since) {
     const real = toReal(nominal);
     const peak = maxPt(nominal), rpeak = maxPt(real);
     const items = [];
@@ -401,7 +412,6 @@
       : fromPeak < -5
         ? `${Math.round(-fromPeak)}% below its record month, ${fmt(peak.v, 'usd')} in ${peak.label}.`
         : `Within ${Math.max(1, Math.round(-fromPeak))}% of its record month, ${fmt(peak.v, 'usd')} in ${peak.label}.`);
-    const since = nominal[0].label.split(' ')[1];
     const share = Math.round(shareBelow(nominal, price) * 100);
     items.push(share >= 50
       ? `Higher than ${share}% of all months since ${since} (not counting inflation).`
@@ -413,37 +423,51 @@
         : `Counting inflation, the record was ${rpeak.label}, at ${fmt(rpeak.v, 'usd')} in today's dollars. Today's price is ${Math.max(1, Math.round(-fromReal))}% below that.`);
     }
     const ratioNow = live.gold / live.silver;
-    const med = median(ratioMonthly().map((p) => p.v));
+    const med = median(ratioMonthly().map((q) => q.v));
     const verdict = ratioNow > med * 1.1 ? 'silver is cheap compared with gold'
       : ratioNow < med * 0.9 ? 'silver is expensive compared with gold' : 'silver is about normally priced against gold';
     items.push(`One ounce of gold buys ${nf(0).format(ratioNow)} ounces of silver. Usually (since ${since}) it buys about ${nf(0).format(med)}, so ${verdict}.`);
-    const ul = document.getElementById('verdict');
-    ul.replaceChildren(...items.map((t) => el('li', {}, t)));
+    return items;
+  }
 
-    const wrap = document.getElementById('silver-ranges');
-    wrap.replaceChildren();
+  // One meter row: where today's price sits among the monthly averages in a window
+  function rangeRow(label, pts, price) {
+    const lo = Math.min(price, ...pts.map((q) => q.v)), hi = Math.max(price, ...pts.map((q) => q.v));
+    const below = shareBelow(pts, price); // rank, not linear price, so the dot agrees with the label
+    const sh = Math.round(below * 100);
+    const row = el('div', { class: 'range-row' });
+    row.append(el('span', { class: 'lbl' }, label),
+      el('span', { class: 'pct' }, below === 0 ? 'Lowest in window' : below === 1 ? 'Highest in window' : `Higher than ${sh}%`));
+    const m = el('div', { class: 'meter', role: 'img',
+      'aria-label': `${label}: ${fmt(price, 'usd')} is higher than ${sh}% of monthly averages, range ${fmt(lo, 'usd')} to ${fmt(hi, 'usd')}` });
+    const dot = el('span', { class: 'dot' });
+    dot.style.left = (below * 100).toFixed(1) + '%';
+    m.append(dot);
+    const ends = el('div', { class: 'meter-ends' });
+    ends.append(el('span', {}, fmt(lo, 'usd')), el('span', {}, fmt(hi, 'usd')));
+    const box = el('div', { class: 'meter-box' });
+    box.append(m, ends);
+    row.append(box);
+    return row;
+  }
+
+  function renderHero() {
+    const price = live.silver;
+    document.getElementById('silver-price').textContent = fmt(price, 'usd');
+    const status = document.getElementById('live-status');
+    status.textContent = live.isLive
+      ? 'Live · ' + live.at.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
+      : 'As of ' + shortDate(live.at) + ' (live price unavailable)';
+    status.classList.toggle('on', live.isLive);
+    renderStash();
+
+    const nominal = monthly('silver');
+    const since = nominal[0].label.split(' ')[1];
+    document.getElementById('verdict').replaceChildren(...heroVerdict(price, nominal, since).map((t) => el('li', {}, t)));
     const lastM = nominal[nominal.length - 1].m;
-    for (const [label, months] of [['1 year', 12], ['5 years', 60], ['10 years', 120], ['Since ' + since, Infinity]]) {
-      const pts = nominal.filter((p) => p.m > lastM - months);
-      const lo = Math.min(price, ...pts.map((p) => p.v)), hi = Math.max(price, ...pts.map((p) => p.v));
-      const share = shareBelow(pts, price);
-      const pos = share; // rank, not linear price, so the dot agrees with the label
-      const sh = Math.round(share * 100);
-      const row = el('div', { class: 'range-row' });
-      row.append(el('span', { class: 'lbl' }, label),
-        el('span', { class: 'pct' }, share === 0 ? 'Lowest in window' : share === 1 ? 'Highest in window' : `Higher than ${sh}%`));
-      const m = el('div', { class: 'meter', role: 'img',
-        'aria-label': `${label}: ${fmt(price, 'usd')} is higher than ${sh}% of monthly averages, range ${fmt(lo, 'usd')} to ${fmt(hi, 'usd')}` });
-      const dot = el('span', { class: 'dot' });
-      dot.style.left = (pos * 100).toFixed(1) + '%';
-      m.append(dot);
-      const ends = el('div', { class: 'meter-ends' });
-      ends.append(el('span', {}, fmt(lo, 'usd')), el('span', {}, fmt(hi, 'usd')));
-      const box = el('div', { class: 'meter-box' });
-      box.append(m, ends);
-      row.append(box);
-      wrap.append(row);
-    }
+    const windows = [['1 year', 12], ['5 years', 60], ['10 years', 120], ['Since ' + since, Infinity]];
+    document.getElementById('silver-ranges').replaceChildren(
+      ...windows.map(([label, months]) => rangeRow(label, nominal.filter((q) => q.m > lastM - months), price)));
   }
 
   function renderStash() {
@@ -462,7 +486,7 @@
       : 'Prices as they were at the time, not adjusted for inflation.';
   }
 
-  let cards = [];
+  const cards = [];
   function renderAll() {
     syncFilters();
     for (const c of cards) c._render();
@@ -498,7 +522,7 @@
     const box = document.getElementById('sources');
     box.replaceChildren();
     const list = Object.values(D.sources);
-    list.forEach((s, i) => {
+    list.forEach((s) => {
       const a = el('a', { href: s.url, rel: 'noopener' }, s.name);
       box.append(a);
       if (s.updated) box.append(document.createTextNode(` (updated ${s.updated})`));
@@ -512,7 +536,8 @@
     let spot;
     try {
       [D, spot] = await Promise.all([getJSON('data/series.json'), getJSON('data/spot.json').catch(() => null)]);
-    } catch (e) {
+      if (!window.TP.seriesOK(D)) throw new Error('series.json has the wrong shape');
+    } catch {
       showError('Could not load the data files. Try reloading the page.');
       return;
     }

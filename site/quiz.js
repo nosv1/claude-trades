@@ -17,9 +17,7 @@
   const usd = (v) => '$' + new Intl.NumberFormat('en-US', { maximumFractionDigits: v < 100 ? 2 : 0 }).format(v);
   const mlabel = (m) => MONTHS[((m % 12) + 12) % 12] + ' ' + Math.floor(m / 12);
   const shuffle = (a) => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
-  async function getJSON(url) {
-    try { const r = await fetch(url, { cache: 'no-cache' }); return r.ok ? await r.json() : null; } catch { return null; }
-  }
+  const getJSON = window.TP.getJSON;
 
   function series(D, id) {
     const s = D.series[id];
@@ -40,65 +38,71 @@
   }
 
   // ---- questions about what the data says now (answers change as the data does) ----
-  function dataQuestions(D, E, T) {
-    const qs = [];
+  // One builder per question; each returns a question, or null when its data is missing.
+  function oilQ(D) {
     const oil = series(D, 'brent');
-    if (oil && oil.yoy != null) {
-      qs.push({ id: 'oil-year', q: 'Oil compared with a year ago?',
-        ...bucket(oil.yoy, [-20, 20, 60], ['Down more than 20%', 'Within 20% either way', 'Up 20% to 60%', 'Up more than 60%']),
-        why: `Oil averaged ${usd(oil.last.v)} a barrel in ${mlabel(oil.last.m)}, ${signed(oil.yoy)} in a year.`, link: 'card-brent' });
-    }
+    if (!oil || oil.yoy == null) return null;
+    return { id: 'oil-year', q: 'Oil compared with a year ago?',
+      ...bucket(oil.yoy, [-20, 20, 60], ['Down more than 20%', 'Within 20% either way', 'Up 20% to 60%', 'Up more than 60%']),
+      why: `Oil averaged ${usd(oil.last.v)} a barrel in ${mlabel(oil.last.m)}, ${signed(oil.yoy)} in a year.`, link: 'card-brent' };
+  }
+  function foodQ(D) {
     const food = series(D, 'fao_food');
-    if (food && food.yoy != null) {
-      qs.push({ id: 'food-year', q: 'The FAO Food Price Index (world food prices) compared with a year ago?',
-        ...bucket(food.yoy, [-5, 5, 15], ['Down more than 5%', 'About flat (within 5%)', 'Up 5% to 15%', 'Up more than 15%']),
-        why: `The FAO Food Price Index was ${food.last.v.toFixed(1)} in ${mlabel(food.last.m)}, ${signed(food.yoy)} in a year.`, link: 'card-fao_food' });
-    }
+    if (!food || food.yoy == null) return null;
+    return { id: 'food-year', q: 'The FAO Food Price Index (world food prices) compared with a year ago?',
+      ...bucket(food.yoy, [-5, 5, 15], ['Down more than 5%', 'About flat (within 5%)', 'Up 5% to 15%', 'Up more than 15%']),
+      why: `The FAO Food Price Index was ${food.last.v.toFixed(1)} in ${mlabel(food.last.m)}, ${signed(food.yoy)} in a year.`, link: 'card-fao_food' };
+  }
+  function usdQ(D) {
     const usdS = series(D, 'usd');
-    if (usdS && usdS.yoy != null) {
-      qs.push({ id: 'usd-year', q: 'The US dollar compared with a year ago?',
-        ...bucket(usdS.yoy, [-5, 5, 10], ['Weaker by more than 5%', 'About the same (within 5%)', 'Stronger by 5% to 10%', 'Stronger by more than 10%']),
-        why: `The dollar index is ${signed(usdS.yoy)} in a year. A stronger dollar usually pushes the dollar prices of oil, grain and metals down.`, link: 'card-usd' });
-    }
+    if (!usdS || usdS.yoy == null) return null;
+    return { id: 'usd-year', q: 'The US dollar compared with a year ago?',
+      ...bucket(usdS.yoy, [-5, 5, 10], ['Weaker by more than 5%', 'About the same (within 5%)', 'Stronger by 5% to 10%', 'Stronger by more than 10%']),
+      why: `The dollar index is ${signed(usdS.yoy)} in a year. A stronger dollar usually pushes the dollar prices of oil, grain and metals down.`, link: 'card-usd' };
+  }
+  function ureaQ(D) {
     const urea = series(D, 'urea');
-    if (urea && urea.ch6 != null) {
-      qs.push({ id: 'urea-6m', q: 'What has fertilizer (urea) done over the past 6 months?',
-        ...bucket(urea.ch6, [-30, -10, 10], ['Fell by a third or more', 'Fell somewhat', 'Stayed about flat', 'Rose']),
-        why: `Urea is ${usd(urea.last.v)} a ton, ${signed(urea.ch6)} in 6 months. Cheaper fertilizer tends to mean cheaper crops a season later.`, link: 'card-urea' });
-    }
-    if (E && E.oni && E.oni.length) {
-      const a = E.oni[E.oni.length - 1][2];
-      const labels = ['A strong El Niño (warm)', 'A mild El Niño', 'Neutral', 'La Niña (cool)'];
-      const answer = a >= 1.5 ? 0 : a >= 0.5 ? 1 : a > -0.5 ? 2 : 3;
-      qs.push({ id: 'enso-now', q: 'What is the tropical Pacific doing right now?', options: labels, answer,
-        why: `It's ${Math.abs(a).toFixed(1)}°C ${a >= 0 ? 'warmer' : 'cooler'} than normal. NOAA: ${E.status || ''}.`, link: 'outlook' });
-    }
-    if (T && T.commodities) {
-      for (const c of T.commodities.filter((x) => ['wheat', 'rice', 'soybeans', 'maize'].includes(x.id))) {
-        const ex = c.exporters;
-        if (ex.length < 6) continue;
-        const nm = (p) => T.names[String(p)] || '?';
-        const the = (p) => (['United States', 'United Kingdom', 'Netherlands', 'Philippines'].includes(nm(p)) ? 'the ' + nm(p) : nm(p));
-        const opts = shuffle([ex[0], ex[1], ex[2], ex[4 + Math.floor(Math.random() * Math.min(3, ex.length - 4))]]);
-        const crop = c.id;
-        qs.push({ id: 'seller-' + c.id, q: `Which country sells the most ${crop} to other countries?`,
-          options: opts.map(([p]) => nm(p)), answer: opts.indexOf(ex[0]),
-          why: `${nm(ex[0][0])} sells about ${Math.round(ex[0][1] / c.covered * 100)}% of it, then ${the(ex[1][0])} and ${the(ex[2][0])}.`, link: 'trade' });
-      }
-    }
-    // Trend and value: rising >= 10% in a year but no more than 15% above the 5-year average
+    if (!urea || urea.ch6 == null) return null;
+    return { id: 'urea-6m', q: 'What has fertilizer (urea) done over the past 6 months?',
+      ...bucket(urea.ch6, [-30, -10, 10], ['Fell by a third or more', 'Fell somewhat', 'Stayed about flat', 'Rose']),
+      why: `Urea is ${usd(urea.last.v)} a ton, ${signed(urea.ch6)} in 6 months. Cheaper fertilizer tends to mean cheaper crops a season later.`, link: 'card-urea' };
+  }
+  function ensoQ(E) {
+    if (!E || !E.oni || !E.oni.length) return null;
+    const a = E.oni[E.oni.length - 1][2];
+    const labels = ['A strong El Niño (warm)', 'A mild El Niño', 'Neutral', 'La Niña (cool)'];
+    const answer = a >= 1.5 ? 0 : a >= 0.5 ? 1 : a > -0.5 ? 2 : 3;
+    return { id: 'enso-now', q: 'What is the tropical Pacific doing right now?', options: labels, answer,
+      why: `It's ${Math.abs(a).toFixed(1)}°C ${a >= 0 ? 'warmer' : 'cooler'} than normal. NOAA: ${E.status || ''}.`, link: 'outlook' };
+  }
+  function sellerQs(T) {
+    if (!T || !T.commodities) return [];
+    const nm = (p) => T.names[String(p)] || '?';
+    const the = (p) => (['United States', 'United Kingdom', 'Netherlands', 'Philippines'].includes(nm(p)) ? 'the ' + nm(p) : nm(p));
+    return T.commodities.filter((x) => ['wheat', 'rice', 'soybeans', 'maize'].includes(x.id) && x.exporters.length >= 6).map((c) => {
+      const ex = c.exporters;
+      const opts = shuffle([ex[0], ex[1], ex[2], ex[4 + Math.floor(Math.random() * Math.min(3, ex.length - 4))]]);
+      return { id: 'seller-' + c.id, q: `Which country sells the most ${c.id} to other countries?`,
+        options: opts.map(([p]) => nm(p)), answer: opts.indexOf(ex[0]),
+        why: `${nm(ex[0][0])} sells about ${Math.round(ex[0][1] / c.covered * 100)}% of it, then ${the(ex[1][0])} and ${the(ex[2][0])}.`, link: 'trade' };
+    });
+  }
+  // Trend and value: rising >= 10% in a year but no more than 15% above the 5-year average
+  function earlyQ(D) {
     const names = { silver: 'Silver', gold: 'Gold', copper: 'Copper', brent: 'Oil', wheat: 'Wheat', maize: 'Maize', rice: 'Rice', soybeans: 'Soybeans', urea: 'Urea' };
     const rows = Object.keys(names).map((id) => ({ id, s: series(D, id) })).filter((r) => r.s && r.s.yoy != null)
       .map((r) => ({ id: r.id, early: r.s.yoy >= 10 && (r.s.last.v / r.s.avg5 - 1) * 100 <= 15 }));
     const early = rows.filter((r) => r.early), rest = rows.filter((r) => !r.early);
-    if (early.length && rest.length >= 3) {
-      const pick = early[Math.floor(Math.random() * early.length)];
-      const opts = shuffle([pick, ...shuffle(rest.slice()).slice(0, 3)]);
-      qs.push({ id: 'early-trend', q: 'Which of these is in an "early rise": going up, but still near its usual price?',
-        options: opts.map((r) => names[r.id]), answer: opts.indexOf(pick),
-        why: `In an early rise right now: ${early.map((r) => names[r.id].toLowerCase()).join(', ')}.`, link: 'trendvalue' });
-    }
-    return qs;
+    if (!early.length || rest.length < 3) return null;
+    const chosen = early[Math.floor(Math.random() * early.length)];
+    const opts = shuffle([chosen, ...shuffle(rest.slice()).slice(0, 3)]);
+    return { id: 'early-trend', q: 'Which of these is in an "early rise": going up, but still near its usual price?',
+      options: opts.map((r) => names[r.id]), answer: opts.indexOf(chosen),
+      why: `In an early rise right now: ${early.map((r) => names[r.id].toLowerCase()).join(', ')}.`, link: 'trendvalue' };
+  }
+  // Same order as before (it decides the order of the random draws)
+  function dataQuestions(D, E, T) {
+    return [oilQ(D), foodQ(D), usdQ(D), ureaQ(D), ensoQ(E), ...sellerQs(T), earlyQ(D)].filter(Boolean);
   }
 
   // ---- questions about how things work (the part worth remembering for years) ----
@@ -198,77 +202,82 @@
     { s: 'brent', label: 'Oil', unit: (v) => usd(v),
       now: (v, m) => `Oil averaged ${usd(v)} a barrel in ${m}.` },
   ];
-  function renderCalls(D) {
-    let calls = load('calls', []);
-    const latest = {};
-    for (const c of CALLS) { const s = series(D, c.s); if (s) latest[c.s] = s; }
-    // score calls whose next month has arrived
+  // Score calls whose next month has arrived (marks them unseen so the banner shows once)
+  function scoreCalls(calls, latest) {
     for (const k of calls) {
       const s = latest[k.s];
       if (k.result || !s) continue;
       const nxt = s.p.find((q) => q.m === k.from + 1);
       if (!nxt) continue;
-      const up = nxt.v > k.v;
-      k.result = { v: nxt.v, right: (k.call === 'up') === up };
+      k.result = { v: nxt.v, right: (k.call === 'up') === (nxt.v > k.v) };
       k.seen = false;
     }
-    save('calls', calls);
+  }
 
-    const box = $('calls');
-    box.replaceChildren(...CALLS.filter((c) => latest[c.s]).map((c) => {
-      const s = latest[c.s];
-      const card = el('div', { class: 'qcard' });
-      card.append(el('p', { class: 'qq' }, `${c.now(s.last.v, mlabel(s.last.m))} Will ${mlabel(s.last.m + 1)} be higher or lower?`));
-      const mine = calls.find((k) => k.s === c.s && k.from === s.last.m);
-      const fb = el('p', { class: 'qfb' });
-      if (mine) {
-        fb.textContent = `Your call: ${mine.call === 'up' ? 'higher' : 'lower'}. It gets scored when the ${mlabel(s.last.m + 1)} number comes in, early next month.`;
-        card.append(fb);
-        return card;
-      }
-      const opts = el('div', { class: 'qopts two' });
-      for (const [v, t] of [['up', 'Higher'], ['down', 'Lower']]) {
-        const b = el('button', { type: 'button', class: 'qopt' }, t);
-        b.addEventListener('click', () => {
-          calls = load('calls', []);
-          calls.push({ s: c.s, from: s.last.m, v: s.last.v, call: v, made: today() });
-          save('calls', calls.slice(-40));
-          renderCalls(D);
-        });
-        opts.append(b);
-      }
-      card.append(opts);
+  function callCard(c, s, calls, D) {
+    const card = el('div', { class: 'qcard' });
+    card.append(el('p', { class: 'qq' }, `${c.now(s.last.v, mlabel(s.last.m))} Will ${mlabel(s.last.m + 1)} be higher or lower?`));
+    const mine = calls.find((k) => k.s === c.s && k.from === s.last.m);
+    if (mine) {
+      card.append(el('p', { class: 'qfb' }, `Your call: ${mine.call === 'up' ? 'higher' : 'lower'}. It gets scored when the ${mlabel(s.last.m + 1)} number comes in, early next month.`));
       return card;
-    }));
+    }
+    const opts = el('div', { class: 'qopts two' });
+    for (const [v, t] of [['up', 'Higher'], ['down', 'Lower']]) {
+      const b = el('button', { type: 'button', class: 'qopt' }, t);
+      b.addEventListener('click', () => {
+        const fresh = load('calls', []);
+        fresh.push({ s: c.s, from: s.last.m, v: s.last.v, call: v, made: today() });
+        save('calls', fresh.slice(-40));
+        renderCalls(D);
+      });
+      opts.append(b);
+    }
+    card.append(opts);
+    return card;
+  }
 
+  function renderRecord(calls) {
     const done = calls.filter((k) => k.result);
     const rec = $('calls-record');
     rec.replaceChildren();
-    if (done.length) {
-      const r = done.filter((k) => k.result.right).length;
-      rec.append(el('strong', {}, `Your record: ${r} of ${done.length} call${done.length > 1 ? 's' : ''} right. `));
-      const lastFew = done.slice(-3).reverse().map((k) => {
-        const c = CALLS.find((x) => x.s === k.s);
-        return `${c ? c.label : k.s}, ${mlabel(k.from + 1)}: you said ${k.call === 'up' ? 'higher' : 'lower'}, it ${k.result.v > k.v ? 'rose' : 'fell'} to ${c ? c.unit(k.result.v) : k.result.v} ${k.result.right ? '✓' : '✗'}`;
-      });
-      rec.append(lastFew.join('; ') + '.');
-    } else {
+    if (!done.length) {
       rec.textContent = 'Guess before the new numbers come out. The page checks your guess when they do. Even experts are right only a bit more than half the time, so this is about paying attention, not winning.';
+      return;
     }
-
-    // banner near the top when a call has just been scored
-    const unseen = calls.filter((k) => k.result && k.seen === false);
-    const banner = $('callback');
-    if (unseen.length) {
-      const k = unseen[unseen.length - 1];
+    const r = done.filter((k) => k.result.right).length;
+    rec.append(el('strong', {}, `Your record: ${r} of ${done.length} call${done.length > 1 ? 's' : ''} right. `));
+    const lastFew = done.slice(-3).reverse().map((k) => {
       const c = CALLS.find((x) => x.s === k.s);
-      banner.replaceChildren(el('span', { class: 'qmark ' + (k.result.right ? 'ok' : 'no'), 'aria-hidden': 'true' }, k.result.right ? '✓' : '✗'),
-        `Your call came in: ${c ? c.label : k.s} ${k.result.v > k.v ? 'rose' : 'fell'}, and you said ${k.call === 'up' ? 'higher' : 'lower'}. `,
-        el('a', { href: '#check' }, 'Make the next one'));
-      banner.hidden = false;
-      for (const x of unseen) x.seen = true;
-      save('calls', calls);
-    }
+      return `${c ? c.label : k.s}, ${mlabel(k.from + 1)}: you said ${k.call === 'up' ? 'higher' : 'lower'}, it ${k.result.v > k.v ? 'rose' : 'fell'} to ${c ? c.unit(k.result.v) : k.result.v} ${k.result.right ? '✓' : '✗'}`;
+    });
+    rec.append(lastFew.join('; ') + '.');
+  }
+
+  // Banner near the top when a call has just been scored
+  function renderBanner(calls) {
+    const unseen = calls.filter((k) => k.result && k.seen === false);
+    if (!unseen.length) return;
+    const k = unseen[unseen.length - 1];
+    const c = CALLS.find((x) => x.s === k.s);
+    const banner = $('callback');
+    banner.replaceChildren(el('span', { class: 'qmark ' + (k.result.right ? 'ok' : 'no'), 'aria-hidden': 'true' }, k.result.right ? '✓' : '✗'),
+      `Your call came in: ${c ? c.label : k.s} ${k.result.v > k.v ? 'rose' : 'fell'}, and you said ${k.call === 'up' ? 'higher' : 'lower'}. `,
+      el('a', { href: '#check' }, 'Make the next one'));
+    banner.hidden = false;
+    for (const x of unseen) x.seen = true;
+    save('calls', calls);
+  }
+
+  function renderCalls(D) {
+    const calls = load('calls', []);
+    const latest = {};
+    for (const c of CALLS) { const s = series(D, c.s); if (s) latest[c.s] = s; }
+    scoreCalls(calls, latest);
+    save('calls', calls);
+    $('calls').replaceChildren(...CALLS.filter((c) => latest[c.s]).map((c) => callCard(c, latest[c.s], calls, D)));
+    renderRecord(calls);
+    renderBanner(calls);
   }
 
   async function init() {

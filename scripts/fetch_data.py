@@ -98,7 +98,7 @@ def to_series(points: dict[str, float]) -> dict:
     y, m = map(int, months[0].split("-"))
     ey, em = map(int, months[-1].split("-"))
     values = []
-    while (y, m) <= (ey, em):
+    while (y, m) <= (ey, em):  # one step per month from the first to the last: ends
         values.append(points.get(f"{y:04d}-{m:02d}"))
         m += 1
         if m == 13:
@@ -203,7 +203,7 @@ def fetch_dollar() -> tuple[dict, dict]:
     def last_weekday(m: str) -> str:
         y, mo = map(int, m.split("-"))
         d = dt.date(y + mo // 12, mo % 12 + 1, 1) - dt.timedelta(days=1)
-        while d.weekday() > 4:
+        while d.weekday() > 4:  # at most 2 steps back, from a Sunday
             d -= dt.timedelta(days=1)
         return d.isoformat()
 

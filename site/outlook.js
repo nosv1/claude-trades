@@ -30,9 +30,7 @@
     return '$' + Math.round(v / 1e6) + 'M';
   }
 
-  async function getJSON(url) {
-    try { const r = await fetch(url, { cache: 'no-cache' }); return r.ok ? await r.json() : null; } catch { return null; }
-  }
+  const getJSON = window.TP.getJSON;
 
   function pts(D, id) {
     const s = D.series[id];
@@ -58,169 +56,176 @@
   }
 
   // ---- the rules ----
-  function signals(D, E, T) {
-    const out = [], calm = [];
-    const add = (s) => (s.level ? out.push(s) : calm.push(s.short));
-
-    // Oil
+  // One function per signal. Each returns a signal (level null = calm) or null when its data is
+  // missing. signals() keeps their order, which is also the order of the "Calm right now" list.
+  function oilSignal(D) {
     const oil = stats(pts(D, 'brent'));
-    {
-      const up = oil.yoy >= 40 || (oil.rank10 >= 0.9 && oil.yoy >= 15) ? 'alert' : oil.yoy >= 15 ? 'watch' : null;
-      const level = up || (oil.yoy <= -20 ? 'easing' : null);
-      add({
-        level, short: 'oil', tag: 'Energy', series: oil, card: 'brent',
-        title: level === 'easing'
-          ? `Oil down ${Math.round(-oil.yoy)}% in a year, to ${usd(oil.last.v)} a barrel`
-          : `Oil at ${usd(oil.last.v)} a barrel, up ${Math.round(oil.yoy)}% in a year${oil.rank10 >= 0.99 ? ', the highest in 10 years' : ''}`,
-        body: level === 'easing'
-          ? 'Cheaper energy makes shipping, fertilizer and food cheaper over the next few months.'
-          : 'Energy is a hidden ingredient in food. Tractors and trucks run on diesel, ships burn fuel, and fertilizer is made from natural gas. Big changes in oil usually show up at the gas pump and the grocery store within a few months.',
-        watch: level === 'easing' ? 'Whether the drop lasts. Gas prices should follow it down.'
-          : `Whether oil stays ${oil.last.v >= 100 ? 'above $100' : 'this high'} through the winter. If it does, shipping and food will likely keep getting pricier into next year.`,
-      });
-    }
+    const up = oil.yoy >= 40 || (oil.rank10 >= 0.9 && oil.yoy >= 15) ? 'alert' : oil.yoy >= 15 ? 'watch' : null;
+    const level = up || (oil.yoy <= -20 ? 'easing' : null);
+    const easing = level === 'easing';
+    return {
+      level, short: 'oil', tag: 'Energy', series: oil, card: 'brent',
+      title: easing
+        ? `Oil down ${Math.round(-oil.yoy)}% in a year, to ${usd(oil.last.v)} a barrel`
+        : `Oil at ${usd(oil.last.v)} a barrel, up ${Math.round(oil.yoy)}% in a year${oil.rank10 >= 0.99 ? ', the highest in 10 years' : ''}`,
+      body: easing
+        ? 'Cheaper energy makes shipping, fertilizer and food cheaper over the next few months.'
+        : 'Energy is a hidden ingredient in food. Tractors and trucks run on diesel, ships burn fuel, and fertilizer is made from natural gas. Big changes in oil usually show up at the gas pump and the grocery store within a few months.',
+      watch: easing ? 'Whether the drop lasts. Gas prices should follow it down.'
+        : `Whether oil stays ${oil.last.v >= 100 ? 'above $100' : 'this high'} through the winter. If it does, shipping and food will likely keep getting pricier into next year.`,
+    };
+  }
 
-    // El Nino / La Nina
-    let elNinoStrong = false;
-    if (E && E.oni && E.oni.length) {
-      const [season, year, anom] = E.oni[E.oni.length - 1];
-      const a = Math.abs(anom);
-      const strength = a >= 2 ? 'very strong' : a >= 1.5 ? 'strong' : a >= 1 ? 'moderate' : 'weak';
-      const nino = anom >= 0.5, nina = anom <= -0.5;
-      elNinoStrong = anom >= 1.5;
-      const level = a >= 1.5 ? 'alert' : a >= 0.5 ? 'watch' : null;
-      const phase = nino ? 'El Niño' : 'La Niña';
-      add({
-        level: nino || nina ? level : null, short: 'El Niño / La Niña', tag: 'Weather',
-        title: `A ${strength} ${phase} is under way`,
-        body: `${phase} means the Pacific Ocean near the equator is ${nino ? 'warmer' : 'cooler'} than normal, which shifts where rain falls around the world. Right now it's ${a.toFixed(1)}°C ${nino ? 'warmer' : 'cooler'} (${SEASON[season] || season} ${year}).`
-          + ` (Source: NOAA, the US weather agency${E.issued ? ', ' + E.issued : ''}.)`,
-        watch: nino
-          ? 'El Niño usually brings dry weather to Australia (wheat), India and Thailand (rice and sugar), Indonesia and Malaysia (palm oil) and southern Africa (maize). Damaged harvests show up in prices 6 to 12 months later.'
-          : 'La Niña usually brings dry weather to Argentina, the southern US (soybeans, maize, wheat) and East Africa. Watch soybean and maize prices over the next 6 to 12 months.',
-        link: E.url,
-      });
-    }
+  // NOAA's usual strength words for an El Niño or La Niña, by how far the ocean is from normal (°C)
+  const ensoStrength = (a) => (a >= 2 ? 'very strong' : a >= 1.5 ? 'strong' : a >= 1 ? 'moderate' : 'weak');
 
-    // World food prices + grains
+  function ensoSignal(E) {
+    if (!E || !E.oni || !E.oni.length) return null;
+    const [season, year, anom] = E.oni[E.oni.length - 1];
+    const a = Math.abs(anom);
+    const strength = ensoStrength(a);
+    const nino = anom >= 0.5, nina = anom <= -0.5;
+    const level = a >= 1.5 ? 'alert' : a >= 0.5 ? 'watch' : null;
+    const phase = nino ? 'El Niño' : 'La Niña';
+    return {
+      level: nino || nina ? level : null, short: 'El Niño / La Niña', tag: 'Weather',
+      title: `A ${strength} ${phase} is under way`,
+      body: `${phase} means the Pacific Ocean near the equator is ${nino ? 'warmer' : 'cooler'} than normal, which shifts where rain falls around the world. Right now it's ${a.toFixed(1)}°C ${nino ? 'warmer' : 'cooler'} (${SEASON[season] || season} ${year}).`
+        + ` (Source: NOAA, the US weather agency${E.issued ? ', ' + E.issued : ''}.)`,
+      watch: nino
+        ? 'El Niño usually brings dry weather to Australia (wheat), India and Thailand (rice and sugar), Indonesia and Malaysia (palm oil) and southern Africa (maize). Damaged harvests show up in prices 6 to 12 months later.'
+        : 'La Niña usually brings dry weather to Argentina, the southern US (soybeans, maize, wheat) and East Africa. Watch soybean and maize prices over the next 6 to 12 months.',
+      link: E.url,
+    };
+  }
+  const elNinoStrong = (E) => Boolean(E && E.oni && E.oni.length && E.oni[E.oni.length - 1][2] >= 1.5);
+
+  function foodSignal(D) {
     const food = stats(pts(D, 'fao_food'));
     const grains = ['wheat', 'rice', 'soybeans', 'maize'].map((id) => ({ id, s: stats(pts(D, id)) }))
       .sort((a, b) => b.s.yoy - a.s.yoy);
     const maxGrain = grains[0].s.yoy;
-    {
-      const level = food.yoy >= 15 || food.rank10 >= 0.95 || maxGrain >= 40 ? 'alert'
-        : food.yoy >= 5 || food.ch3 >= 3 || maxGrain >= 20 ? 'watch'
-          : food.yoy <= -5 ? 'easing' : null;
-      const movers = grains.filter((g) => Math.abs(g.s.yoy) >= 10).map((g) => `${g.id} ${signed(g.s.yoy)}`);
-      add({
-        level, short: 'world food prices', tag: 'Food', series: food, card: 'fao_food',
-        title: `World food prices ${food.yoy >= 0 ? 'up' : 'down'} ${Math.abs(Math.round(food.yoy))}% in a year`,
-        body: (movers.length ? `Grains moved the most this year: ${movers.join(', ')}. ` : '')
-          + 'People eat grains, and so do farm animals, so grain prices spread to bread, meat, milk and more.',
-        watch: 'Whether the FAO Food Price Index keeps rising when the next numbers come out early next month.',
-      });
-    }
+    const level = food.yoy >= 15 || food.rank10 >= 0.95 || maxGrain >= 40 ? 'alert'
+      : food.yoy >= 5 || food.ch3 >= 3 || maxGrain >= 20 ? 'watch'
+        : food.yoy <= -5 ? 'easing' : null;
+    const movers = grains.filter((g) => Math.abs(g.s.yoy) >= 10).map((g) => `${g.id} ${signed(g.s.yoy)}`);
+    return {
+      level, short: 'world food prices', tag: 'Food', series: food, card: 'fao_food',
+      title: `World food prices ${food.yoy >= 0 ? 'up' : 'down'} ${Math.abs(Math.round(food.yoy))}% in a year`,
+      body: (movers.length ? `Grains moved the most this year: ${movers.join(', ')}. ` : '')
+        + 'People eat grains, and so do farm animals, so grain prices spread to bread, meat, milk and more.',
+      watch: 'Whether the FAO Food Price Index keeps rising when the next numbers come out early next month.',
+    };
+  }
 
-    // Cooking oils
+  function oilsSignal(D, ninoStrong) {
     const oils = stats(pts(D, 'fao_oils'));
-    {
-      const high = oils.rank10 >= 0.9;
-      const level = high ? (elNinoStrong ? 'alert' : 'watch') : oils.yoy >= 20 ? 'watch' : null;
-      add({
-        level, short: 'cooking oils', tag: 'Food', series: oils, card: 'fao_food',
-        title: `Cooking oils ${high ? 'near a 10-year high' : 'rising'}, up ${Math.round(oils.yoy)}% in a year`,
-        body: 'Palm, soy, sunflower and canola oil are in cooking oil and most packaged food.'
-          + (elNinoStrong ? ' Most palm oil comes from Indonesia and Malaysia. El Niño droughts there usually shrink the harvest about a year later.' : ''),
-        watch: 'Prices of cooking oil, chips, snacks and baked goods.',
-      });
-    }
+    const high = oils.rank10 >= 0.9;
+    const level = high ? (ninoStrong ? 'alert' : 'watch') : oils.yoy >= 20 ? 'watch' : null;
+    return {
+      level, short: 'cooking oils', tag: 'Food', series: oils, card: 'fao_food',
+      title: `Cooking oils ${high ? 'near a 10-year high' : 'rising'}, up ${Math.round(oils.yoy)}% in a year`,
+      body: 'Palm, soy, sunflower and canola oil are in cooking oil and most packaged food.'
+        + (ninoStrong ? ' Most palm oil comes from Indonesia and Malaysia. El Niño droughts there usually shrink the harvest about a year later.' : ''),
+      watch: 'Prices of cooking oil, chips, snacks and baked goods.',
+    };
+  }
 
-    // Fertilizer
+  function ureaSignal(D) {
     const urea = stats(pts(D, 'urea'));
-    {
-      const drop = (1 - urea.last.v / urea.peak6.v) * 100;
-      const level = urea.yoy >= 50 ? 'alert' : urea.yoy >= 20 ? 'watch' : drop >= 30 || urea.yoy <= -20 ? 'easing' : null;
-      add({
-        level, short: 'fertilizer', tag: 'Farming', series: urea, card: 'urea',
-        title: level === 'easing'
-          ? (drop >= 30 ? `Urea fertilizer is getting cheaper: down ${Math.round(drop)}% since ${mlabel(urea.peak6.m)}` : `Urea fertilizer down ${Math.round(-urea.yoy)}% in a year`)
-          : `Urea fertilizer up ${Math.round(urea.yoy)}% in a year`,
-        body: level === 'easing'
-          ? (drop >= 30 ? `Urea fertilizer jumped to ${usd(urea.peak6.v)} a ton in ${mlabel(urea.peak6.m)}. Now it's ${usd(urea.last.v)}. ` : '')
-            + 'Cheaper fertilizer makes next season\'s crops cheaper to grow. That pushes against expensive oil.'
-          : 'Farmers buy fertilizer months before harvest, so today\'s price shows up in food prices 6 to 12 months from now.',
-        watch: level === 'easing' ? 'Whether it stays low until farmers plant in the spring.' : 'Fertilizer and natural gas prices.',
-      });
-    }
+    const drop = (1 - urea.last.v / urea.peak6.v) * 100;
+    const level = urea.yoy >= 50 ? 'alert' : urea.yoy >= 20 ? 'watch' : drop >= 30 || urea.yoy <= -20 ? 'easing' : null;
+    const easing = level === 'easing', fromPeak = drop >= 30;
+    return {
+      level, short: 'fertilizer', tag: 'Farming', series: urea, card: 'urea',
+      title: easing
+        ? (fromPeak ? `Urea fertilizer is getting cheaper: down ${Math.round(drop)}% since ${mlabel(urea.peak6.m)}` : `Urea fertilizer down ${Math.round(-urea.yoy)}% in a year`)
+        : `Urea fertilizer up ${Math.round(urea.yoy)}% in a year`,
+      body: easing
+        ? (fromPeak ? `Urea fertilizer jumped to ${usd(urea.peak6.v)} a ton in ${mlabel(urea.peak6.m)}. Now it's ${usd(urea.last.v)}. ` : '')
+          + 'Cheaper fertilizer makes next season\'s crops cheaper to grow. That pushes against expensive oil.'
+        : 'Farmers buy fertilizer months before harvest, so today\'s price shows up in food prices 6 to 12 months from now.',
+      watch: easing ? 'Whether it stays low until farmers plant in the spring.' : 'Fertilizer and natural gas prices.',
+    };
+  }
 
-    // The US dollar: commodities are priced in it, so it tends to move against them
+  // Counts earlier months when the dollar moved as much, and what oil and food did, so the text
+  // stays true as months are added. Empty under 3 cases (too few to say anything).
+  function dollarTally(D, usdP, dollar, up) {
+    const yoyOf = (p) => {
+      const at = new Map(p.map((q) => [q.m, q.v]));
+      return (m) => (at.has(m) && at.has(m - 12) ? at.get(m) / at.get(m - 12) - 1 : null);
+    };
+    const dY = yoyOf(usdP), oY = yoyOf(pts(D, 'brent')), fY = yoyOf(pts(D, 'fao_food'));
+    const like = usdP.map((q) => q.m).filter((m) => m < dollar.last.m && dY(m) != null
+      && (up ? dY(m) >= 0.08 : dY(m) <= -0.08) && oY(m) != null && fY(m) != null);
+    const went = (y) => like.filter((m) => (up ? y(m) < 0 : y(m) > 0)).length;
+    const n = like.length, since = Math.floor(usdP[0].m / 12) + 1; // first year with a year-ago
+    return n >= 3 ? ` Since ${since}, the dollar moved this much in ${n} earlier months. Oil ${up ? 'fell' : 'rose'} in ${went(oY)} of them, and world food prices in ${went(fY)}.` : '';
+  }
+
+  // The US dollar: commodities are priced in it, so it tends to move against them
+  function dollarSignal(D) {
     const usdP = pts(D, 'usd');
-    if (usdP.length > 24) {
-      const dollar = stats(usdP);
-      const up = dollar.yoy >= 8, down = dollar.yoy <= -8;
-      // Count earlier months like this one from the data, so the text stays true as months are added
-      const yoyOf = (id) => {
-        const at = new Map((id === 'usd' ? usdP : pts(D, id)).map((q) => [q.m, q.v]));
-        return (m) => (at.has(m) && at.has(m - 12) ? at.get(m) / at.get(m - 12) - 1 : null);
-      };
-      const dY = yoyOf('usd'), oY = yoyOf('brent'), fY = yoyOf('fao_food');
-      let tally = '';
-      if (up || down) {
-        const like = usdP.map((q) => q.m).filter((m) => m < dollar.last.m && dY(m) != null
-          && (up ? dY(m) >= 0.08 : dY(m) <= -0.08) && oY(m) != null && fY(m) != null);
-        const went = (y) => like.filter((m) => (up ? y(m) < 0 : y(m) > 0)).length;
-        const n = like.length, since = Math.floor(usdP[0].m / 12) + 1; // first year with a year-ago
-        if (n >= 3) tally = ` Since ${since}, the dollar moved this much in ${n} earlier months. Oil ${up ? 'fell' : 'rose'} in ${went(oY)} of them, and world food prices in ${went(fY)}.`;
-      }
-      add({
-        level: up || down ? 'watch' : null, short: 'the dollar', tag: 'Money', series: dollar, card: 'usd',
-        title: `The US dollar is ${up ? 'up' : 'down'} ${Math.abs(Math.round(dollar.yoy))}% in a year`,
-        body: up
-          ? 'Oil and grain are priced in dollars. A stronger dollar makes them cost more for everyone else, which usually pushes their dollar prices down.' + tally + ' It\'s a push, not a rule: in 2022 a war pushed oil and food up anyway.'
-          : 'A weaker dollar makes dollar-priced food, fuel and metals cheaper for the rest of the world, which usually pushes their dollar prices up.' + tally,
-        watch: up
-          ? 'Food import bills in countries with weak currencies, like Egypt, Nigeria and Pakistan. A falling local currency is often how world prices turn into local food crises.'
-          : 'Whether gold, oil and grain keep climbing.',
-      });
-    }
+    if (usdP.length <= 24) return null;
+    const dollar = stats(usdP);
+    const up = dollar.yoy >= 8, down = dollar.yoy <= -8;
+    const tally = up || down ? dollarTally(D, usdP, dollar, up) : '';
+    return {
+      level: up || down ? 'watch' : null, short: 'the dollar', tag: 'Money', series: dollar, card: 'usd',
+      title: `The US dollar is ${up ? 'up' : 'down'} ${Math.abs(Math.round(dollar.yoy))}% in a year`,
+      body: up
+        ? 'Oil and grain are priced in dollars. A stronger dollar makes them cost more for everyone else, which usually pushes their dollar prices down.' + tally + ' It\'s a push, not a rule: in 2022 a war pushed oil and food up anyway.'
+        : 'A weaker dollar makes dollar-priced food, fuel and metals cheaper for the rest of the world, which usually pushes their dollar prices up.' + tally,
+      watch: up
+        ? 'Food import bills in countries with weak currencies, like Egypt, Nigeria and Pakistan. A falling local currency is often how world prices turn into local food crises.'
+        : 'Whether gold, oil and grain keep climbing.',
+    };
+  }
 
-    // Copper
+  function copperSignal(D) {
     const copper = stats(pts(D, 'copper'));
-    if (copper.rank10 >= 0.97 && copper.yoy >= 20) {
-      add({
-        level: 'watch', short: 'copper', tag: 'Metals', series: copper, card: 'copper',
-        title: `Copper ${copper.record ? 'at a record high' : 'near a 10-year high'}, up ${Math.round(copper.yoy)}% in a year`,
-        body: 'Copper goes into wires, motors, power lines and electronics. A price this high means factories want more copper than mines are digging up.',
-        watch: 'Prices of anything electrical, from appliances to cars.',
-      });
-    } else calm.push('copper');
+    const on = copper.rank10 >= 0.97 && copper.yoy >= 20;
+    return {
+      level: on ? 'watch' : null, short: 'copper', tag: 'Metals', series: copper, card: 'copper',
+      title: `Copper ${copper.record ? 'at a record high' : 'near a 10-year high'}, up ${Math.round(copper.yoy)}% in a year`,
+      body: 'Copper goes into wires, motors, power lines and electronics. A price this high means factories want more copper than mines are digging up.',
+      watch: 'Prices of anything electrical, from appliances to cars.',
+    };
+  }
 
-    // Pressure points from trade data: where one seller dominates
-    if (T && T.commodities) {
-      for (const id of ['wheat', 'rice']) {
-        const c = T.commodities.find((x) => x.id === id);
-        if (!c || !c.exporters.length) continue;
-        const [p, v] = c.exporters[0];
-        const share = v / c.covered;
-        if (share < 0.15) continue;
-        const nm = T.names[String(p)] || '?';
-        const rows = c.importers.map((b) => {
-          const got = (b.from.find(([q]) => q === p) || [0, 0])[1];
-          return { c: b.c, share: b.total ? got / b.total : 0, value: got };
-        });
-        const over = rows.filter((r) => r.share > 0.5).length;
-        const big = rows.reduce((a, r) => (r.value > a.value ? r : a), rows[0]);
-        const black = nm === 'Russia' || nm === 'Ukraine';
-        add({
-          level: 'point', short: id, tag: 'Trade', card: null, anchor: 'trade',
-          title: `${nm} sells ${Math.round(share * 100)}% of all the ${id} sold between countries`,
-          body: `${over} of the ${c.importers.length} biggest ${id} buyers get more than half their ${id} from ${THE.has(nm) ? 'the ' + nm : nm}. `
-            + `${T.names[String(big.c)]} has the most to lose: it buys ${money(big.value)} a year from ${THE.has(nm) ? 'the ' + nm : nm}, ${Math.round(big.share * 100)}% of its ${id}.`,
-          watch: black ? 'News of ships blocked in the Black Sea, or Russia limiting what it sells abroad.' : `News of ${nm} limiting what it sells abroad, or a bad harvest there.`,
-        });
-      }
-    }
+  // Pressure points from trade data: where one seller sells 15%+ of all of a grain traded
+  function tradeSignal(T, id) {
+    const c = T.commodities.find((x) => x.id === id);
+    if (!c || !c.exporters.length) return null;
+    const [p, v] = c.exporters[0];
+    const share = v / c.covered;
+    if (share < 0.15) return null;
+    const nm = T.names[String(p)] || '?';
+    const rows = c.importers.map((b) => {
+      const got = (b.from.find(([q]) => q === p) || [0, 0])[1];
+      return { c: b.c, share: b.total ? got / b.total : 0, value: got };
+    });
+    const over = rows.filter((r) => r.share > 0.5).length;
+    const big = rows.reduce((a, r) => (r.value > a.value ? r : a), rows[0]);
+    const black = nm === 'Russia' || nm === 'Ukraine';
+    const from = THE.has(nm) ? 'the ' + nm : nm;
+    return {
+      level: 'point', short: id, tag: 'Trade', card: null, anchor: 'trade',
+      title: `${nm} sells ${Math.round(share * 100)}% of all the ${id} sold between countries`,
+      body: `${over} of the ${c.importers.length} biggest ${id} buyers get more than half their ${id} from ${from}. `
+        + `${T.names[String(big.c)]} has the most to lose: it buys ${money(big.value)} a year from ${from}, ${Math.round(big.share * 100)}% of its ${id}.`,
+      watch: black ? 'News of ships blocked in the Black Sea, or Russia limiting what it sells abroad.' : `News of ${nm} limiting what it sells abroad, or a bad harvest there.`,
+    };
+  }
 
+  function signals(D, E, T) {
+    const all = [
+      oilSignal(D), ensoSignal(E), foodSignal(D), oilsSignal(D, elNinoStrong(E)), ureaSignal(D),
+      dollarSignal(D), copperSignal(D),
+      ...(T && T.commodities ? ['wheat', 'rice'].map((id) => tradeSignal(T, id)) : []),
+    ].filter(Boolean);
+    const out = all.filter((s) => s.level), calm = all.filter((s) => !s.level).map((s) => s.short);
     out.sort((a, b) => LEVELS[a.level].rank - LEVELS[b.level].rank);
     return { out, calm };
   }
@@ -304,38 +309,42 @@
     cheap: { label: 'Cheap, still falling', rank: 4, text: 'well below its usual price and still dropping' },
     none: { label: 'No clear signal', rank: 5, text: null },
   };
+  // Which read a row gets, from its trend (12-month change), value (vs the 5-year average) and drop
+  function readOf(r) {
+    const rising = r.trend >= 10, falling = r.trend <= -10 || r.fromPeak <= -25;
+    if (rising) return r.value <= 15 ? 'early' : 'late';
+    if (r.value <= -15 && r.ch3 >= 3) return 'turning';
+    if (r.value <= -15 && falling) return 'cheap';
+    return falling && r.value > 15 ? 'cooling' : 'none';
+  }
+  function radarRow(D, spot, [id, label, live]) {
+    const p = pts(D, id);
+    if (p.length < 70) return null;
+    let last = p[p.length - 1];
+    const liveV = live && spot && spot[live] && spot[live].price;
+    if (liveV) {
+      const d = new Date(spot.fetched || Date.now());
+      last = { m: d.getFullYear() * 12 + d.getMonth(), v: liveV };
+    }
+    const hist = p.filter((q) => q.m < last.m);
+    const at = (m) => (hist.find((q) => q.m === m) || {}).v;
+    const prev5 = hist.slice(-60);
+    const avg5 = prev5.reduce((a, q) => a + q.v, 0) / prev5.length;
+    const yo = at(last.m - 12), m3 = at(last.m - 3);
+    const peak2 = Math.max(...hist.slice(-24).map((q) => q.v), last.v);
+    const r = {
+      id, label,
+      trend: yo ? (last.v / yo - 1) * 100 : 0,
+      ch3: m3 ? (last.v / m3 - 1) * 100 : 0,
+      value: (last.v / avg5 - 1) * 100,
+      fromPeak: (last.v / peak2 - 1) * 100,
+    };
+    r.read = readOf(r);
+    return r;
+  }
   function radar(D, spot) {
-    return RADAR.map(([id, label, live]) => {
-      const p = pts(D, id);
-      if (p.length < 70) return null;
-      let last = p[p.length - 1];
-      const liveV = live && spot && spot[live] && spot[live].price;
-      if (liveV) {
-        const d = new Date(spot.fetched || Date.now());
-        last = { m: d.getFullYear() * 12 + d.getMonth(), v: liveV };
-      }
-      const hist = p.filter((q) => q.m < last.m);
-      const at = (m) => (hist.find((q) => q.m === m) || {}).v;
-      const prev5 = hist.slice(-60);
-      const avg5 = prev5.reduce((a, q) => a + q.v, 0) / prev5.length;
-      const yo = at(last.m - 12), m3 = at(last.m - 3);
-      const peak2 = Math.max(...hist.slice(-24).map((q) => q.v), last.v);
-      const r = {
-        id, label,
-        trend: yo ? (last.v / yo - 1) * 100 : 0,
-        ch3: m3 ? (last.v / m3 - 1) * 100 : 0,
-        value: (last.v / avg5 - 1) * 100,
-        fromPeak: (last.v / peak2 - 1) * 100,
-      };
-      const rising = r.trend >= 10, falling = r.trend <= -10 || r.fromPeak <= -25;
-      r.read = rising && r.value <= 15 ? 'early'
-        : rising ? 'late'
-          : r.value <= -15 && r.ch3 >= 3 ? 'turning'
-            : r.value <= -15 && falling ? 'cheap'
-              : falling && r.value > 15 ? 'cooling'
-                : 'none';
-      return r;
-    }).filter(Boolean).sort((a, b) => READS[a.read].rank - READS[b.read].rank || b.trend - a.trend);
+    return RADAR.map((row) => radarRow(D, spot, row)).filter(Boolean)
+      .sort((a, b) => READS[a.read].rank - READS[b.read].rank || b.trend - a.trend);
   }
   function renderRadar(rows) {
     $('radar').replaceChildren(...rows.map((r) => {

@@ -123,7 +123,8 @@ NUM = r"\d[\d,]*(?:\.\d+)?"
 # One pass, each span once: "$125"; "8%" / "8 percent" / "2 percentage points"; a range's low end
 # too ("8-10%", "3 to 10 percent", but not a year: "through 2024 to 15%"); any other decimal.
 NUMBER = re.compile(r"\$\s*(" + NUM + r")"
-                    r"|(?<![\d.,])(?:(?!(?:19|20)\d\d\b)(" + NUM + r")\s*(?:-|\u2013|to)\s*\$?)?(" + NUM + r")[\s-]*" + UNIT +
+                    r"|(?<![\d.,])(?:(?!(?:19|20)\d\d\b)(" + NUM + r")\s*(?:-|\u2013|to)\s*\$?)?"
+                    r"(" + NUM + r")[\s-]*" + UNIT +
                     r"|(\d+\.\d+)", re.I)
 NOT_LABEL = r"since last week(?!end)"  # would repeat the page's label ("weekend" is fine)
 
@@ -149,20 +150,20 @@ def unmatched(nums, facts):
     return miss
 
 
-def check_briefing(b, p, data, prev=None):
-    if not p.need(isinstance(b, dict), "briefing: not an object"):
-        return
-    date(p, b.get("date"), "briefing.date")
-    text(p, b.get("by"), "briefing.by", 2, 40)
-    text(p, b.get("headline"), "briefing.headline", 10, 140)
-    text(p, b.get("summary"), "briefing.summary", 40, 600)
-    # Required unless the published read is from the same day and had none (only the very first
-    # read). Fails closed: if the published read can't be found, a lookback is required.
+def check_lookback(b, p, prev):
+    """Required unless the published read is from the same day and had none (only the very first
+    read). Fails closed: if the published read can't be found, a lookback is required."""
     same_day_first = (isinstance(prev, dict) and prev.get("date") == b.get("date")
                       and "lookback" not in prev)
     if "lookback" in b or not same_day_first:
         text(p, b.get("lookback"), "briefing.lookback (what happened since last week)", 40, 600)
-    # Numbers in the summary and lookback get checked too, each against its own list.
+    if isinstance(b.get("lookback"), str):
+        p.need(not re.match(r"\s*" + NOT_LABEL, b["lookback"], re.I),
+               "briefing.lookback: don't start with \"Since last week\"; the page adds that label")
+
+
+def check_quoted(b, p, data):
+    """Numbers in the summary and lookback, each against its own facts list."""
     for k in ("summary", "lookback"):
         fl = b.get(k + "_facts", [])
         if not p.need(isinstance(fl, list) and len(fl) <= 12, f"briefing.{k}_facts: needs a list"):
@@ -173,9 +174,17 @@ def check_briefing(b, p, data, prev=None):
         miss = unmatched(quoted_numbers(t), fl) if isinstance(t, str) else []
         p.need(not miss, f"briefing.{k}: no {k}_facts entry backs {', '.join(f'{n:g}' for n in miss)}; "
                "add one fact per number (same value), or write news numbers in words")
-    if isinstance(b.get("lookback"), str):
-        p.need(not re.match(r"\s*" + NOT_LABEL, b["lookback"], re.I),
-               "briefing.lookback: don't start with \"Since last week\"; the page adds that label")
+
+
+def check_briefing(b, p, data, prev=None):
+    if not p.need(isinstance(b, dict), "briefing: not an object"):
+        return
+    date(p, b.get("date"), "briefing.date")
+    text(p, b.get("by"), "briefing.by", 2, 40)
+    text(p, b.get("headline"), "briefing.headline", 10, 140)
+    text(p, b.get("summary"), "briefing.summary", 40, 600)
+    check_lookback(b, p, prev)
+    check_quoted(b, p, data)
     items = b.get("items")
     if p.need(isinstance(items, list) and 2 <= len(items) <= 5, "briefing.items: needs 2-5 items"):
         for i, it in enumerate(items):
@@ -191,11 +200,13 @@ def check_briefing(b, p, data, prev=None):
                     sw = f"{w}.sources[{j}]"
                     if p.need(isinstance(s, dict), f"{sw}: not an object"):
                         text(p, s.get("name"), sw + ".name", 2, 60)
-                        p.need(isinstance(s.get("url"), str) and s["url"].startswith("https://") and len(s["url"]) <= 400,
+                        url = s.get("url")
+                        p.need(isinstance(url, str) and url.startswith("https://") and len(url) <= 400,
                                f"{sw}.url: needs an https:// link")
                         text(p, s.get("quote"), sw + ".quote (exact words on that page that back the claim)", 15, 300)
             facts = it.get("facts")
-            if p.need(isinstance(facts, list) and len(facts) <= 12, f"{w}.facts: needs a list (can be empty) of the numbers taken from site/data"):
+            if p.need(isinstance(facts, list) and len(facts) <= 12,
+                      f"{w}.facts: needs a list (can be empty) of the numbers taken from site/data"):
                 for j, f in enumerate(facts):
                     check_fact(f, p, f"{w}.facts[{j}]", data)
     watch = b.get("watch")
@@ -206,7 +217,8 @@ def check_briefing(b, p, data, prev=None):
 
 def check_fact(f, p, where, data):
     """{"s": series, "m": metric, "v": the number as written, "month": "YYYY-MM" (optional; default latest)}"""
-    if not p.need(isinstance(f, dict) and f.get("m") in METRICS and isinstance(f.get("v"), (int, float)), f"{where}: needs s, m and a number v"):
+    shaped = isinstance(f, dict) and f.get("m") in METRICS and isinstance(f.get("v"), (int, float))
+    if not p.need(shaped, f"{where}: needs s, m and a number v"):
         return
     if not p.need(f.get("s") in data.series or f.get("s") == "oni", f"{where}.s: unknown series {f.get('s')!r}"):
         return
@@ -238,7 +250,8 @@ def check_sources(b, p, warn):
                 continue
             if url not in cache:
                 try:
-                    with urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": UA}), timeout=25) as r:
+                    req = urllib.request.Request(url, headers={"User-Agent": UA})
+                    with urllib.request.urlopen(req, timeout=25) as r:
                         t = r.read().decode(r.headers.get_content_charset() or "utf-8", "ignore")
                     t = re.sub(r"(?s)<(script|style)[^>]*>.*?</\1>", " ", t)
                     cache[url] = norm(html.unescape(re.sub(r"<[^>]+>", " ", t)))
@@ -280,7 +293,8 @@ def check_scenarios(sc, p, data):
         w = f"scenarios[{i}]"
         if not p.need(isinstance(s, dict), f"{w}: not an object"):
             continue
-        p.need(isinstance(s.get("id"), str) and bool(SLUG.match(s["id"])) and s["id"] not in ids, f"{w}.id: unique lowercase slug")
+        p.need(isinstance(s.get("id"), str) and bool(SLUG.match(s["id"])) and s["id"] not in ids,
+               f"{w}.id: unique lowercase slug")
         ids.add(s.get("id"))
         text(p, s.get("title"), w + ".title", 5, 70)
         p.need(s.get("likelihood") in LIKELY, f"{w}.likelihood: one of {sorted(LIKELY)}")
@@ -291,7 +305,8 @@ def check_scenarios(sc, p, data):
                f"{w}.cases: how many past cases the history rests on (a whole number)")
         for k in ("up", "down"):
             v = s.get(k, [])
-            p.need(isinstance(v, list) and len(v) <= 6 and all(isinstance(x, str) and 2 <= len(x) <= 50 for x in v), f"{w}.{k}: up to 6 short names")
+            names_ok = isinstance(v, list) and len(v) <= 6 and all(isinstance(x, str) and 2 <= len(x) <= 50 for x in v)
+            p.need(names_ok, f"{w}.{k}: up to 6 short names")
         p.need(bool(s.get("up")) or bool(s.get("down")), f"{w}: needs something in up or down")
         steps = s.get("steps")
         if not p.need(isinstance(steps, list) and 2 <= len(steps) <= 6, f"{w}.steps: needs 2-6 steps"):
@@ -356,16 +371,19 @@ def check_log(L, p, data, scenarios, base):
         made = date(p, x.get("made"), w + ".made")
         before = len(p)
         check_cond(x.get("check"), p, w + ".check", data)
-        if p.need(isinstance(x.get("deadline"), str) and bool(YM.match(x["deadline"])), f"{w}.deadline: YYYY-MM") and made:
+        deadline_ok = isinstance(x.get("deadline"), str) and bool(YM.match(x["deadline"]))
+        if p.need(deadline_ok, f"{w}.deadline: YYYY-MM") and made:
             p.need(ym(x["deadline"]) > month_of(made), f"{w}.deadline: must be after the month it was made")
         if i >= n_old and len(p) == before:
-            p.need(not data.passes(x["check"]), f"{w}: its check already passes in today's data, so it isn't a prediction")
+            p.need(not data.passes(x["check"]),
+                   f"{w}: its check already passes in today's data, so it isn't a prediction")
         latest[x.get("id")] = x
     for s in scenarios or []:
         if isinstance(s, dict):
             x = latest.get(s.get("id"))
             p.need(x is not None and x.get("likelihood") == s.get("likelihood"),
-                   f"scenario {s.get('id')!r}: its likelihood ({s.get('likelihood')}) needs a matching entry at the end of claude-log.likelihoods")
+                   f"scenario {s.get('id')!r}: its likelihood ({s.get('likelihood')}) needs a matching entry "
+                   "at the end of claude-log.likelihoods")
 
 
 def git_base(rel):
