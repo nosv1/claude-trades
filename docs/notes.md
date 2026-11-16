@@ -16,9 +16,23 @@ urea; FAO sub-index tiles; range filter, inflation toggle, table view per chart.
 
 ## Handoff
 
-**Where it stands (2026-11-15):** milestone 1 merged to `main` and live at
-<https://nosv1.github.io/claude-trades/>. Pages source must be "GitHub Actions"; with "Deploy from a
-branch" the root shows the README and the dashboard only appears under `/site/`.
+**Where it stands (2026-11-16, end of session):** live at <https://nosv1.github.io/claude-trades/>
+(Pages source must be "GitHub Actions"). Sections: This week's read, Heads up, What could happen
+next (+ Claude's track record), Trend and value, Silver, Charts, Who feeds whom, Check yourself.
+
+**Running on their own:** daily data refresh + deploy (Action); weekly read every Monday 14:00 UTC
+(routine `trig_01XVXQyruGPYEB3Pps7ASnkE`, follows [weekly-routine.md](weekly-routine.md), publishes
+via the weekly-read workflow); sync worker auto-deploys on changes under `worker/`.
+
+**Next session, first:**
+1. **Google sign-in:** he still needs to create the Google OAuth client (Web, origin
+   `https://nosv1.github.io`) and send the client ID. Then set it in `worker/wrangler.toml`
+   (`GOOGLE_CLIENT_ID`) and `site/sync-config.js` (`googleClientId`); `api` is already set to
+   `https://trade-pulse-sync.nosv1.workers.dev`. Test a real sign-in on the live site.
+2. **Check Monday's routine run** (2026-11-23 is the first with the new rules: facts, quotes,
+   `--sources`, claude-log calls). `RemoteTrigger list_runs`/`get_run_log`, then read what it
+   published and whether the checker caught anything.
+3. Early Jan 2027: first graded calls (Dec FAO up, Dec Brent down) appear on the track record.
 
 **Roadmap, in order (Claude's call as domain expert, 2026-11-15):**
 

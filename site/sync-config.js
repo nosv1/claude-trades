@@ -2,6 +2,6 @@
 // api: the sync worker's URL (worker/, deployed by .github/workflows/sync-worker.yml).
 // googleClientId: the OAuth web client ID from Google Cloud, with https://nosv1.github.io allowed.
 window.TP_SYNC = {
-  api: '',
+  api: 'https://trade-pulse-sync.nosv1.workers.dev',
   googleClientId: '',
 };
