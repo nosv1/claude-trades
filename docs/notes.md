@@ -30,8 +30,9 @@ and branch names still say "weekly"); sync worker auto-deploys on changes under 
    topics, from `checked`) and the local-language quote rule. `RemoteTrigger list_runs` /
    `get_run_log`. Watch for: `unreached` counts, quotes that fail because they were translated,
    and whether a full sweep twice a week is too heavy (run time, his usage).
-   **Widen access** is waiting on him: hosts to add to the Default environment allowlist are in
-   the 2026-11-16 log entry (step by step given in chat). Reuters/AP/BBC refuse Anthropic's
+   **Access widened** (he added the hosts, 2026-11-16 evening, bare + `*.` form): the 21 hosts in
+   the 2026-11-16 log entry; weekly-routine.md lists them. Check the 11-20 run actually reaches
+   them (fewer `unreached`). Reuters/AP/BBC refuse Anthropic's
    crawler and CNBC/S&P Global block cloud machines: neither is a setting, and we don't route
    around a site's opt-out. The page doesn't show the checklist yet.
 2. **Google sign-in confirmed working on his phone** (2026-11-16), and the dark-mode fix behind

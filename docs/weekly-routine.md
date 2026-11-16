@@ -79,7 +79,11 @@ non-experts who want to know what to look out for in the coming months.
 
    Prefer primary or well-known sources: FAO, USDA, NOAA, IEA, OPEC, World Bank, Reuters, AP,
    Bloomberg, FT. The cloud environment only reaches allowlisted sites (Reuters, AP, BBC, CNBC,
-   S&P Global, DTN, FAO, USDA, NOAA, EIA, IEA, OPEC, World Bank, IMF, MPOB). If a page fails with
+   S&P Global, DTN, FAO, USDA, NOAA, EIA, IEA, OPEC, World Bank, IMF, MPOB; added 2026-11-16:
+   GDELT news search (api.gdeltproject.org), AMIS, GEOGLAM (cropmonitor.org), FEWS NET, WFP, IGC,
+   IFPRI, Al Jazeera, The Hindu BusinessLine, Interfax, Kommersant, Kontan, Bisnis, CONAB, Bolsa
+   de Cereales, BCR, Ahram Online, APK-Inform, UKMTO, Australia's BoM, India's IMD). Reuters, AP,
+   BBC, CNBC and S&P Global are listed but usually refuse us; go to another site first. If a page fails with
    ENOTFOUND or 403, don't retry it: find the same story on an allowed site, or leave the claim
    out. Search results alone are not a source; open the page. If you can't open any page for a
    topic, mark it `unreached` and say why. Never mark a topic `quiet` without opening a page.
