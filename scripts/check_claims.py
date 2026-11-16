@@ -30,19 +30,29 @@ up = [m for m in period if yoy(usd, m) >= 0.08]
 down = [m for m in period if yoy(usd, m) <= -0.08]
 years = lambda ms: sorted({m // 12 for m in ms})
 
+def all_(ms, test):
+    """True if there are months and every one has data and passes; missing data fails the claim."""
+    return bool(ms) and all(None not in v and test(*v) for v in ms)
+
+
+def worst(d, ms):
+    v = [yoy(d, m) for m in ms]
+    return min(v) if v and None not in v else 0
+
+
 claims = {
     "strong-dollar years are 2008-09, 2012 (one month), 2014-16 and 2022":
         years(up) == [2008, 2009, 2012, 2014, 2015, 2016, 2022] and sum(m // 12 == 2012 for m in up) == 1,
     "outside 2022, oil and food fell in every strong-dollar month":
-        all(yoy(oil, m) < 0 and yoy(food, m) < 0 for m in up if m // 12 != 2022),
+        all_([(yoy(oil, m), yoy(food, m)) for m in up if m // 12 != 2022], lambda o, f: o < 0 and f < 0),
     "oil fell by as much as half (worst month -45% or lower) in 2008-09 and 2014-16":
-        all(min(yoy(oil, m) for m in up if a <= m // 12 <= b) <= -0.45 for a, b in ((2008, 2009), (2014, 2016))),
+        all(worst(oil, [m for m in up if a <= m // 12 <= b]) <= -0.45 for a, b in ((2008, 2009), (2014, 2016))),
     "in 2022 oil and food rose in every strong-dollar month":
-        all(yoy(oil, m) > 0 and yoy(food, m) >= 0 for m in up if m // 12 == 2022),
+        all_([(yoy(oil, m), yoy(food, m)) for m in up if m // 12 == 2022], lambda o, f: o > 0 and f > 0),
     "weak dollar: oil rose every time":
-        bool(down) and all(yoy(oil, m) > 0 for m in down),
+        all_([(yoy(oil, m),) for m in down], lambda o: o > 0),
     "weak dollar: food rose in all but one month":
-        sum(yoy(food, m) <= 0 for m in down) == 1,
+        all_([(yoy(food, m),) for m in down], lambda f: True) and sum(yoy(food, m) <= 0 for m in down) == 1,
 }
 bad = [c for c, ok in claims.items() if not ok]
 for c, ok in claims.items():

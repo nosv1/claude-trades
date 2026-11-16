@@ -160,16 +160,18 @@
       const up = dollar.yoy >= 8, down = dollar.yoy <= -8;
       // Count earlier months like this one from the data, so the text stays true as months are added
       const yoyOf = (id) => {
-        const at = new Map(pts(D, id).map((q) => [q.m, q.v]));
+        const at = new Map((id === 'usd' ? usdP : pts(D, id)).map((q) => [q.m, q.v]));
         return (m) => (at.has(m) && at.has(m - 12) ? at.get(m) / at.get(m - 12) - 1 : null);
       };
       const dY = yoyOf('usd'), oY = yoyOf('brent'), fY = yoyOf('fao_food');
-      const like = usdP.map((q) => q.m).filter((m) => m < dollar.last.m && dY(m) != null
-        && (up ? dY(m) >= 0.08 : dY(m) <= -0.08) && oY(m) != null && fY(m) != null);
-      const went = (y) => like.filter((m) => (up ? y(m) < 0 : y(m) > 0)).length;
-      const tally = like.length
-        ? ` In the ${like.length} earlier months since 2006 when the dollar moved this much, oil ${up ? 'fell' : 'rose'} in ${went(oY)} and world food prices in ${went(fY)}.`
-        : '';
+      let tally = '';
+      if (up || down) {
+        const like = usdP.map((q) => q.m).filter((m) => m < dollar.last.m && dY(m) != null
+          && (up ? dY(m) >= 0.08 : dY(m) <= -0.08) && oY(m) != null && fY(m) != null);
+        const went = (y) => like.filter((m) => (up ? y(m) < 0 : y(m) > 0)).length;
+        const n = like.length;
+        if (n) tally = ` In the ${n === 1 ? 'one earlier month' : `${n} earlier months`} since 2007 when the dollar moved this much, oil ${up ? 'fell' : 'rose'} in ${went(oY)} and world food prices in ${went(fY)}.`;
+      }
       add({
         level: up || down ? 'watch' : null, short: 'the dollar', tag: 'Money', series: dollar, card: 'usd',
         title: `The US dollar is ${up ? 'up' : 'down'} ${Math.abs(Math.round(dollar.yoy))}% in a year`,

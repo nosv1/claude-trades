@@ -33,6 +33,8 @@ jobs:
           python scripts/fetch_data.py
           # Annual trade data: refreshes only when trade.json is 30+ days old (~5 min, rate-limited API).
           python scripts/fetch_trade.py || echo "::warning::Trade data fetch failed; keeping the previous trade.json."
+          # The page's fixed-period dollar claims (scripts/check_claims.py): warn if revised data breaks one.
+          python scripts/check_claims.py || echo "::warning title=Page claim no longer true::scripts/check_claims.py failed; fix the sentence in site/index.html or site/quiz.js"
 
       - name: Commit refreshed data
         run: |
