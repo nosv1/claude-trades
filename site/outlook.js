@@ -214,24 +214,35 @@
     return svg;
   }
 
+  // Phones get folded cards (headline only, tap for the rest); wider screens start open.
+  const WIDE = window.matchMedia('(min-width: 760px)').matches;
+
   function card(s) {
     const lv = LEVELS[s.level];
     const a = el('article', { class: 'card signal' });
+    const fold = el('details', { class: 'fold' });
+    fold.open = WIDE;
+    const sum = el('summary');
     const top = el('div', { class: 'sig-top' });
     const chip = el('span', { class: 'chip ' + s.level });
     chip.append(el('span', { class: 'ic', 'aria-hidden': 'true' }, lv.icon), lv.label);
-    top.append(chip, el('span', { class: 'sig-tag' }, s.tag));
-    a.append(top);
+    const right = el('span', { class: 'sig-right' });
+    right.append(el('span', { class: 'sig-tag' }, s.tag), el('span', { class: 'chev', 'aria-hidden': 'true' }));
+    top.append(chip, right);
     const head = el('div', { class: 'sig-head' });
     head.append(el('h3', {}, s.title));
     if (s.series) head.append(spark(s.series));
-    a.append(head, el('p', { class: 'sig-body' }, s.body));
+    sum.append(top, head);
+    const body = el('div', { class: 'fold-body' });
+    body.append(el('p', { class: 'sig-body' }, s.body));
     const w = el('p', { class: 'sig-watch' });
     w.append(el('strong', {}, 'Watch for: '), s.watch);
-    a.append(w);
+    body.append(w);
     const target = s.card ? 'card-' + s.card : s.anchor;
-    if (target) a.append(el('a', { class: 'sig-link', href: '#' + target }, 'See the data ↓'));
-    else if (s.link) a.append(el('a', { class: 'sig-link', href: s.link, rel: 'noopener' }, 'NOAA\'s full update ↗'));
+    if (target) body.append(el('a', { class: 'sig-link', href: '#' + target }, 'See the data ↓'));
+    else if (s.link) body.append(el('a', { class: 'sig-link', href: s.link, rel: 'noopener' }, 'NOAA\'s full update ↗'));
+    fold.append(sum, body);
+    a.append(fold);
     return a;
   }
 

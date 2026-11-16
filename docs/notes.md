@@ -33,6 +33,11 @@ Code review fixes merged 2026-11-15 (CPI gap interpolation, workflow push retry,
 
 ## Log
 
+- **2026-11-16:** Mobile reading pass: sticky section nav (`site/nav.js`, scroll-spy, hides links to
+  hidden sections); Heads up, What could happen next and the weekly read's items fold on phones
+  (`details.fold`, open by default at 760px+). Folded scenario cards show a progress strip, the
+  next step and what it could push up or down. Heads up went from ~8 phone screens to ~3. Also:
+  the weekly routine now covers politics that moves supply, neutrally (new `Politics` tag).
 - **2026-11-16:** Option 3 wired: a weekly Claude Code routine (his subscription, no API key) runs
   Mondays 14:00 UTC, follows [weekly-routine.md](weekly-routine.md), writes `site/data/briefing.json`
   ("This week's read", top of the page) and updates `scenarios.json`, checks both with

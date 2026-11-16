@@ -36,16 +36,24 @@
     $('read-summary').textContent = b.summary;
     $('read-items').replaceChildren(...b.items.map((it) => {
       const li = el('li', { class: 'read-item' });
+      const fold = el('details', { class: 'fold' });
+      fold.open = window.matchMedia('(min-width: 760px)').matches;
+      const sum = el('summary');
       const head = el('div', { class: 'read-head' });
-      if (str(it.tag, 20)) head.append(el('span', { class: 'sig-tag' }, it.tag));
-      head.append(el('h3', {}, it.title));
+      const tagRow = el('span', { class: 'sig-right' });
+      tagRow.append(el('span', { class: 'sig-tag' }, str(it.tag, 20) ? it.tag : ''), el('span', { class: 'chev', 'aria-hidden': 'true' }));
+      head.append(tagRow, el('h3', {}, it.title));
+      sum.append(head);
       const src = el('p', { class: 'read-src' });
       src.append('Sources: ');
       it.sources.forEach((s, i) => {
         if (i) src.append(', ');
         src.append(el('a', { href: s.url, rel: 'noopener', target: '_blank' }, s.name));
       });
-      li.append(head, el('p', { class: 'read-text' }, it.text), src);
+      const body = el('div', { class: 'fold-body' });
+      body.append(el('p', { class: 'read-text' }, it.text), src);
+      fold.append(sum, body);
+      li.append(fold);
       return li;
     }));
     const watch = Array.isArray(b.watch) ? b.watch : [];

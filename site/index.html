@@ -14,6 +14,16 @@
     <p class="sub">What's moving in food, energy and metals, and what to watch in the months ahead.</p>
   </header>
 
+  <nav class="jump" id="jump" aria-label="Sections">
+    <a href="#weekly" data-for="weekly">This week</a>
+    <a href="#outlook" data-for="outlook">Heads up</a>
+    <a href="#whatnext" data-for="whatnext">What's next</a>
+    <a href="#trendvalue" data-for="trendvalue">Trends</a>
+    <a href="#silver" data-for="silver">Silver</a>
+    <a href="#charts" data-for="charts">Charts</a>
+    <a href="#trade" data-for="trade">Trade</a>
+  </nav>
+
   <main>
     <section class="weekly card" id="weekly" aria-labelledby="read-headline" hidden>
       <p class="read-kicker">This week's read <span id="read-byline"></span></p>
@@ -53,7 +63,7 @@
       <p class="filter-note">Not a buy list. Public information like this is already in the price, so treat it as a way to notice things, not to time them. If you invest, most of these trade through ETFs, and commodity funds can lag the price they track over time. Broad stock index funds already own the companies that produce and use them.</p>
     </section>
 
-    <section class="hero card" aria-labelledby="hero-title">
+    <section class="hero card" id="silver" aria-labelledby="hero-title">
       <div class="hero-head">
         <h2 id="hero-title">Silver right now</h2>
         <span class="live" id="live-status">loading</span>
@@ -74,7 +84,7 @@
       <div class="ranges" id="silver-ranges"></div>
     </section>
 
-    <div class="ts">
+    <div class="ts" id="charts">
     <div class="filters" role="group" aria-label="Chart options">
       <div class="seg" id="range" role="radiogroup" aria-label="Time range">
         <button type="button" data-v="1">1Y</button>
@@ -151,5 +161,6 @@
   <script src="trade.js"></script>
   <script src="outlook.js"></script>
   <script src="scenarios.js"></script>
+  <script src="nav.js"></script>
 </body>
 </html>
