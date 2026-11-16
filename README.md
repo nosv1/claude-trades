@@ -10,6 +10,9 @@ Live at **<https://nosv1.github.io/claude-trades/>**.
 - **Heads up:** the signals worth watching in the coming months (oil, El Niño, food prices,
   cooking oils, fertilizer, copper, single-seller pressure points), rated Alert / Watch / Easing
   and recomputed from the data every day.
+- **What could happen next:** chains of events that have played out before (El Niño, La Niña,
+  oil, export bans, fertilizer), each step lighting up when the data shows it. Written by Claude
+  in `site/data/scenarios.json`.
 - **Trend and value:** for each commodity, its 12-month trend against its 5-year average, read as
   early trend, late trend, cooling, out of favor or no clear signal.
 - **Silver right now:** live spot price, what your ounces are worth, and where today's price ranks

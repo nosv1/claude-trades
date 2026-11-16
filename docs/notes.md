@@ -33,6 +33,14 @@ Code review fixes merged 2026-11-15 (CPI gap interpolation, workflow push retry,
 
 ## Log
 
+- **2026-11-16:** He asked for "a sequence of probable events that could trigger outcomes". Added
+  **What could happen next** (`site/scenarios.js`, `site/data/scenarios.json`): 6 event chains written
+  by Claude (El Niño harvests, La Niña follows, oil into food, oil cures itself, export-ban scramble,
+  cheap fertilizer). Each step with a `check` (series + yoy/ch3/ch6/fromPeak, or ONI) lights up from
+  the data, in order; the others are news to watch. Likelihoods and "last time" lines were checked
+  against the data (e.g. cooking oils higher a year after all 5 strong El Niños since 1990; La Niña
+  followed 7 of 9 strong El Niños since 1950). `scenarios.json` is the file the planned weekly Claude
+  routine (option 3, not set up yet) would rewrite.
 - **2026-11-16:** He wants "don't miss out" more than stock-up advice. Added **Trend and value**
   under Heads up: 12-month trend vs distance from the 5-year average (both documented long-run
   tendencies in commodities, weak per item), giving one reading per item: Early trend, Late trend,
