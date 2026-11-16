@@ -46,6 +46,7 @@
     drivers: [
       { id: 'brent', kind: 'usd', blurb: 'Brent is the main world price for crude oil. A barrel is 42 gallons. Gas, diesel and jet fuel are made from it.' },
       { id: 'urea', kind: 'usd', blurb: 'Urea is the most common fertilizer. It\'s made from natural gas.' },
+      { id: 'usd', kind: 'index', noReal: true, blurb: 'Higher means a stronger dollar. Not adjusted for inflation, since it compares currencies, not prices.' },
     ],
     parts: ['fao_cereals', 'fao_oils', 'fao_dairy', 'fao_meat', 'fao_sugar'],
   };
@@ -110,7 +111,7 @@
       const v = def.live === 'ratio' ? live.gold / live.silver : live[def.live];
       if (v) pts = [...pts, livePoint(v, pts[pts.length - 1])];
     }
-    if (real && def.kind !== 'ratio') pts = toReal(pts);
+    if (real && def.kind !== 'ratio' && !def.noReal) pts = toReal(pts);
     return pts;
   }
 
@@ -291,7 +292,7 @@
     const pts = details._host._pts || [];
     const table = el('table');
     const head = el('tr');
-    head.append(el('th', {}, 'Month'), el('th', {}, !state.real || def.kind === 'ratio' ? 'Value'
+    head.append(el('th', {}, 'Month'), el('th', {}, !state.real || def.kind === 'ratio' || def.noReal ? 'Value'
       : def.kind === 'usd' ? 'Value (today\'s $)' : 'Value (inflation-adjusted)'));
     const thead = el('thead'); thead.append(head);
     const tbody = el('tbody');

@@ -7,6 +7,7 @@ Sources (all free, no API key):
   World Bank "Pink Sheet"  monthly commodity prices since 1960 (metals, grains, oil, fertilizer)
   FAO Food Price Index     monthly, since 1990
   FRED CPIAUCSL            US consumer prices, for inflation adjustment
+  FRED DTWEXBGS            Broad US dollar index (daily, averaged by month)
   gold-api.com             live silver/gold spot price
   NOAA CPC                 El Nino / La Nina status and the ONI ocean-temperature index
 
@@ -44,6 +45,7 @@ FAO_FALLBACK = (
     "food_price_indices_data.csv"
 )
 CPI_CSV = "https://fred.stlouisfed.org/graph/fredgraph.csv?id=CPIAUCSL"
+USD_CSV = "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DTWEXBGS"
 SPOT = "https://api.gold-api.com/price/{}"
 ONI = "https://www.cpc.ncep.noaa.gov/data/indices/oni.ascii.txt"
 ENSO_PAGE = "https://www.cpc.ncep.noaa.gov/products/analysis_monitoring/enso_advisory/ensodisc.shtml"
@@ -178,6 +180,31 @@ def fetch_cpi() -> tuple[dict, dict]:
     )
 
 
+def fetch_dollar() -> tuple[dict, dict]:
+    """Broad trade-weighted US dollar index (Jan 2006 = 100), daily -> monthly averages.
+    Only finished months, so it lines up with the other monthly series."""
+    print(f"FRED: {USD_CSV}")
+    rows = list(csv.reader(io.StringIO(get(USD_CSV).decode())))
+    this_month = dt.date.today().strftime("%Y-%m")
+    days: dict[str, list[float]] = {}
+    for r in rows[1:]:
+        try:
+            v = float(r[1])
+        except (ValueError, IndexError):
+            continue  # holidays are "."
+        if r[0][:7] < this_month:
+            days.setdefault(r[0][:7], []).append(v)
+    if not days:
+        raise RuntimeError("no dollar index rows")
+    pts = {m: round(sum(v) / len(v), 2) for m, v in days.items()}
+    return (
+        {"usd": {"name": "US dollar index", "unit": "against major trading partners, Jan 2006 = 100",
+                 "source": "fred_usd", **to_series(pts)}},
+        {"name": "Federal Reserve broad dollar index, via FRED",
+         "url": "https://fred.stlouisfed.org/series/DTWEXBGS", "updated": None},
+    )
+
+
 def fetch_spot() -> dict:
     spot = {}
     for sid, sym in (("silver", "XAG"), ("gold", "XAU")):
@@ -214,7 +241,8 @@ def main() -> int:
                                                                             "sources": {}}
     series, sources, failed = dict(prev["series"]), dict(prev["sources"]), []
 
-    for key, fn in (("wb", fetch_world_bank), ("fao", fetch_fao), ("fred", fetch_cpi)):
+    fetchers = (("wb", fetch_world_bank), ("fao", fetch_fao), ("fred", fetch_cpi), ("fred_usd", fetch_dollar))
+    for key, fn in fetchers:
         try:
             got, meta = fn()
             series.update(got)
@@ -224,7 +252,7 @@ def main() -> int:
             print(f"  FAILED {key}: {e}", file=sys.stderr)
 
     now = dt.datetime.now(dt.timezone.utc).replace(microsecond=0).isoformat()
-    if len(failed) < 3:
+    if len(failed) < len(fetchers):
         series_path.write_text(json.dumps(
             {"generated": now, "sources": sources, "series": series}, separators=(",", ":")))
 

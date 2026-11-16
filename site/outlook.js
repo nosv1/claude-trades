@@ -153,6 +153,25 @@
       });
     }
 
+    // The US dollar: commodities are priced in it, so it tends to move against them
+    const usdP = pts(D, 'usd');
+    if (usdP.length > 24) {
+      const usd = stats(usdP);
+      const up = usd.yoy >= 8, down = usd.yoy <= -8;
+      if (up || down) {
+        add({
+          level: 'watch', short: 'the dollar', tag: 'Money', series: usd, card: 'usd',
+          title: `The US dollar is ${up ? 'up' : 'down'} ${Math.abs(Math.round(usd.yoy))}% in a year`,
+          body: up
+            ? 'Oil, grain and metals are priced in dollars. A stronger dollar makes them cost more for everyone else, and their dollar prices have usually fallen when it rose.'
+            : 'A weaker dollar makes dollar-priced food, fuel and metals cheaper for the rest of the world. Their dollar prices have usually risen when it fell.',
+          watch: up
+            ? 'Food import bills in countries with weak currencies, like Egypt, Nigeria and Pakistan. A falling local currency is often how world prices turn into local food crises.'
+            : 'Whether gold, oil and grain keep climbing.',
+        });
+      } else calm.push('the dollar');
+    }
+
     // Copper
     const copper = stats(pts(D, 'copper'));
     if (copper.rank10 >= 0.97 && copper.yoy >= 20) {

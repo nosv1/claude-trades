@@ -41,7 +41,7 @@ via the weekly-read workflow); sync worker auto-deploys on changes under `worker
    shipping chokepoints (Red Sea, Panama). Prices only show a shortage after it starts.
 3. Daily spot chart: `site/data/spot.json` already logs one silver/gold price a day.
 4. Price alert when silver crosses a price he picks.
-5. **Currencies** (he asked 2026-11-16): add the US dollar index (FRED `DTWEXBGS`, broad, daily;
+5. **Currencies** (he asked 2026-11-16). ~~US dollar~~ done 2026-11-16 (see log). Still to do: add the US dollar index (FRED `DTWEXBGS`, broad, daily;
    same plain-UA fetch as CPI) as a driver chart and a Heads-up signal. A strong dollar makes
    dollar-priced food and fuel dearer for everyone else and tends to push commodity prices down in
    dollars. Maybe also the currencies of big food importers (Egypt, Nigeria, Pakistan), where a
@@ -51,6 +51,14 @@ Code review fixes merged 2026-11-15 (CPI gap interpolation, workflow push retry,
 
 ## Log
 
+- **2026-11-16:** Added the **US dollar** (FRED DTWEXBGS broad index, daily -> monthly averages of
+  finished months, as `usd` in series.json): a Drivers chart (no inflation adjustment, `noReal`), a
+  Heads-up signal (Watch at +/-8% y/y, else "calm"), a data quiz question and a "how it works" one.
+  Checked against our data first: since 2006, y/y changes in the dollar and in gold, silver, Brent,
+  copper, FAO food, wheat, maize, soybeans correlate -0.47 to -0.73; in dollar-up-8%+ years Brent's
+  median y/y was -45% and FAO food -19% (only 4 strong-dollar episodes, so the page notes shared
+  causes). Dollar now: 121.5, +0.6% y/y. Not done: importer currencies (Egypt, Nigeria, Pakistan);
+  FRED doesn't carry them daily, needs a source.
 - **2026-11-16:** Weekly read now looks back: a required `lookback` ("Since last week", shown in a
   shaded box) on what happened to last week's points and watch items, including what we got wrong.
 - **2026-11-16:** "How are we making sure we're not confidently wrong?" Built three guards:
