@@ -1,0 +1,18 @@
+# Trade Pulse sync worker: Google sign-in + saved quiz progress. Deployed by
+# .github/workflows/sync-worker.yml. See worker/README.md.
+name = "trade-pulse-sync"
+main = "src/index.js"
+compatibility_date = "2025-09-01"
+
+[vars]
+# Public values (an OAuth client ID is not a secret).
+GOOGLE_CLIENT_ID = ""
+ALLOWED_ORIGINS = "https://nosv1.github.io,http://localhost:8000,http://127.0.0.1:8765"
+
+[[durable_objects.bindings]]
+name = "USERS"
+class_name = "User"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["User"]

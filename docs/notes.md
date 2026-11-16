@@ -33,6 +33,15 @@ Code review fixes merged 2026-11-15 (CPI gap interpolation, workflow push retry,
 
 ## Log
 
+- **2026-11-16:** He asked for Google sign-in to save quiz answers, on his Cloudflare account. Built
+  [worker/](../worker/README.md): a Cloudflare Worker (Durable Object per Google `sub`, SQLite-backed,
+  free plan) that verifies Google ID tokens itself and issues random session tokens; stores only
+  `sub`, sessions, quiz progress and calls (no email/name). Page side: `site/sync.js` +
+  `site/sync-config.js` (empty = sign-in hidden), merge = newer `t` per question, calls unioned.
+  Deployed by `.github/workflows/sync-worker.yml` (skips until the Cloudflare secrets exist).
+  Tested locally with wrangler dev + `DEV_FAKE_LOGIN` (gitignored .dev.vars): CORS, bad tokens,
+  scrubbing, isolation, 64 KB cap, logout, and a page-to-cloud merge. Waiting on him for:
+  Cloudflare token + account ID as GitHub secrets, Google OAuth client ID, workers.dev URL.
 - **2026-11-16:** He asked for it to read like it's for a high-schooler, not a graduate. Plain-words
   pass over every page string, the scenarios, this week's read and the routine's style rules (now
   "write for a high-school student", with a word list). Jargon swapped or explained: FAO index ->
