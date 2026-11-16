@@ -25,14 +25,17 @@ next (+ Claude's track record), Trend and value, Silver, Charts, Who feeds whom,
 via the weekly-read workflow); sync worker auto-deploys on changes under `worker/`.
 
 **Next session, first:**
-1. **Google sign-in is on** (client ID added 2026-11-16, button live). Not yet confirmed: a real
-   sign-in on his phone, cross-device sync, and the dark-mode fix for a white box behind the
-   Google button on iPhone (`color-scheme: light` on `.gbtn iframe`; couldn't reproduce in Edge).
-2. **Check today's routine run** (2026-11-16, 14:05 UTC / 8am Central; prompt updated that morning
-   to the three-file flow). First run with facts, quotes, `--sources`, `summary_facts` /
-   `lookback_facts` and claude-log calls; the number matching is strict, so a failure may be the
-   checker being too picky rather than the read being wrong. `RemoteTrigger list_runs` /
-   `get_run_log`, then read what it published.
+1. **Review and merge the `checklist` branch** (7d912d2, built 2026-11-16 in the routine's cloud
+   session, which he kept chatting with from his phone: claude.ai/code/session_01CAx28g14KBLwkA9s6WpZ7y;
+   cloud sessions don't show in the local VS Code history). Every weekly read must mark all 15
+   news topics covered / quiet / unreached; the checker fails a skip from the 23 Nov read. Then
+   **widen access**: Reuters/AP/BBC are refused by the search tool and CNBC/S&P Global block cloud
+   machines (neither fixable by him); he can add hosts to the Default environment allowlist
+   (suggested: api.gdeltproject.org, amis-outlook.org, cropmonitor.org, fews.net, wfp.org,
+   igc.int, ifpri.org, aljazeera.com, thehindubusinessline.com). The page doesn't show the
+   checklist yet.
+2. **Google sign-in confirmed working on his phone** (2026-11-16), and the dark-mode fix behind
+   the button is good. Cross-device sync not yet confirmed.
 3. **Resume the code review** on commit 24f7453 (standard review round 1: shared `TP.getJSON`,
    per-file shape checks, frozen shared data). Stopped there to end the session; keep going until
    findings are nitpicks. Run `/code-review` before merging from now on, not after.
