@@ -43,3 +43,4 @@ jobs:
           URL: ${{ steps.deploy.outputs.deployment-url }}
         run: |
           echo "Worker URL: $URL" | tee -a "$GITHUB_STEP_SUMMARY"
+          echo "::notice title=Worker URL::$URL"
