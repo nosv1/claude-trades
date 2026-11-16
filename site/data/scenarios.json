@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-15",
+  "updated": "2026-11-16",
   "by": "Claude",
   "note": "Chains of events that have played out before. Steps with a 'check' light up from the data; steps without one are news to watch for. Likelihoods are judgment calls from the history cited.",
   "scenarios": [
@@ -7,7 +7,7 @@
       "id": "elnino",
       "title": "El Niño dries out Asia's harvests",
       "likelihood": "likely",
-      "why": "NOAA gives better than a 79% chance it stays strong to very strong through March 2027, and its effect on tropical crops is well documented.",
+      "why": "NOAA (12 Nov) says El Niño is still strengthening, with better than a 79% chance it stays strong through March 2027 and about a 60% chance it becomes one of the strongest on record. Sugar is already up 28% in 3 months.",
       "horizon": "Now to late 2027",
       "steps": [
         { "text": "A strong El Niño forms in the Pacific", "lag": "Now", "check": { "s": "oni", "m": "last", "op": ">=", "v": 1.5 } },
@@ -39,7 +39,7 @@
       "id": "oilfood",
       "title": "Expensive oil leaks into food",
       "likelihood": "possible",
-      "why": "Oil alone is a weak guide. After the 6 oil spikes this size since 1990, world food prices were higher a year later 3 times and lower 3 times. It usually takes a second push, like a bad harvest, and El Niño could be one.",
+      "why": "Oil alone is a weak guide: after the 6 oil spikes this size since 1990, food was higher a year later 3 times and lower 3 times. Oil is now easing and world food prices fell for a third month in October, but El Niño could still give the second push.",
       "horizon": "Next 3 to 12 months",
       "steps": [
         { "text": "Oil spikes", "lag": "Now", "check": { "s": "brent", "m": "yoy", "op": ">=", "v": 40 } },
@@ -54,8 +54,8 @@
     {
       "id": "oilcure",
       "title": "High oil prices cure themselves",
-      "likelihood": "possible",
-      "why": "Of the 9 oil spikes this big since 1970, oil was lower a year later in 4 and higher in 5. Close to a coin flip.",
+      "likelihood": "likely",
+      "why": "Raised this week. Oil fell about 20% in early November as fears of new strikes on Iran eased, and the IEA sees a growing oil surplus. A fresh attack on Hormuz shipping could reverse it.",
       "horizon": "Next 6 to 18 months",
       "steps": [
         { "text": "Oil spikes", "lag": "Now", "check": { "s": "brent", "m": "yoy", "op": ">=", "v": 40 } },
