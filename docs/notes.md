@@ -24,7 +24,7 @@ branch" the root shows the README and the dashboard only appears under `/site/`.
 
 1. ~~Who feeds whom~~ built 2026-11-16 (`scripts/fetch_trade.py`, `site/trade.js`): wheat, maize,
    rice, soybeans, nitrogen fertilizer; sellers, buyers, "if this seller stopped" picker.
-2. Shortage early warnings: USDA stocks-to-use ratios (best single leading signal), export bans,
+2. (Partly done in Heads up.) Shortage early warnings: USDA stocks-to-use ratios (best single leading signal), export bans,
    shipping chokepoints (Red Sea, Panama). Prices only show a shortage after it starts.
 3. Daily spot chart: `site/data/spot.json` already logs one silver/gold price a day.
 4. Price alert when silver crosses a price he picks.
@@ -33,6 +33,13 @@ Code review fixes merged 2026-11-15 (CPI gap interpolation, workflow push retry,
 
 ## Log
 
+- **2026-11-16:** He clarified the goal: awareness, "look out for this in the coming months". Added a
+  **Heads up** section at the top (`site/outlook.js`): rule-based signals (Alert / Watch / Pressure
+  point / Easing) for oil, El Nino/La Nina (NOAA ONI + advisory, new `enso.json`), world food prices
+  and grains, cooking oils, fertilizer, copper, and single-seller pressure points from the trade
+  data, plus "what it could mean for you". Rules and thresholds live in `signals()`; keep the copy
+  plain and say "signals, not predictions". At launch: oil $125 (+93% y/y), very strong El Nino,
+  cooking oils near 10-year high = alerts; fertilizer easing.
 - **2026-11-16:** "Who feeds whom" section. UN Comtrade public preview API (no key): ~3.5 s between
   calls or HTTP 429, and a daily quota (403 "Quota Exceeded") of roughly 50 calls, so a full fetch
   takes two days. The script saves per crop with a `fetched` date and the daily Action refreshes
