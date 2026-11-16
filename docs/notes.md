@@ -33,6 +33,10 @@ Code review fixes merged 2026-11-15 (CPI gap interpolation, workflow push retry,
 
 ## Log
 
+- **2026-11-16:** He marked up the plain-words summary: keep "usual price", "sells abroad", "Weak
+  spot", "Early rise", "trackable steps"; undo the name swaps. Real names are back (FAO Food Price
+  Index, Brent crude, maize, urea), each explained once in plain words; the "grocery bill" line is
+  gone. Routine style rules and CLAUDE.md updated to keep real names.
 - **2026-11-16:** He asked for Google sign-in to save quiz answers, on his Cloudflare account. Built
   [worker/](../worker/README.md): a Cloudflare Worker (Durable Object per Google `sub`, SQLite-backed,
   free plan) that verifies Google ID tokens itself and issues random session tokens; stores only

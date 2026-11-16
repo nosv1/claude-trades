@@ -59,9 +59,9 @@
     }
     const food = series(D, 'fao_food');
     if (food && food.yoy != null) {
-      qs.push({ id: 'food-year', q: 'World food prices compared with a year ago?',
+      qs.push({ id: 'food-year', q: 'The FAO Food Price Index (world food prices) compared with a year ago?',
         ...bucket(food.yoy, [-5, 5, 15], ['Down more than 5%', 'About flat (within 5%)', 'Up 5% to 15%', 'Up more than 15%']),
-        why: `The world food price index was ${food.last.v.toFixed(1)} in ${mlabel(food.last.m)}, ${signed(food.yoy)} in a year.`, link: 'card-fao_food' });
+        why: `The FAO Food Price Index was ${food.last.v.toFixed(1)} in ${mlabel(food.last.m)}, ${signed(food.yoy)} in a year.`, link: 'card-fao_food' });
     }
     const urea = series(D, 'urea');
     if (urea && urea.ch6 != null) {
@@ -83,14 +83,14 @@
         const nm = (p) => T.names[String(p)] || '?';
         const the = (p) => (['United States', 'United Kingdom', 'Netherlands', 'Philippines'].includes(nm(p)) ? 'the ' + nm(p) : nm(p));
         const opts = shuffle([ex[0], ex[1], ex[2], ex[4 + Math.floor(Math.random() * Math.min(3, ex.length - 4))]]);
-        const crop = c.id === 'maize' ? 'corn' : c.id;
+        const crop = c.id;
         qs.push({ id: 'seller-' + c.id, q: `Which country sells the most ${crop} to other countries?`,
           options: opts.map(([p]) => nm(p)), answer: opts.indexOf(ex[0]),
           why: `${nm(ex[0][0])} sells about ${Math.round(ex[0][1] / c.covered * 100)}% of it, then ${the(ex[1][0])} and ${the(ex[2][0])}.`, link: 'trade' });
       }
     }
     // Trend and value: rising >= 10% in a year but no more than 15% above the 5-year average
-    const names = { silver: 'Silver', gold: 'Gold', copper: 'Copper', brent: 'Oil', wheat: 'Wheat', maize: 'Corn', rice: 'Rice', soybeans: 'Soybeans', urea: 'Fertilizer' };
+    const names = { silver: 'Silver', gold: 'Gold', copper: 'Copper', brent: 'Oil', wheat: 'Wheat', maize: 'Maize', rice: 'Rice', soybeans: 'Soybeans', urea: 'Urea' };
     const rows = Object.keys(names).map((id) => ({ id, s: series(D, id) })).filter((r) => r.s && r.s.yoy != null)
       .map((r) => ({ id: r.id, early: r.s.yoy >= 10 && (r.s.last.v / r.s.avg5 - 1) * 100 <= 15 }));
     const early = rows.filter((r) => r.early), rest = rows.filter((r) => !r.early);
@@ -193,8 +193,8 @@
 
   // ---- make a call ----
   const CALLS = [
-    { s: 'fao_food', label: 'World food prices', unit: (v) => v.toFixed(1),
-      now: (v, m) => `The world food price index was ${v.toFixed(1)} in ${m}.` },
+    { s: 'fao_food', label: 'FAO Food Price Index', unit: (v) => v.toFixed(1),
+      now: (v, m) => `The FAO Food Price Index was ${v.toFixed(1)} in ${m}.` },
     { s: 'brent', label: 'Oil', unit: (v) => usd(v),
       now: (v, m) => `Oil averaged ${usd(v)} a barrel in ${m}.` },
   ];
@@ -263,7 +263,7 @@
       const k = unseen[unseen.length - 1];
       const c = CALLS.find((x) => x.s === k.s);
       banner.replaceChildren(el('span', { class: 'qmark ' + (k.result.right ? 'ok' : 'no'), 'aria-hidden': 'true' }, k.result.right ? '✓' : '✗'),
-        `Your call came in: ${c ? c.label.toLowerCase() : k.s} ${k.result.v > k.v ? 'rose' : 'fell'}, and you said ${k.call === 'up' ? 'higher' : 'lower'}. `,
+        `Your call came in: ${c ? c.label : k.s} ${k.result.v > k.v ? 'rose' : 'fell'}, and you said ${k.call === 'up' ? 'higher' : 'lower'}. `,
         el('a', { href: '#check' }, 'Make the next one'));
       banner.hidden = false;
       for (const x of unseen) x.seen = true;
