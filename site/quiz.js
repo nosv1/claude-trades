@@ -160,7 +160,15 @@
     });
   }
 
-  function renderQuiz(qs, memo) {
+  // What's saved, so you can see it worked (and compare two devices)
+  function renderSaved(all, memo) {
+    const tried = all.filter((q) => memo[q.id]).length;
+    $('quiz-saved').textContent = tried
+      ? `Saved: you've answered ${tried} of ${all.length} questions so far.`
+      : `Saved: nothing yet. ${all.length} questions to work through.`;
+  }
+
+  function renderQuiz(qs, memo, onSave) {
     let done = 0, right = 0;
     const score = $('quiz-score');
     score.textContent = `${qs.length} questions. Ones you miss come back on your next visit; ones you know come back less often.`;
@@ -182,6 +190,7 @@
           m.t = Date.now(); // for merging with other devices
           memo[q.id] = m;
           save('quiz', memo);
+          onSave();
           fb.replaceChildren(el('span', { class: 'qmark ' + (ok ? 'ok' : 'no'), 'aria-hidden': 'true' }, ok ? '✓' : '✗'),
             el('strong', {}, ok ? 'Right. ' : 'Not quite. '), q.why + ' ');
           if (q.link) fb.append(el('a', { href: '#' + q.link }, 'See it'));
@@ -285,12 +294,15 @@
     if (!D || !D.series) return;
     const memo = load('quiz', {});
     const all = [...dataQuestions(D, E, T), ...CONCEPTS];
-    renderQuiz(pick(all, memo), memo);
+    const saved = () => renderSaved(all, memo);
+    renderQuiz(pick(all, memo), memo, saved);
+    saved();
     renderCalls(D);
     // sync.js merged in progress from another device: refresh what we hold
     window.addEventListener('tp:synced', () => {
       for (const k of Object.keys(memo)) delete memo[k];
       Object.assign(memo, load('quiz', {}));
+      saved();
       renderCalls(D);
     });
     $('check').hidden = false;
