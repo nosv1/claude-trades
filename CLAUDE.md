@@ -29,6 +29,10 @@ Claude).
 - **Coding standard:** [docs/coding-standard.md](docs/coding-standard.md), NASA/JPL's "Power of Ten"
   adapted to JS/Python (his call, 2026-11-16). ESLint and Ruff must pass with zero warnings (the Lint
   workflow runs on every push); refactors are checked by rendering the page before and after.
+  **Every code change, without being reminded** (he asked, 2026-11-17): read the standard before
+  writing code, and before any commit run all four commands in its "Running it" section locally
+  (`npx eslint@10.14.0 .` works here; ESLint doesn't need installing). In the reply, say which
+  rules the change touched and that the four commands passed. Don't push and let CI find it.
 - **Commits:** authored as Claude (`--author="Claude <noreply@anthropic.com>"`), explicit paths
   only, never `git add -A` or `git add .`.
 - **Remote:** public repo [nosv1/claude-trades](https://github.com/nosv1/claude-trades); site at
