@@ -8,6 +8,7 @@ Sources (all free, no API key):
   FAO Food Price Index     monthly, since 1990
   FRED CPIAUCSL            US consumer prices, for inflation adjustment
   FRED DTWEXBGS            Broad US dollar index (daily, averaged by month)
+  FRED EXBZUS/EXCHUS/EXINUS  Brazilian real, Chinese yuan, Indian rupee per US dollar (monthly)
   gold-api.com             live silver/gold spot price
   NOAA CPC                 El Nino / La Nina status and the ONI ocean-temperature index
 
@@ -46,6 +47,13 @@ FAO_FALLBACK = (
 )
 CPI_CSV = "https://fred.stlouisfed.org/graph/fredgraph.csv?id=CPIAUCSL"
 USD_CSV = "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DTWEXBGS"
+FRED_CSV = "https://fred.stlouisfed.org/graph/fredgraph.csv?id={}"
+# FRED monthly exchange rates (Federal Reserve H.10): id -> (our id, name, unit)
+FX_SERIES = {
+    "EXBZUS": ("brl", "Brazilian real", "reals per US dollar (higher = weaker real)"),
+    "EXCHUS": ("cny", "Chinese yuan", "yuan per US dollar (higher = weaker yuan)"),
+    "EXINUS": ("inr", "Indian rupee", "rupees per US dollar (higher = weaker rupee)"),
+}
 SPOT = "https://api.gold-api.com/price/{}"
 ONI = "https://www.cpc.ncep.noaa.gov/data/indices/oni.ascii.txt"
 ENSO_PAGE = "https://www.cpc.ncep.noaa.gov/products/analysis_monitoring/enso_advisory/ensodisc.shtml"
@@ -218,6 +226,28 @@ def fetch_dollar() -> tuple[dict, dict]:
     )
 
 
+def fetch_fx() -> tuple[dict, dict]:
+    """Monthly average exchange rates. All three or none, so the cards never mix fresh and stale."""
+    out = {}
+    for fred_id, (sid, name, unit) in FX_SERIES.items():
+        url = FRED_CSV.format(fred_id)
+        print(f"FRED: {url}")
+        pts = {}
+        for r in list(csv.reader(io.StringIO(get(url).decode())))[1:]:
+            try:
+                pts[r[0][:7]] = float(r[1])
+            except (ValueError, IndexError):
+                continue  # header, blank or "." for a month not published yet
+        if len(pts) < 120:
+            raise RuntimeError(f"{fred_id}: only {len(pts)} months")
+        out[sid] = {"name": name, "unit": unit, "source": "fred_fx", **to_series(pts)}
+    return (
+        out,
+        {"name": "Federal Reserve exchange rates (H.10), via FRED",
+         "url": "https://fred.stlouisfed.org/release/tables?rid=17", "updated": None},
+    )
+
+
 def fetch_spot() -> dict:
     spot = {}
     for sid, sym in (("silver", "XAG"), ("gold", "XAU")):
@@ -254,7 +284,8 @@ def main() -> int:
                                                                             "sources": {}}
     series, sources, failed = dict(prev["series"]), dict(prev["sources"]), []
 
-    fetchers = (("wb", fetch_world_bank), ("fao", fetch_fao), ("fred", fetch_cpi), ("fred_usd", fetch_dollar))
+    fetchers = (("wb", fetch_world_bank), ("fao", fetch_fao), ("fred", fetch_cpi), ("fred_usd", fetch_dollar),
+                ("fred_fx", fetch_fx))
     for key, fn in fetchers:
         try:
             got, meta = fn()

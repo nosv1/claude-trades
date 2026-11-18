@@ -1,5 +1,6 @@
-"""Assert the fixed-period claims written into the page (site/index.html, site/quiz.js) about the
-US dollar, oil and food, against site/data/series.json. Run after editing those sentences:
+"""Assert the fixed-period claims written into the page (site/index.html, site/quiz.js, the
+currency card blurbs in site/app.js) about the US dollar, oil, food, other currencies and the top
+sellers and buyers, against site/data/series.json and trade.json. Run after editing those sentences:
 
     python scripts/check_claims.py
 
@@ -9,8 +10,8 @@ import json
 import pathlib
 import sys
 
-S = json.loads((pathlib.Path(__file__).resolve().parent.parent / "site/data/series.json")
-               .read_text(encoding="utf-8"))["series"]
+ROOT = pathlib.Path(__file__).resolve().parent.parent
+S = json.loads((ROOT / "site/data/series.json").read_text(encoding="utf-8"))["series"]
 
 
 def monthly(sid):
@@ -44,6 +45,24 @@ def halved(d, ms):
 
 
 foods_down = [yoy(food, m) for m in down]
+brl, cny, inr = monthly("brl"), monthly("cny"), monthly("inr")
+
+
+def in_year(d, y):
+    return [d[m] for m in range(y * 12, y * 12 + 12) if m in d]
+
+
+peg = [cny[m] for m in range(1998 * 12, 2005 * 12 + 6) if m in cny]  # Jan 1998 to Jun 2005
+TRADE = {c["id"]: c for c in json.loads((ROOT / "site/data/trade.json").read_text(encoding="utf-8"))["commodities"]}
+
+
+def top_seller(cid):
+    """UN country code of the biggest exporter (codes: 76 Brazil, 156 China, 699 India)."""
+    return max(TRADE[cid]["exporters"], key=lambda e: e[1])[0]
+
+
+def top_buyer(cid):
+    return max(TRADE[cid]["importers"], key=lambda i: i["total"])["c"]
 
 
 claims = {
@@ -59,6 +78,16 @@ claims = {
         all_([(yoy(oil, m),) for m in down], lambda o: o > 0),
     "weak dollar: food rose in all but one month":
         bool(foods_down) and None not in foods_down and sum(f <= 0 for f in foods_down) == 1,
+    # Currency card blurbs (site/app.js CARDS.currency)
+    "real: under 2 per dollar all of 2011, about 6 in Dec 2024":
+        len(in_year(brl, 2011)) == 12 and max(in_year(brl, 2011)) < 2 and 5.5 <= brl.get(2024 * 12 + 11, 0) <= 6.5,
+    "yuan: held near 8.28 (8.27-8.32) every month from 1998 to mid-2005":
+        len(peg) == 90 and all(8.27 <= v <= 8.32 for v in peg),
+    "rupee: about 45 per dollar in 2000 (yearly average 43-47)":
+        len(in_year(inr, 2000)) == 12 and 43 <= sum(in_year(inr, 2000)) / 12 <= 47,
+    "Brazil sells the most soybeans and China buys the most":
+        top_seller("soybeans") == 76 and top_buyer("soybeans") == 156,
+    "India sells the most rice": top_seller("rice") == 699,
 }
 bad = [c for c, ok in claims.items() if not ok]
 for c, ok in claims.items():
