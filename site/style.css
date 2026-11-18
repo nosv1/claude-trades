@@ -156,7 +156,11 @@ button:focus-visible, input:focus-visible, summary:focus-visible, svg:focus-visi
 section { margin-top: 28px; }
 .section-title { font-size: 20px; }
 .section-lede { margin: 6px 0 14px; color: var(--ink-2); max-width: 70ch; }
-.grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); }
+/* Two columns on every chart section, so 2 and 4 cards fill whole rows; a .wide card (a section's
+   headline chart) takes a full row. One column on phones. */
+.grid { display: grid; gap: 14px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.chart-card.wide { grid-column: 1 / -1; }
+@media (max-width: 700px) { .grid { grid-template-columns: 1fr; } }
 
 .chart-card h3 { font-size: 15px; font-weight: 600; }
 .chart-card .unit { color: var(--muted); font-size: 13px; }
@@ -412,6 +416,5 @@ main > section, .ts, .trade { scroll-margin-top: calc(var(--nav-h) + 8px); }
 
 @media (max-width: 480px) {
   .hero-figure { font-size: 48px; }
-  .grid { grid-template-columns: 1fr; }
   .seg button { padding: 6px 9px; min-width: 40px; }
 }

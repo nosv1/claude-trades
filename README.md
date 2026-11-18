@@ -24,7 +24,9 @@ Live at **<https://nosv1.github.io/claude-trades/>**.
   against the last 1, 5 and 10 years and all history since 1960.
 - **Metals:** silver, gold, the gold/silver ratio, copper.
 - **Food:** the FAO Food Price Index and its five groups, plus wheat, maize, rice, soybeans.
-- **Drivers:** Brent crude oil, urea fertilizer and the US dollar.
+- **Energy and fertilizer:** Brent crude oil and urea fertilizer.
+- **Currencies:** the US dollar index, plus the Brazilian real, Chinese yuan and Indian rupee
+  against the dollar (no inflation adjustment).
 - Every chart has 1Y / 5Y / 10Y / 25Y / All ranges, an inflation adjustment and a table view.
 - **Check yourself:** a short quiz that brings back what you missed, and "make a call" guesses on
   next month's food and oil prices that get scored when the data comes in. Saved in your browser,
@@ -40,6 +42,7 @@ Live at **<https://nosv1.github.io/claude-trades/>**.
 | [FAO Food Price Index](https://www.fao.org/worldfoodsituation/foodpricesindex/en/) | Monthly food price indices since 1990 | Early each month |
 | [FRED CPIAUCSL](https://fred.stlouisfed.org/series/CPIAUCSL) | US consumer prices, for inflation adjustment | Monthly |
 | [FRED DTWEXBGS](https://fred.stlouisfed.org/series/DTWEXBGS) | Broad US dollar index, averaged by month | Daily |
+| [FRED EXBZUS, EXCHUS, EXINUS](https://fred.stlouisfed.org/release/tables?rid=17) | Brazilian real, Chinese yuan, Indian rupee per US dollar | Monthly |
 | [gold-api.com](https://gold-api.com) | Live silver and gold spot price | Live, in the browser |
 | [NOAA CPC](https://www.cpc.ncep.noaa.gov/products/analysis_monitoring/enso_advisory/) | El Niño / La Niña status and ocean-temperature index | Monthly |
 | [UN Comtrade](https://comtradeplus.un.org/) (public preview API) | Imports by country and supplier | Annual; refetched monthly by `scripts/fetch_trade.py` |

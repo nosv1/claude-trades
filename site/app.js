@@ -33,7 +33,7 @@
       { id: 'copper', kind: 'usd' },
     ],
     food: [
-      { id: 'fao_food', kind: 'index', unit: '100 = the 2014-2016 average' },
+      { id: 'fao_food', kind: 'index', wide: true, unit: '100 = the 2014-2016 average' },
       { id: 'wheat', kind: 'usd', name: 'Wheat',
         blurb: 'Russia sells the most, then the EU, Canada, Australia and the US.' },
       { id: 'maize', kind: 'usd',
@@ -46,7 +46,16 @@
     drivers: [
       { id: 'brent', kind: 'usd', blurb: 'Brent is the main world price for crude oil. A barrel is 42 gallons. Gas, diesel and jet fuel are made from it.' },
       { id: 'urea', kind: 'usd', blurb: 'Urea is the most common fertilizer. It\'s made from natural gas.' },
+    ],
+    // Not adjusted for inflation (noReal): these compare currencies, not prices.
+    currency: [
       { id: 'usd', kind: 'index', noReal: true, blurb: 'Higher means a stronger dollar. Not adjusted for inflation, since it compares currencies, not prices.' },
+      { id: 'brl', kind: 'fx', noReal: true,
+        blurb: 'Brazil sells more soybeans abroad than any other country, plus lots of sugar, coffee and beef. When the real is weak, each dollar of sales turns into more reals at home, so farmers there sell and plant more. In 2011 a dollar bought less than 2 reals. At the end of 2024 it bought about 6.' },
+      { id: 'cny', kind: 'fx', noReal: true,
+        blurb: 'China buys more soybeans than any other country, and lots of copper and oil. A lower number means a stronger yuan, which makes those cheaper for Chinese buyers. China\'s government held it near 8.28 per dollar from 1998 to 2005, and it still steers it.' },
+      { id: 'inr', kind: 'fx', noReal: true,
+        blurb: 'India sells more rice abroad than any other country, and Indian families buy lots of gold. A weaker rupee makes gold cost more in India and Indian rice cheaper abroad. In 2000 a dollar bought about 45 rupees.' },
     ],
     parts: ['fao_cereals', 'fao_oils', 'fao_dairy', 'fao_meat', 'fao_sugar'],
   };
@@ -126,6 +135,7 @@
   function fmt(v, kind) {
     if (v == null || !isFinite(v)) return '-';
     if (kind === 'usd') return '$' + nf(Math.abs(v) < 100 ? 2 : 0).format(v);
+    if (kind === 'fx') return nf(Math.abs(v) < 20 ? 2 : 1).format(v); // 5.13 reals, 95.5 rupees
     return nf(1).format(v);
   }
   function fmtAxis(v, kind, step) {
@@ -331,7 +341,7 @@
   function buildCard(def) {
     const s = D.series[def.id] || {};
     const meta = { name: def.name || s.name || def.id, unit: def.unit || s.unit || '' };
-    const card = el('article', { class: 'card chart-card', id: 'card-' + def.id });
+    const card = el('article', { class: def.wide ? 'card chart-card wide' : 'card chart-card', id: 'card-' + def.id });
     const h = el('h3', {}, meta.name);
     const unit = el('div', { class: 'unit' }, meta.unit);
     const stat = el('div', { class: 'stat' });
@@ -531,9 +541,12 @@
     setupCPI();
     if (spot && spot.silver) live = { silver: spot.silver.price, gold: spot.gold.price, at: new Date(spot.silver.at || spot.fetched), isLive: false };
 
-    for (const [key, defs] of Object.entries({ metals: CARDS.metals, food: CARDS.food, drivers: CARDS.drivers })) {
+    for (const key of ['metals', 'food', 'drivers', 'currency']) {
       const box = document.getElementById(key);
-      for (const def of defs) { const c = buildCard(def); box.append(c); cards.push(c); }
+      // A series missing from series.json (say, a new one before its first refresh) gets no card.
+      // The ratio has no series of its own: it's worked out from gold and silver, which seriesOK requires.
+      const has = (def) => def.id === 'ratio' || D.series[def.id];
+      for (const def of CARDS[key].filter(has)) { const c = buildCard(def); box.append(c); cards.push(c); }
     }
     const parts = document.getElementById('fao-parts');
     for (const id of CARDS.parts) if (D.series[id]) { const t = buildTile(id); parts.append(t); cards.push(t); }

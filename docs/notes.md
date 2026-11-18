@@ -62,6 +62,18 @@ Code review fixes merged 2026-11-15 (CPI gap interpolation, workflow push retry,
 
 ## Log
 
+- **2026-11-18:** He said the dollar felt odd mixed in with food and asked for a currency section,
+  plus a layout pass for consistency. Added **Currencies**: the dollar index moved out of "What
+  drives food prices" (now **Energy and fertilizer**: oil, urea), plus the **Brazilian real**
+  (top soybean seller), **Chinese yuan** (top soybean buyer) and **Indian rupee** (top rice
+  seller) from FRED monthly H.10 rates (EXBZUS/EXCHUS/EXINUS, `fetch_fx`, ids brl/cny/inr,
+  kind `fx`, no inflation adjustment). The dollar's history moved under the cards as "When the
+  dollar moved a lot". Layout: every chart grid is now 2 columns (1 under 700px), so sections fill
+  whole rows (Metals 2x2, Food has the FAO index full-width (`wide`) over 2x2 crops, Energy 1 row,
+  Currencies 2x2). Cards whose series is missing are skipped (the ratio is computed, so exempt).
+  The blurb facts (real under 2 in 2011, about 6 in Dec 2024; yuan near 8.28 from 1998 to mid-2005;
+  rupee about 45 in 2000; Brazil/China/India top seller or buyer) are asserted in `check_claims.py`.
+  Heads-up tag for the dollar stays "Money" (the weekly read's tag list uses it for the Fed too).
 - **2026-11-16 (afternoon):** Merged `checklist` (4 review rounds). He asked about a faster
   cadence: Claude's call was **Monday + Friday**, not three a week (the page's core data is
   monthly, so extra reads would mostly say "nothing new"; Monday catches weekend news like OPEC+
