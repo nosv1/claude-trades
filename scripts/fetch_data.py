@@ -24,6 +24,7 @@ import csv
 import datetime as dt
 import io
 import json
+import os
 import re
 import sys
 import urllib.parse
@@ -309,6 +310,16 @@ def fetch_enso() -> dict:
             "url": ENSO_PAGE, "oni": oni[-36:]}
 
 
+def report_failure(failed: list[str], key: str, e: Exception) -> None:
+    """Note a source that failed (its previous data is kept). On GitHub Actions it also becomes a
+    warning annotation, which shows on the run page and in the public API without reading logs."""
+    failed.append(key)
+    print(f"  FAILED {key}: {e}", file=sys.stderr)
+    if os.environ.get("GITHUB_ACTIONS") == "true":
+        first_line = (str(e).splitlines() or [type(e).__name__])[0][:200]  # annotations are one line
+        print(f"::warning title=Data source failed::{key}: {first_line}")
+
+
 def main() -> int:
     OUT.mkdir(parents=True, exist_ok=True)
     series_path, spot_path = OUT / "series.json", OUT / "spot.json"
@@ -324,8 +335,7 @@ def main() -> int:
             series.update(got)
             sources[key] = meta
         except Exception as e:  # noqa: BLE001 - keep previous data for this source
-            failed.append(key)
-            print(f"  FAILED {key}: {e}", file=sys.stderr)
+            report_failure(failed, key, e)
 
     now = dt.datetime.now(dt.timezone.utc).replace(microsecond=0).isoformat()
     if len(failed) < len(fetchers):
@@ -336,8 +346,7 @@ def main() -> int:
         (OUT / "enso.json").write_text(json.dumps(fetch_enso(), separators=(",", ":"), ensure_ascii=False),
                                        encoding="utf-8")
     except Exception as e:  # noqa: BLE001 - keep the previous enso.json
-        failed.append("enso")
-        print(f"  FAILED enso: {e}", file=sys.stderr)
+        report_failure(failed, "enso", e)
 
     # Live spot snapshot, plus one row per day so a daily history builds up over time.
     try:
@@ -349,8 +358,7 @@ def main() -> int:
             {"fetched": now, **spot, "history": sorted(history.values())},
             separators=(",", ":")))
     except Exception as e:  # noqa: BLE001
-        failed.append("spot")
-        print(f"  FAILED spot: {e}", file=sys.stderr)
+        report_failure(failed, "spot", e)
 
     missing_now = [k for k in ("silver", "fao_food", "cpi") if k not in series]
     print(f"done; failed sources: {failed or 'none'}")
