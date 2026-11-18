@@ -49,9 +49,11 @@
     ],
     // Not adjusted for inflation (noReal): these compare currencies, not prices.
     currency: [
-      { id: 'usd', kind: 'index', noReal: true, blurb: 'Higher means a stronger dollar. Not adjusted for inflation, since it compares currencies, not prices.' },
+      { id: 'usd', kind: 'index', noReal: true, wide: true, blurb: 'Higher means a stronger dollar. Not adjusted for inflation, since it compares currencies, not prices.' },
       { id: 'brl', kind: 'fx', noReal: true,
         blurb: 'Brazil sells more soybeans abroad than any other country, plus lots of sugar, coffee and beef. When the real is weak, each dollar of sales turns into more reals at home, so farmers there sell and plant more. In 2011 a dollar bought less than 2 reals. At the end of 2024 it bought about 6.' },
+      { id: 'rub', kind: 'fx', noReal: true,
+        blurb: 'Russia sells more wheat and fertilizer abroad than any other country. A weak ruble usually pushes Russian farmers to sell more abroad. But a Russian tax on wheat sold abroad (since 2021) and sanctions over its war on Ukraine (since 2022) blunt that. In 2013 a dollar bought about 32 rubles. After oil prices crashed in 2014, it bought about 67 in 2016.' },
       { id: 'cny', kind: 'fx', noReal: true,
         blurb: 'China buys more soybeans than any other country, and lots of copper and oil. A lower number means a stronger yuan, which makes those cheaper for Chinese buyers. China\'s government held it near 8.28 per dollar from 1998 to 2005, and it still steers it.' },
       { id: 'inr', kind: 'fx', noReal: true,

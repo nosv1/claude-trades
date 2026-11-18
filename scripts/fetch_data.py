@@ -9,6 +9,7 @@ Sources (all free, no API key):
   FRED CPIAUCSL            US consumer prices, for inflation adjustment
   FRED DTWEXBGS            Broad US dollar index (daily, averaged by month)
   FRED EXBZUS/EXCHUS/EXINUS  Brazilian real, Chinese yuan, Indian rupee per US dollar (monthly)
+  Bank of Russia           official ruble rate (daily, averaged by month; FRED doesn't carry it)
   gold-api.com             live silver/gold spot price
   NOAA CPC                 El Nino / La Nina status and the ONI ocean-temperature index
 
@@ -54,6 +55,9 @@ FX_SERIES = {
     "EXCHUS": ("cny", "Chinese yuan", "yuan per US dollar (higher = weaker yuan)"),
     "EXINUS": ("inr", "Indian rupee", "rupees per US dollar (higher = weaker rupee)"),
 }
+# Bank of Russia daily USD rate (R01235). From 1998: the ruble lost three zeros that January.
+RUB_XML = ("https://www.cbr.ru/scripts/XML_dynamic.asp?date_req1=01/01/1998&date_req2={}"
+           "&VAL_NM_RQ=R01235")
 SPOT = "https://api.gold-api.com/price/{}"
 ONI = "https://www.cpc.ncep.noaa.gov/data/indices/oni.ascii.txt"
 ENSO_PAGE = "https://www.cpc.ncep.noaa.gov/products/analysis_monitoring/enso_advisory/ensodisc.shtml"
@@ -83,10 +87,17 @@ FAO_SERIES = {
 }
 
 
+MAX_BYTES = 50_000_000  # biggest download (the World Bank workbook) is a few MB
+
+
 def get(url: str, timeout: int = 60) -> bytes:
+    """Download with a time limit and a size cap (docs/coding-standard.md rule 3)."""
     req = urllib.request.Request(url, headers=UA)
     with urllib.request.urlopen(req, timeout=timeout) as r:
-        return r.read()
+        body = r.read(MAX_BYTES + 1)
+    if len(body) > MAX_BYTES:
+        raise RuntimeError(f"{url}: over {MAX_BYTES} bytes")
+    return body
 
 
 def find_link(page: str, pattern: str, fallback: str) -> str:
@@ -248,6 +259,27 @@ def fetch_fx() -> tuple[dict, dict]:
     )
 
 
+def fetch_ruble() -> tuple[dict, dict]:
+    """Rubles per US dollar, daily official rates -> monthly averages, finished months only."""
+    url = RUB_XML.format(dt.date.today().strftime("%d/%m/%Y"))
+    print(f"Bank of Russia: {url}")
+    text = get(url).decode("cp1251")
+    days: dict[str, list[float]] = {}
+    rec = r'<Record Date="(\d\d)\.(\d\d)\.(\d{4})"[^>]*><Nominal>(\d+)</Nominal><Value>([\d,]+)</Value>'
+    for _d, mo, y, nominal, value in re.findall(rec, text):
+        days.setdefault(f"{y}-{mo}", []).append(float(value.replace(",", ".")) / int(nominal))
+    this_month = dt.date.today().strftime("%Y-%m")
+    pts = {m: round(sum(v) / len(v), 2) for m, v in days.items() if m < this_month}
+    if len(pts) < 200:
+        raise RuntimeError(f"ruble: only {len(pts)} months")
+    return (
+        {"rub": {"name": "Russian ruble", "unit": "rubles per US dollar (higher = weaker ruble)",
+                 "source": "cbr", **to_series(pts)}},
+        {"name": "Bank of Russia official exchange rates",
+         "url": "https://www.cbr.ru/eng/currency_base/dynamics/", "updated": None},
+    )
+
+
 def fetch_spot() -> dict:
     spot = {}
     for sid, sym in (("silver", "XAG"), ("gold", "XAU")):
@@ -285,7 +317,7 @@ def main() -> int:
     series, sources, failed = dict(prev["series"]), dict(prev["sources"]), []
 
     fetchers = (("wb", fetch_world_bank), ("fao", fetch_fao), ("fred", fetch_cpi), ("fred_usd", fetch_dollar),
-                ("fred_fx", fetch_fx))
+                ("fred_fx", fetch_fx), ("cbr", fetch_ruble))
     for key, fn in fetchers:
         try:
             got, meta = fn()

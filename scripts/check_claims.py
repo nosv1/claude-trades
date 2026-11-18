@@ -45,11 +45,17 @@ def halved(d, ms):
 
 
 foods_down = [yoy(food, m) for m in down]
-brl, cny, inr = monthly("brl"), monthly("cny"), monthly("inr")
+brl, cny, inr, rub = monthly("brl"), monthly("cny"), monthly("inr"), monthly("rub")
 
 
 def in_year(d, y):
     return [d[m] for m in range(y * 12, y * 12 + 12) if m in d]
+
+
+def year_avg(d, y):
+    """Average of a full year; NaN (fails every comparison) if any month is missing."""
+    v = in_year(d, y)
+    return sum(v) / 12 if len(v) == 12 else float("nan")
 
 
 peg = [cny[m] for m in range(1998 * 12, 2005 * 12 + 6) if m in cny]  # Jan 1998 to Jun 2005
@@ -57,7 +63,7 @@ TRADE = {c["id"]: c for c in json.loads((ROOT / "site/data/trade.json").read_tex
 
 
 def top_seller(cid):
-    """UN country code of the biggest exporter (codes: 76 Brazil, 156 China, 699 India)."""
+    """UN country code of the biggest exporter (codes: 76 Brazil, 156 China, 643 Russia, 699 India)."""
     return max(TRADE[cid]["exporters"], key=lambda e: e[1])[0]
 
 
@@ -88,6 +94,12 @@ claims = {
     "Brazil sells the most soybeans and China buys the most":
         top_seller("soybeans") == 76 and top_buyer("soybeans") == 156,
     "India sells the most rice": top_seller("rice") == 699,
+    "ruble: about 32 per dollar in 2013, about 67 in 2016 (yearly averages within 2)":
+        abs(year_avg(rub, 2013) - 32) <= 2 and abs(year_avg(rub, 2016) - 67) <= 2,
+    "oil crashed in 2014: Brent's 2015-16 low was under half its June 2014 level":
+        min(oil[m] for m in range(2015 * 12, 2017 * 12) if m in oil) < oil[2014 * 12 + 5] / 2,
+    "Russia sells the most wheat and fertilizer":
+        top_seller("wheat") == 643 and top_seller("fertilizer") == 643,
 }
 bad = [c for c, ok in claims.items() if not ok]
 for c, ok in claims.items():
