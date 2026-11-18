@@ -40,6 +40,8 @@ and branch names still say "weekly"); sync worker auto-deploys on changes under 
 3. **Resume the code review** on commit 24f7453 (standard review round 1: shared `TP.getJSON`,
    per-file shape checks, frozen shared data). Stopped there to end the session; keep going until
    findings are nitpicks. Run `/code-review` before merging from now on, not after.
+   **Missed on 2026-11-18:** the Currencies work (e1afc75, 42f6899, dfb36ab) was merged without a
+   `/code-review` first. Include e1afc75..4c6f57e in the next review round.
 4. Early Jan 2027: first graded calls (Dec FAO up, Dec Brent down) appear on the track record.
 
 **Roadmap, in order (Claude's call as domain expert, 2026-11-15):**
