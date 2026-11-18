@@ -74,6 +74,16 @@ Code review fixes merged 2026-11-15 (CPI gap interpolation, workflow push retry,
   The blurb facts (real under 2 in 2011, about 6 in Dec 2024; yuan near 8.28 from 1998 to mid-2005;
   rupee about 45 in 2000; Brazil/China/India top seller or buyer) are asserted in `check_claims.py`.
   Heads-up tag for the dollar stays "Money" (the weekly read's tag list uses it for the Fed too).
+- **2026-11-18 (later):** He asked why only those currencies. Checked: euro, pound, Australian and
+  Canadian dollars move with the dollar index (yearly changes correlate -0.73 to -0.88 since 2006),
+  and AUD/CAD follow copper and oil (0.69/0.77), so they mirror rather than drive. The real gap was
+  the **ruble** (Russia is the top wheat and fertilizer seller), missing only because FRED lacks
+  it. Added from the Bank of Russia (`fetch_ruble`, cbr.ru XML, daily -> monthly, from 1998 when
+  the ruble lost three zeros, finished months only; regex parse, no XML parser). The card says the
+  2021 wheat export tax and 2022 sanctions blunt the weak-ruble effect. The dollar index is now
+  Currencies' full-width card over a 2x2. `get()` gained a 50 MB cap (rule 3). **Unverified:**
+  whether cbr.ru answers GitHub's runners; if not, the card just never appears (check the next
+  "Refresh data" commit for `rub`).
 - **2026-11-16 (afternoon):** Merged `checklist` (4 review rounds). He asked about a faster
   cadence: Claude's call was **Monday + Friday**, not three a week (the page's core data is
   monthly, so extra reads would mostly say "nothing new"; Monday catches weekend news like OPEC+
