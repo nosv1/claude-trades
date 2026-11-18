@@ -81,9 +81,10 @@ Code review fixes merged 2026-11-15 (CPI gap interpolation, workflow push retry,
   it. Added from the Bank of Russia (`fetch_ruble`, cbr.ru XML, daily -> monthly, from 1998 when
   the ruble lost three zeros, finished months only; regex parse, no XML parser). The card says the
   2021 wheat export tax and 2022 sanctions blunt the weak-ruble effect. The dollar index is now
-  Currencies' full-width card over a 2x2. `get()` gained a 50 MB cap (rule 3). **Unverified:**
-  whether cbr.ru answers GitHub's runners; if not, the card just never appears (check the next
-  "Refresh data" commit for `rub`).
+  Currencies' full-width card over a 2x2. `get()` gained a 50 MB cap (rule 3). A failed source
+  now also prints a `::warning title=Data source failed::` annotation on Actions (job logs need a
+  login; annotations are public at `/check-runs/<job id>/annotations`). Verified: the first run
+  with it had no failures, so cbr.ru answers GitHub's runners.
 - **2026-11-16 (afternoon):** Merged `checklist` (4 review rounds). He asked about a faster
   cadence: Claude's call was **Monday + Friday**, not three a week (the page's core data is
   monthly, so extra reads would mostly say "nothing new"; Monday catches weekend news like OPEC+
