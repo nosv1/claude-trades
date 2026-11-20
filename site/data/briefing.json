@@ -1,125 +1,93 @@
 {
-  "date": "2026-11-16",
+  "date": "2026-11-20",
   "by": "Claude",
-  "headline": "Tankers caught fire near Iran again, a reminder that cheaper oil could still flip back up.",
-  "summary": "Oil averaged $125 a barrel in October, then fell for two weeks as war fears eased. But six tankers caught fire near Iran over the weekend. Gold hit its lowest price in more than a year, because a US rate rise in December now looks nearly certain. Palm oil is piling up in storage for now, even with El Niño on the way.",
-  "lookback": "The last read came out earlier today, so the monthly price data hasn't changed. Since then, the risk it flagged near Iran showed up: more tankers were hit in the Strait of Hormuz. Gold slipped further, and bets on a December rate rise grew a little. None of the dated things on the watch list has happened yet.",
+  "headline": "Gold and silver hit their lowest in over a year, while India plants far less wheat after a dry monsoon.",
+  "summary": "Gold and silver fell to their lowest prices in more than a year. Traders expect the Fed (the US central bank) to keep raising interest rates. In India, farmers are planting much less wheat after the weakest monsoon in over a decade, and rice is getting pricier across Asia. Oil is far below October's $125 average, and the US, China and Russia promised more fuel.",
+  "lookback": "The last read said a December rate rise looked nearly certain. Fed officials kept sounding tough, and gold kept falling, to its lowest in about 14 months. More ships were hit near Iran, as the last read warned. But oil barely moved, because the US has plenty in storage. Two watch items are still ahead: the OPEC+ meeting and FAO's November food prices. We couldn't open Malaysia's palm oil board this time, so there is no new palm oil storage number.",
   "summary_facts": [
-    {
-      "s": "brent",
-      "m": "last",
-      "v": 125,
-      "month": "2026-10"
-    }
+    { "s": "brent", "m": "last", "v": 125, "month": "2026-10" }
   ],
   "lookback_facts": [],
   "items": [
     {
-      "tag": "Energy",
-      "title": "Tankers burn near Iran, even as oil keeps easing",
-      "text": "Six tankers caught fire near the Strait of Hormuz on Sunday and Monday, CNBC reported. That's the narrow sea lane a lot of the world's oil passes through. Iran's Revolutionary Guards (a branch of its military) said two of them hit mines. Oil had already fallen for two weeks in a row. The US plans to keep its blockade of Iran, which makes big new fighting less likely. The IEA (the world's energy watchdog) expects more oil than buyers need in the last three months of this year. October's average was $125 a barrel, 93% more than a year before. More attacks could push gas prices back up.",
+      "tag": "Metals",
+      "title": "Gold and silver sink to their lowest in over a year",
+      "text": "Gold fell to about $3,780 an ounce on Wednesday, The Hindu BusinessLine reported. Silver fell to about $46. Both are at their lowest in more than a year. Traders think the Fed (the US central bank) will raise interest rates faster than expected. That lifts the dollar, and gold pays no interest, so it looks less attractive. Both metals peaked on 29 January, gold near $5,600 and silver near $122. So silver has lost almost two thirds since then. Gold averaged $4,105 in October and silver $57. The live price on this page slid further on Thursday.",
       "sources": [
-        {
-          "name": "CNBC",
-          "url": "https://www.cnbc.com/2026/11/16/oil-prices-brent-wti-latest.html",
-          "quote": "Six tankers caught fire in similar incidents on Sunday and Monday."
-        },
-        {
-          "name": "CNBC",
-          "url": "https://www.cnbc.com/2026/11/13/oil-prices-set-for-second-weekly-decline-as-trump-to-stay-with-iran-blockade.html",
-          "quote": "Oil weakened on Friday, notching a second straight weekly decline."
-        },
-        {
-          "name": "CNBC",
-          "url": "https://www.cnbc.com/2026/11/13/oil-prices-set-for-second-weekly-decline-as-trump-to-stay-with-iran-blockade.html",
-          "quote": "the U.S. plans to continue its Iranian blockade, reducing the chance of renewed large-scale fighting"
-        },
-        {
-          "name": "CNBC",
-          "url": "https://www.cnbc.com/2026/11/16/oil-prices-brent-wti-latest.html",
-          "quote": "The world oil market will return to a surplus in the fourth quarter"
-        }
+        { "name": "The Hindu BusinessLine", "url": "https://www.thehindubusinessline.com/markets/gold/gold-silver-prices-in-indian-markets-crash-to-nearly-a-years-low/article71714989.ece", "quote": "gold was down over 2 per cent at $3,780 an ounce at 1910 hrs IST, while silver was quoted at $45.81 an ounce" },
+        { "name": "The Hindu BusinessLine", "url": "https://www.thehindubusinessline.com/markets/gold/gold-silver-prices-in-indian-markets-crash-to-nearly-a-years-low/article71714989.ece", "quote": "The precious metals have plunged to their lowest in over a year in the global market as the dollar strengthened on hopes of the US Fed raising interest rates faster than expected." },
+        { "name": "The Hindu BusinessLine", "url": "https://www.thehindubusinessline.com/markets/gold/gold-silver-prices-in-indian-markets-crash-to-nearly-a-years-low/article71714989.ece", "quote": "Gold and silver peaked at $5,608 an ounce and $121.74 an ounce on January 29" }
       ],
       "facts": [
-        {
-          "s": "brent",
-          "m": "last",
-          "v": 125,
-          "month": "2026-10"
-        },
-        {
-          "s": "brent",
-          "m": "yoy",
-          "v": 93,
-          "month": "2026-10"
-        }
+        { "s": "gold", "m": "last", "v": 4105, "month": "2026-10" },
+        { "s": "silver", "m": "last", "v": 57, "month": "2026-10" }
       ]
     },
     {
-      "tag": "Money",
-      "title": "Gold hits its lowest in more than a year",
-      "text": "Gold fell to its lowest price in more than a year on Monday, CNBC reported. It was about $3,880 an ounce, down from a $5,020 average in February. Traders now see a 91% chance that the Fed (the US central bank) raises interest rates in December. Higher rates make gold less attractive, because gold pays no interest. Traders are waiting to hear from the Fed's boss, Kevin Warsh. His words could move gold either way.",
+      "tag": "Farming",
+      "title": "India plants far less wheat, and rice gets pricier",
+      "text": "India is the world's second-biggest wheat grower. Its farmers are set to cut wheat planting by the most in 26 years, Reuters reported. The monsoon (the summer rainy season) was the weakest in over a decade. With dry fields, many farmers are switching to other crops. That could mean less wheat and higher food prices in India. El Niño (the Pacific running warm) brings another risk: a hot February and March could hurt the crop. Thai rice also hit its highest price in nearly two years. World rice and wheat prices were both 37% higher in October than a year before.",
       "sources": [
-        {
-          "name": "CNBC",
-          "url": "https://www.cnbc.com/2026/11/16/gold-holds-steady-as-investors-await-warsh-remarks-for-rate-signals.html",
-          "quote": "Gold prices fell to their lowest level in more than a year on Monday"
-        },
-        {
-          "name": "CNBC",
-          "url": "https://www.cnbc.com/2026/11/16/gold-holds-steady-as-investors-await-warsh-remarks-for-rate-signals.html",
-          "quote": "Markets are pricing in a 91% chance of a 25-basis-point rate hike in December"
-        },
-        {
-          "name": "CNBC",
-          "url": "https://www.cnbc.com/2026/11/16/gold-holds-steady-as-investors-await-warsh-remarks-for-rate-signals.html",
-          "quote": "awaited remarks from Fed Chair Kevin Warsh for further clues on the US interest-rate outlook"
-        }
+        { "name": "The Hindu BusinessLine (Reuters)", "url": "https://www.thehindubusinessline.com/economy/agri-business/indias-wheat-area-set-for-biggest-drop-in-26-years-as-farmers-switch-crops/article71723372.ece", "quote": "India's wheat acreage is poised for its steepest decline in 26 years as fields parched by the weakest monsoon rains in more than a decade spur farmers to switch to competing crops" },
+        { "name": "The Hindu BusinessLine (Reuters)", "url": "https://www.thehindubusinessline.com/economy/agri-business/indias-wheat-area-set-for-biggest-drop-in-26-years-as-farmers-switch-crops/article71723372.ece", "quote": "threatens to curb output in the world's second-largest wheat producer, in turn boosting prices" },
+        { "name": "The Hindu BusinessLine", "url": "https://www.thehindubusinessline.com/economy/agri-business/cyclone-akvan-was-trapped-in-a-wedge-sat-too-long-over-bay-before-weakening/article71723290.ece", "quote": "That is potentially bad news for wheat, particularly if temperatures rise sharply in February and March" },
+        { "name": "The Hindu BusinessLine (Reuters)", "url": "https://www.thehindubusinessline.com/economy/agri-business/indian-rice-export-prices-hit-19-month-high-as-rupee-strengthens-african-demand-rises/article71722963.ece", "quote": "rates for the Thai variety rose to their highest level in nearly two years" }
       ],
       "facts": [
-        {
-          "s": "gold",
-          "m": "last",
-          "v": 5020,
-          "month": "2026-02"
-        }
+        { "s": "rice", "m": "yoy", "v": 37 },
+        { "s": "wheat", "m": "yoy", "v": 37 }
+      ]
+    },
+    {
+      "tag": "Energy",
+      "title": "Oil stays far below October, and three leaders promise more fuel",
+      "text": "Brent crude (the main world oil price) was about $92 a barrel on Friday. October's average was $125. The leaders of the US, China and Russia met in China on Thursday. They said they plan to make and supply more fuel, like gasoline and diesel. Experts doubt it will add much fuel. The Strait of Hormuz (the narrow sea lane by Iran) is still far quieter than before the war. If oil stays this low, gas prices could ease in the coming months.",
+      "sources": [
+        { "name": "The Hindu BusinessLine", "url": "https://www.thehindubusinessline.com/markets/commodities/crude-oil-futures-gain-on-reports-of-houthi-attack-in-riyadh/article71723090.ece", "quote": "January Brent oil futures were at $92.44, up by 0.50 per cent" },
+        { "name": "Al Jazeera", "url": "https://www.aljazeera.com/news/2026/11/20/trump-putin-xi-pledge-to-increase-global-petrol-supplies-but-how", "quote": "plan to increase the production and supply of refined petroleum products for the benefit of all nations" },
+        { "name": "Al Jazeera", "url": "https://www.aljazeera.com/news/2026/11/20/trump-putin-xi-pledge-to-increase-global-petrol-supplies-but-how", "quote": "The trilateral statement should be treated as political noise rather than the first step to boosting global fuel supplies" },
+        { "name": "Al Jazeera", "url": "https://www.aljazeera.com/news/2026/11/18/us-official-says-hormuz-insurance-hits-64m-is-the-strait-really-open", "quote": "shipping remains substantially below pre-war levels" }
+      ],
+      "facts": [
+        { "s": "brent", "m": "last", "v": 125, "month": "2026-10" }
       ]
     },
     {
       "tag": "Food",
-      "title": "Palm oil piles up for now, before El Niño bites",
-      "text": "Malaysia, a big palm oil grower, had a record amount in storage at the end of October. Its farm board (MPOB) put it at 3.62 million tonnes, the most it has ever held. That is keeping palm oil prices in check for now. Cooking oils overall cost 18% more in October than a year before, by the FAO's count. El Niño (the Pacific running warm) is still getting stronger. Dry weather usually cuts palm harvests many months later. So the squeeze, if it comes, is more likely in 2027 than now.",
+      "title": "Russia sells less wheat abroad, but the world grows more",
+      "text": "The IGC (the world grain council) cut its guess for Russia's wheat sales abroad again, Interfax reported. It's the fourth cut in four months, to about 38.5 million tonnes. But the IGC raised its guess for the world's wheat harvest. Russia and Ukraine also have unusually large amounts in storage. So the world isn't short of wheat for now. Wheat in October was 9% below its recent high.",
       "sources": [
-        {
-          "name": "MPOB",
-          "url": "https://prestasisawit.mpob.gov.my/en/palmnews/news/40202",
-          "quote": "By the end of October, stocks reached 3.62 mln tons, up 3.16% from the previous month."
-        },
-        {
-          "name": "MPOB",
-          "url": "https://prestasisawit.mpob.gov.my/en/palmnews/news/40200",
-          "quote": "although record-high inventories could cap further upside"
-        },
-        {
-          "name": "NOAA",
-          "url": "https://www.cpc.ncep.noaa.gov/products/analysis_monitoring/enso_advisory/ensodisc.shtml",
-          "quote": "El Niño continues to strengthen"
-        }
+        { "name": "Interfax (Russian)", "url": "https://www.interfax.ru/business/1130338", "quote": "оценка экспорта пшеницы снижена на 0,9 млн тонн, до 38,5 млн тонн" },
+        { "name": "Interfax (Russian)", "url": "https://www.interfax.ru/business/1130338", "quote": "В октябре прогноз был снижен на 2,1 млн тонн, в сентябре - на 3,7 млн тонн, в августе - на 2,5 млн тонн" },
+        { "name": "Interfax (Russian)", "url": "https://www.interfax.ru/business/1130338", "quote": "Прогноз мирового сбора пшеницы на этот сельхозгод повышен до 826,4 млн тонн с 820,3 млн тонн" },
+        { "name": "Interfax (Russian)", "url": "https://www.interfax.ru/business/1130338", "quote": "\"Необычно большие запасы зерна в России на Украине\" привели к росту оценки мировых переходящих запасов на 7 млн тонн" }
       ],
       "facts": [
-        {
-          "s": "fao_oils",
-          "m": "yoy",
-          "v": 18,
-          "month": "2026-10"
-        }
+        { "s": "wheat", "m": "fromPeak", "v": -9 }
       ]
     }
   ],
+  "checked": [
+    { "topic": "oil", "status": "covered", "note": "Brent near $92 on Friday; small rise after a Houthi attack on a Riyadh tower.", "url": "https://www.thehindubusinessline.com/markets/commodities/crude-oil-futures-gain-on-reports-of-houthi-attack-in-riyadh/article71723090.ece" },
+    { "topic": "gas-fertilizer", "status": "quiet", "note": "India's urea sales about flat in October, DAP up 7%. No big gas or Russian fertilizer sanctions news found.", "url": "https://www.thehindubusinessline.com/economy/agri-business/fertilisers-sales-drop-9-in-october-but-dap-7-higher/article71723423.ece" },
+    { "topic": "enso", "status": "covered", "note": "NOAA site blocked this run. Indian researchers: El Niño peaks by January; heat risk for India's wheat.", "url": "https://www.thehindubusinessline.com/economy/agri-business/cyclone-akvan-was-trapped-in-a-wedge-sat-too-long-over-bay-before-weakening/article71723290.ece" },
+    { "topic": "southeast-asia", "status": "quiet", "note": "Indonesia's palm growers (GAPKI) expect lower output and sales abroad in 2027. MPOB site blocked this run.", "url": "https://industri.kontan.co.id/news/biaya-ekspor-sawit-bertambah-gapki-khawatir-daya-saing-indonesia-tergerus" },
+    { "topic": "south-asia", "status": "covered", "note": "India's wheat area set for its biggest drop in 26 years; Indian rice export prices at a 19-month high.", "url": "https://www.thehindubusinessline.com/economy/agri-business/indias-wheat-area-set-for-biggest-drop-in-26-years-as-farmers-switch-crops/article71723372.ece" },
+    { "topic": "black-sea", "status": "covered", "note": "IGC cut Russia's wheat export forecast to 38.5 Mt; big stocks in Russia and Ukraine.", "url": "https://www.interfax.ru/business/1130338" },
+    { "topic": "americas", "status": "quiet", "note": "Rosario exchange (13 Nov): the Parana river is at its highest November level since 1998 after El Niño rains. Nothing newer found.", "url": "https://www.bcr.com.ar/es/mercados/investigacion-y-desarrollo/informativo-semanal/noticias-informativo-semanal/el-parana-en" },
+    { "topic": "australia", "status": "quiet", "note": "USDA's November report raised Australia's wheat crop (via Rosario exchange). ABARES site blocked this run.", "url": "https://www.bcr.com.ar/es/mercados/mercado-de-granos/noticias/reporte-mensual-del-usda-noviembre-2026" },
+    { "topic": "china", "status": "quiet", "note": "China's oil imports rose 9% in October as Saudi supplies recovered; Russia stays its top supplier.", "url": "https://www.interfax.ru/business/1130389" },
+    { "topic": "importers", "status": "quiet", "note": "WFP's 2027 plan (20 Nov) aims to help 91 million people. Egypt sites unreachable; no new wheat buying news found.", "url": "https://www.wfp.org/news/world-food-programme-sets-out-2027-plan-assist-91-million-people-need-food-crisis-looms" },
+    { "topic": "shipping", "status": "covered", "note": "Hormuz traffic still far below pre-war; Houthis threaten Saudi Red Sea ports.", "url": "https://www.aljazeera.com/news/2026/11/18/us-official-says-hormuz-insurance-hits-64m-is-the-strait-really-open" },
+    { "topic": "reports", "status": "covered", "note": "IGC's November grain report (19 Nov) raised the world wheat harvest. FAO and USDA sites blocked this run.", "url": "https://www.interfax.ru/business/1130338" },
+    { "topic": "metals", "status": "covered", "note": "Gold and silver at 14-month lows; copper futures in India fell 3% on Friday.", "url": "https://www.thehindubusinessline.com/markets/gold/gold-silver-prices-in-indian-markets-crash-to-nearly-a-years-low/article71714989.ece" },
+    { "topic": "money", "status": "covered", "note": "Hawkish Fed talk lifted the dollar and rate-rise bets. Fed site blocked this run.", "url": "https://www.thehindubusinessline.com/markets/gold/gold-silver-prices-in-indian-markets-crash-to-nearly-a-years-low/article71714989.ece" },
+    { "topic": "politics", "status": "covered", "note": "Trump, Xi and Putin summit in Shenzhen pledged more fuel supply. EU approved its trade deal with Indonesia.", "url": "https://www.aljazeera.com/news/2026/11/20/trump-putin-xi-pledge-to-increase-global-petrol-supplies-but-how" }
+  ],
   "watch": [
-    "Fed boss Kevin Warsh's next remarks, for clues on a December rate rise",
-    "OPEC+ (the big oil countries) meets to set 2027 output, Sun 29 Nov",
-    "World food prices for November (FAO), Fri 4 Dec",
-    "More tanker attacks near Iran, or a US-Iran deal"
+    "OPEC+ (the big oil countries' group) meets to set 2027 output, Sun 29 Nov",
+    "World food prices for November (FAO Food Price Index), Fri 4 Dec",
+    "More attacks on ships near Iran or in the Red Sea",
+    "India's wheat planting numbers, and heat there in February and March"
   ]
 }
