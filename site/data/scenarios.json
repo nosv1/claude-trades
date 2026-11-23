@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-20",
+  "updated": "2026-11-23",
   "by": "Claude",
   "note": "If-this-then-that chains that have happened before. Steps with a 'check' light up from the data; steps without one are news to watch for. Likelihoods are best guesses from the history given.",
   "scenarios": [
@@ -206,7 +206,7 @@
       "id": "oilcure",
       "title": "High oil prices fix themselves",
       "likelihood": "likely",
-      "why": "Brent crude was about $92 a barrel on 20 November, far below October's $125 average. The US, China and Russia promised more fuel, and US oil storage is rising. But ships near Iran are still being attacked. More attacks like that could flip it back.",
+      "why": "Brent crude was about $91 a barrel on 23 November, far below October's $125 average. The IEA (the world's energy watchdog) says oil supply now tops demand for the first time since the Iran war began. But attacks on Saudi sites and tankers go on. More attacks like that could flip it back.",
       "horizon": "Next 6 to 18 months",
       "steps": [
         {
@@ -260,7 +260,7 @@
       "id": "exportban",
       "title": "A ban on food sales sets off a panic",
       "likelihood": "possible",
-      "why": "When food gets expensive at home, governments sometimes stop selling it abroad. Rice and wheat are both up sharply this year. India sells about a quarter of the world's rice, and Russia about a fifth of its wheat. Indian farmers are planting much less wheat after a dry monsoon, and Asian rice prices rose this week.",
+      "why": "When food gets expensive at home, governments sometimes stop selling it abroad. Rice and wheat are both up sharply this year. India sells about a quarter of the world's rice, and Russia about a fifth of its wheat. India is now weighing a tax of up to 30% on rice sold abroad, with a ban as a last resort. A tax is milder than a ban, so this stays possible.",
       "horizon": "Any time",
       "steps": [
         {
@@ -384,6 +384,54 @@
       "outcome": 3,
       "deadline": "2027-12",
       "cases": 7
+    },
+    {
+      "id": "copper",
+      "title": "A slowdown scare knocks copper down",
+      "likelihood": "possible",
+      "why": "Copper briefly fell below $12,000 a tonne on 23 November, after a big drop last week. Doubts about AI spending and weak buying in China are hitting it. But big copper drops are not the usual result of a run-up. After 23 big run-ups since 1960, copper fell 20% within 7 months only 5 times.",
+      "horizon": "Next 6 months",
+      "steps": [
+        {
+          "text": "Copper soars, up 25% or more in a year",
+          "lag": "2026",
+          "check": {
+            "s": "copper",
+            "m": "yoy",
+            "op": ">=",
+            "v": 25
+          }
+        },
+        {
+          "text": "Stock markets fall on doubts about AI spending",
+          "lag": "Now",
+          "watch": "tech stock news and copper buying in China"
+        },
+        {
+          "text": "Copper falls 20% or more from its recent high",
+          "lag": "Within 6 months",
+          "check": {
+            "s": "copper",
+            "m": "fromPeak",
+            "op": "<=",
+            "v": -20
+          }
+        },
+        {
+          "text": "If the slowdown spreads, oil and other metals fall too",
+          "lag": "Months",
+          "watch": "oil, silver and stock prices in the news"
+        }
+      ],
+      "up": [],
+      "down": [
+        "Copper",
+        "Wiring and building costs"
+      ],
+      "history": "2008: copper fell 43% from April to October as the financial crisis hit. 2022: it fell 26% from March to July.",
+      "outcome": 2,
+      "deadline": "2027-05",
+      "cases": 23
     }
   ]
 }

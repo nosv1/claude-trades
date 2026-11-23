@@ -114,6 +114,19 @@
         ]
       },
       "deadline": "2027-12"
+    },
+    {
+      "id": "copper",
+      "made": "2026-11-23",
+      "likelihood": "possible",
+      "claim": "Copper falls 20% or more from its recent high",
+      "check": {
+        "s": "copper",
+        "m": "fromPeak",
+        "op": "<=",
+        "v": -20
+      },
+      "deadline": "2027-05"
     }
   ]
 }
