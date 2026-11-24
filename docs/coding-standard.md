@@ -1,58 +1,46 @@
 # Coding standard
 
-Adapted from NASA/JPL's "Power of Ten" (Gerard Holzmann, 2006), the core of the JPL Institutional
-Coding Standard. Those rules are for flight software in C, where nobody can patch a broken
-spacecraft. This is a static site in JavaScript and Python, so some rules don't apply (memory
-allocation, pointers, the preprocessor) and others become their nearest equivalent here. Each
-rule says how it's checked; "lint" means the Lint workflow, which runs on every push and allows
-zero warnings.
+The standard is the hub's [CODING.md](https://github.com/nosv1/nosv1/blob/main/CODING.md): NASA/JPL's "Power of
+Ten" carried into JavaScript and Python at the strictest settings the tools have. It replaced this file's own
+version on 2026-11-23. This page keeps only what's particular to Trade Pulse.
 
-## The rules
+## How the rules land here
 
-1. **Simple control flow.** No recursion except over data whose depth is capped where it enters
-   (say where). No `eval`, no `with`, no labels. *(lint: `no-eval`, `no-labels`, `no-with`)*
-2. **Every loop has a bound you can state.** `for` over a collection, or a counter with a fixed
-   cap. A `while` needs a comment saying why it ends (for example "at most 2 steps back from a
-   weekend"). Retry loops have a fixed number of tries.
-3. **Inputs have size limits.** The nearest thing to "no allocation after startup": every file or
-   request we read from outside has a cap (fetched JSON, Worker bodies, Claude-written files).
-4. **Functions fit on one screen: 60 lines at most**, and stay simple (cyclomatic complexity 15
-   at most). Split by job, not by line count. *(lint: `max-lines-per-function`, `complexity`;
-   Ruff `C901`, `PLR0915`)*
-5. **Check data where it comes in.** Anything from outside (APIs, `site/data/*.json`, files Claude
-   writes, the Worker's request bodies) is checked for shape and range at the edge, once, and the
-   code after that can trust it. Bad input gives a clear message, not a half-drawn page.
-   `check_weekly.py` does this for the weekly files before they publish. On the page, every JSON
-   fetch goes through `TP.getJSON` (site/common.js): a timeout, a size cap, and a shape check per
-   data file; a file that fails counts as missing, and a damaged `series.json` shows the error box.
-6. **Smallest scope.** `const` by default, `let` only when reassigned, never `var`. No new
-   globals beyond `window.TP`, `window.TP_SYNC`. No name that hides an outer one.
-   *(lint: `no-var`, `prefer-const`, `no-shadow`, `no-implicit-globals`)*
-7. **Check every result.** Every `fetch` checks `r.ok`; every subprocess checks its exit code;
-   every parse can fail. A broad `except Exception` / `catch` is allowed only where any failure
-   means the same thing, with a comment saying what (for example "keep the previous data").
-   No unused variables, no empty `catch` without a comment. *(lint: `no-unused-vars`,
-   `no-empty`; Ruff `BLE`, `F`)*
-8. **Plain language features.** Strict mode in every script (`'use strict'`); `===` (except
-   `== null`). *(lint: `strict`, `eqeqeq`)*
-9. **No hidden state.** Modules talk through `window.TP` and DOM events (`tp:progress`,
-   `tp:synced`), not shared mutable globals. Storage access is wrapped in `try`.
-10. **Zero warnings, checked on every push.** ESLint and Ruff run in the Lint workflow, kept
-    separate from the deploy so a lint failure never blocks the daily data refresh. A warning is
-    fixed or, if the rule is wrong for that line, disabled on that line with a reason.
+- **Rule 2, loops.** A `while` needs a comment saying why it ends (for example "at most 2 steps back from a
+  weekend"). Retry loops have a fixed number of tries.
+- **Rule 3, inputs have size limits.** Every file or request we read from outside has a cap: fetched JSON,
+  Worker bodies, files Claude writes.
+- **Rule 5, check data where it comes in.** Anything from outside (APIs, `site/data/*.json`, files Claude
+  writes, the Worker's request bodies) is checked for shape and range at the edge, once, and the code after
+  that can trust it. Bad input gives a clear message, not a half-drawn page. On the page, every JSON fetch
+  goes through `TP.getJSON` (site/common.js): a timeout, a size cap and a shape check per data file. A file
+  that fails counts as missing, and a damaged `series.json` shows the error box. `check_weekly.py` does the
+  same for the weekly files before they publish.
+- **Rule 6 and 9, no hidden state.** The page's scripts are classic scripts in strict mode (`'use strict'`).
+  No globals beyond `window.TP` and `window.TP_SYNC`. Modules talk through those and DOM events
+  (`tp:progress`, `tp:synced`). Storage access is wrapped in `try`.
+- **Rule 7, broad catches.** `except Exception` / `catch` only where any failure means the same thing, with
+  the reason on that line (for example `# noqa: BLE001 - keep the previous data`).
 
 ## This project's extra rule
 
-11. **Claims are code too.** Any sentence on the page that states a fact about the data is
-    checked against the data before it ships. Words like "every", "always" and "never" need a
-    script that asserts them (`scripts/check_claims.py`), or the text says "in N of M" and counts
-    live. The weekly read's numbers go through `check_weekly.py` facts.
+11. **Claims are code too.** Any sentence on the page that states a fact about the data is checked against
+    the data before it ships. Words like "every", "always" and "never" need a script that asserts them
+    (`scripts/check_claims.py`), or the text says "in N of M" and counts live. The weekly read's numbers go
+    through `check_weekly.py` facts.
 
 ## Running it
 
+One-time: `npm ci` and `pip install -r requirements-dev.txt`. Then, before every commit:
+
 ```sh
-npx eslint@10.14.0 .          # JavaScript: site/ and worker/
-uvx ruff@0.17.3 check .       # Python: scripts/
-python scripts/check_claims.py
-python scripts/check_weekly.py
+npm run check     # ESLint, strict tsc, Ruff + mypy strict, the baselines, check_claims.py, check_weekly.py
 ```
+
+The Lint workflow runs the same on every push, apart from the deploy so a lint failure never blocks the daily
+data refresh.
+
+**Old findings (2026-11-23)** are in `eslint-suppressions.json` (41) and `checks-baseline.json` (765 type
+findings, mostly untyped parameters, plus 190 Ruff and 179 mypy). Both only shrink: when you're in a
+file, clean its entries where that's reasonable, then `npm run lint:prune`, `npm run types:update` or
+`npm run py:update`.

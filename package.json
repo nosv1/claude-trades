@@ -1,0 +1,23 @@
+{
+  "name": "claude-trades",
+  "private": true,
+  "description": "Dev tools only (lint, types). The site has no build step; Pages serves site/ as-is.",
+  "type": "module",
+  "scripts": {
+    "lint": "eslint --max-warnings 0 .",
+    "lint:prune": "eslint --prune-suppressions .",
+    "types": "python tools/check_baseline.py tsc -- npx tsc -p tsconfig.json --pretty false",
+    "types:update": "python tools/check_baseline.py tsc --update -- npx tsc -p tsconfig.json --pretty false",
+    "py": "python tools/check_baseline.py ruff -- python -m ruff check --output-format json . && python tools/check_baseline.py mypy -- python -m mypy scripts tools",
+    "py:update": "python tools/check_baseline.py ruff --update -- python -m ruff check --output-format json . && python tools/check_baseline.py mypy --update -- python -m mypy scripts tools",
+    "claims": "python scripts/check_claims.py && python scripts/check_weekly.py",
+    "check": "npm run lint && npm run types && npm run py && npm run claims"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "eslint": "10.14.0",
+    "globals": "17.13.0",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.72.1"
+  }
+}

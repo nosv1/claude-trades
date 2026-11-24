@@ -1,0 +1,163 @@
+{
+ "mypy": {
+  "scripts/check_claims.py": {
+   "no-untyped-call": 23,
+   "no-untyped-def": 9
+  },
+  "scripts/check_weekly.py": {
+   "misc": 1,
+   "no-untyped-call": 90,
+   "no-untyped-def": 34,
+   "type-arg": 1,
+   "var-annotated": 2
+  },
+  "scripts/fetch_data.py": {
+   "no-any-return": 1,
+   "type-arg": 9,
+   "var-annotated": 1
+  },
+  "scripts/fetch_trade.py": {
+   "arg-type": 1,
+   "no-any-return": 1,
+   "no-untyped-def": 1,
+   "type-arg": 4,
+   "var-annotated": 1
+  }
+ },
+ "ruff": {
+  "scripts/check_claims.py": {
+   "ANN001": 14,
+   "ANN201": 9
+  },
+  "scripts/check_weekly.py": {
+   "ANN001": 79,
+   "ANN002": 1,
+   "ANN201": 33,
+   "ANN204": 1,
+   "C901": 4,
+   "DTZ011": 3,
+   "N803": 1,
+   "PERF203": 1,
+   "PLR0911": 2,
+   "PLR0913": 4,
+   "PLR0917": 4,
+   "PLW1510": 2,
+   "S310": 2,
+   "S603": 1,
+   "S607": 2
+  },
+  "scripts/fetch_data.py": {
+   "C416": 1,
+   "DTZ011": 2,
+   "PERF203": 3,
+   "PLC0415": 1,
+   "S310": 2,
+   "SIM105": 2
+  },
+  "scripts/fetch_trade.py": {
+   "ANN001": 8,
+   "DTZ011": 3,
+   "PLR0913": 1,
+   "PLR0917": 1,
+   "PLW0603": 1,
+   "S310": 2
+  }
+ },
+ "tsc": {
+  "site/app.js": {
+   "TS18047": 14,
+   "TS18048": 1,
+   "TS2339": 9,
+   "TS2363": 1,
+   "TS2531": 10,
+   "TS7005": 26,
+   "TS7006": 100,
+   "TS7034": 6,
+   "TS7053": 2
+  },
+  "site/briefing.js": {
+   "TS18047": 4,
+   "TS2339": 1,
+   "TS2363": 1,
+   "TS2531": 7,
+   "TS7006": 14
+  },
+  "site/common.js": {
+   "TS2339": 1,
+   "TS7006": 28,
+   "TS7053": 1
+  },
+  "site/nav.js": {
+   "TS18047": 3,
+   "TS2339": 2,
+   "TS7005": 1,
+   "TS7006": 2,
+   "TS7034": 1
+  },
+  "site/outlook.js": {
+   "TS18047": 10,
+   "TS2339": 4,
+   "TS2345": 4,
+   "TS2531": 10,
+   "TS2532": 1,
+   "TS2538": 2,
+   "TS7006": 79,
+   "TS7031": 4,
+   "TS7053": 5
+  },
+  "site/quiz.js": {
+   "TS18047": 12,
+   "TS2339": 2,
+   "TS2531": 4,
+   "TS7006": 80,
+   "TS7031": 1,
+   "TS7053": 5
+  },
+  "site/scenarios.js": {
+   "TS2339": 1,
+   "TS2531": 4,
+   "TS7006": 54,
+   "TS7053": 6
+  },
+  "site/scoreboard.js": {
+   "TS18047": 5,
+   "TS18048": 2,
+   "TS2339": 2,
+   "TS7006": 56,
+   "TS7031": 3,
+   "TS7053": 4
+  },
+  "site/sync-config.js": {
+   "TS2339": 1
+  },
+  "site/sync.js": {
+   "TS18047": 7,
+   "TS2339": 4,
+   "TS2379": 1,
+   "TS2810": 1,
+   "TS7005": 2,
+   "TS7006": 14,
+   "TS7034": 2,
+   "TS7053": 4
+  },
+  "site/trade.js": {
+   "TS18047": 16,
+   "TS2322": 1,
+   "TS2339": 6,
+   "TS2531": 9,
+   "TS7005": 7,
+   "TS7006": 26,
+   "TS7031": 5,
+   "TS7034": 1,
+   "TS7053": 3
+  },
+  "worker/src/index.js": {
+   "TS2307": 1,
+   "TS2339": 8,
+   "TS7005": 1,
+   "TS7006": 47,
+   "TS7034": 1,
+   "TS7053": 2
+  }
+ }
+}

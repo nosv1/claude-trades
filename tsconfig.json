@@ -1,0 +1,29 @@
+{
+  "//": "Strict type check over the JavaScript (nosv1/nosv1 CODING.md rule 10). Site scripts share one global scope (window.TP).",
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": true,
+    "noEmit": true,
+    "strict": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "noImplicitOverride": true,
+    "noUnusedLocals": true,
+    "allowUnreachableCode": false,
+    "allowUnusedLabels": false,
+    "skipLibCheck": true,
+    "target": "es2023",
+    "lib": [
+      "es2023",
+      "dom",
+      "dom.iterable"
+    ],
+    "types": []
+  },
+  "include": [
+    "site/**/*.js",
+    "worker/src/**/*.js"
+  ]
+}

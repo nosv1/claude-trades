@@ -11,6 +11,9 @@ https://raw.githubusercontent.com/nosv1/nosv1/main/PROFILE.md
 It says who he is and how to work with him. If the fetch fails, say so; don't proceed as a generic
 assistant. Local copy of the hub: `C:\Users\chris\nosv1`.
 
+**Before writing any code, fetch and read the coding standard:**
+https://raw.githubusercontent.com/nosv1/nosv1/main/CODING.md
+
 Then read this repo's [docs/notes.md](docs/notes.md) (session notes; update at sign-off, commit as
 Claude).
 
@@ -26,13 +29,16 @@ Claude).
   term the first time ("the Fed (the US central bank)"). Keep real names (FAO Food Price Index,
   Brent, maize, urea) rather than swapping them for plain ones (his call, 2026-11-16). Rules in
   [docs/weekly-routine.md](docs/weekly-routine.md).
-- **Coding standard:** [docs/coding-standard.md](docs/coding-standard.md), NASA/JPL's "Power of Ten"
-  adapted to JS/Python (his call, 2026-11-16). ESLint and Ruff must pass with zero warnings (the Lint
-  workflow runs on every push); refactors are checked by rendering the page before and after.
-  **Every code change, without being reminded** (he asked, 2026-11-17): read the standard before
-  writing code, and before any commit run all four commands in its "Running it" section locally
-  (`npx eslint@10.14.0 .` works here; ESLint doesn't need installing). In the reply, say which
-  rules the change touched and that the four commands passed. Don't push and let CI find it.
+- **Coding standard:** the hub's [CODING.md](https://github.com/nosv1/nosv1/blob/main/CODING.md) at its
+  strictest settings (his calls, 2026-11-16 and 11-23), plus this repo's notes and rule 11 in
+  [docs/coding-standard.md](docs/coding-standard.md). **Every code change, without being reminded** (he
+  asked, 2026-11-17): read both before writing code; before any commit run **Check**; in the reply, say
+  which rules the change touched and that Check passed. Don't push and let CI find it. Refactors are also
+  checked by rendering the page before and after.
+  - **Check:** `npm run check` (ESLint, strict tsc, Ruff + mypy strict, the baselines, the claim checks).
+    One-time setup: `npm ci`, `pip install -r requirements-dev.txt`. The Lint workflow runs the same.
+  - **Baselines only shrink** (`eslint-suppressions.json`, `checks-baseline.json`): clean a file's entries
+    when you're in it.
 - **Commits:** authored as Claude (`--author="Claude <noreply@anthropic.com>"`), explicit paths
   only, never `git add -A` or `git add .`.
 - **Remote:** public repo [nosv1/claude-trades](https://github.com/nosv1/claude-trades); site at

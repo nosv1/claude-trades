@@ -1,30 +1,34 @@
-// Lint for docs/coding-standard.md (rule numbers in brackets). Zero warnings allowed:
-//   npx eslint@10.14.0 --max-warnings 0 .
-const browser = Object.fromEntries([
-  'window', 'document', 'localStorage', 'fetch', 'console', 'setTimeout', 'clearTimeout', 'setInterval',
-  'clearInterval', 'requestAnimationFrame', 'matchMedia', 'getComputedStyle', 'location', 'history',
-  'navigator', 'addEventListener', 'confirm', 'Event', 'CustomEvent', 'MutationObserver',
-  'IntersectionObserver', 'ResizeObserver', 'AbortController', 'URL', 'Intl', 'google', 'atob',
-  'TextDecoder',
-].map((g) => [g, 'readonly']));
-const worker = Object.fromEntries([
-  'fetch', 'console', 'crypto', 'Response', 'Request', 'Headers', 'URL', 'TextEncoder', 'TextDecoder',
-  'atob', 'btoa',
-].map((g) => [g, 'readonly']));
+// Lint for the coding standard (nosv1/nosv1 CODING.md; rules in eslint-standard.mjs, a copy of the hub's) and
+// this repo's docs/coding-standard.md. npm run lint runs it with --max-warnings 0. Old findings are in
+// eslint-suppressions.json, which only shrinks: fix them when you're in the file, then npm run lint:prune.
+import globals from 'globals';
+import tseslint from 'typescript-eslint';
+import { linterOptions, standardRules, typeAwareRules } from './eslint-standard.mjs';
 
-const rules = {
-  'no-eval': 'error', 'no-implied-eval': 'error', 'no-labels': 'error', 'no-with': 'error', // [1]
-  'max-lines-per-function': ['warn', { max: 60, skipBlankLines: true, skipComments: true, IIFEs: false }], // [4]
-  complexity: ['warn', 15], 'max-depth': ['warn', 4], // [4]
-  'no-var': 'error', 'prefer-const': 'warn', 'no-shadow': 'warn', 'no-implicit-globals': 'error', // [6]
-  'no-unused-vars': ['warn', { caughtErrors: 'none' }], 'no-empty': ['warn', { allowEmptyCatch: false }], // [7]
-  'no-undef': 'error', eqeqeq: ['warn', 'smart'], // [7] [8]
+const typed = {
+  parser: tseslint.parser,
+  parserOptions: { project: './tsconfig.json', tsconfigRootDir: import.meta.dirname },
 };
 
 export default [
   { ignores: ['node_modules/**', 'worker/.wrangler/**'] },
-  { files: ['site/**/*.js'], languageOptions: { ecmaVersion: 2023, sourceType: 'script', globals: browser },
-    rules: { ...rules, strict: ['error', 'global'] } },
-  { files: ['worker/**/*.js'], languageOptions: { ecmaVersion: 2023, sourceType: 'module', globals: worker }, rules },
-  { files: ['eslint.config.mjs'], languageOptions: { sourceType: 'module' } },
+  { linterOptions },
+  {
+    // The page: classic scripts sharing window.TP and window.TP_SYNC, each in strict mode.
+    files: ['site/**/*.js'],
+    languageOptions: { ecmaVersion: 2023, sourceType: 'script', globals: { ...globals.browser, google: 'readonly' },
+      ...typed },
+    plugins: { '@typescript-eslint': tseslint.plugin },
+    rules: { ...standardRules, ...typeAwareRules, strict: ['error', 'global'] },
+  },
+  {
+    files: ['worker/**/*.js'],
+    languageOptions: { ecmaVersion: 2023, sourceType: 'module', globals: globals.serviceworker, ...typed },
+    plugins: { '@typescript-eslint': tseslint.plugin },
+    rules: { ...standardRules, ...typeAwareRules },
+  },
+  {
+    files: ['eslint.config.mjs', 'eslint-standard.mjs'],
+    languageOptions: { ecmaVersion: 2023, sourceType: 'module', globals: globals.node },
+  },
 ];

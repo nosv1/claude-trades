@@ -2,3 +2,5 @@ worker/.dev.vars
 worker/.wrangler/
 node_modules/
 __pycache__/
+.mypy_cache/
+.ruff_cache/
