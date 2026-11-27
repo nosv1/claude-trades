@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-23",
+  "updated": "2026-11-27",
   "by": "Claude",
   "note": "If-this-then-that chains that have happened before. Steps with a 'check' light up from the data; steps without one are news to watch for. Likelihoods are best guesses from the history given.",
   "scenarios": [
@@ -206,7 +206,7 @@
       "id": "oilcure",
       "title": "High oil prices fix themselves",
       "likelihood": "likely",
-      "why": "Brent crude was about $91 a barrel on 23 November, far below October's $125 average. The IEA (the world's energy watchdog) says oil supply now tops demand for the first time since the Iran war began. But attacks on Saudi sites and tankers go on. More attacks like that could flip it back.",
+      "why": "Brent crude fell to about $90 a barrel early this week, far below October's $125 average. Then attacks hit two Saudi refineries and tankers near Iran. By Friday it was back near $97. Gulf oil supply keeps coming back, so this stays likely. But more attacks could flip it.",
       "horizon": "Next 6 to 18 months",
       "steps": [
         {
@@ -260,7 +260,7 @@
       "id": "exportban",
       "title": "A ban on food sales sets off a panic",
       "likelihood": "possible",
-      "why": "When food gets expensive at home, governments sometimes stop selling it abroad. Rice and wheat are both up sharply this year. India sells about a quarter of the world's rice, and Russia about a fifth of its wheat. India is now weighing a tax of up to 30% on rice sold abroad, with a ban as a last resort. A tax is milder than a ban, so this stays possible.",
+      "why": "Governments sometimes stop selling food abroad when it gets expensive at home. Rice and wheat are up sharply this year. India sells about a quarter of the world's rice. It is weighing a tax on rice sold abroad, as its harvests shrink. Russia just banned buckwheat sales abroad. A tax is milder than a ban, so this stays possible.",
       "horizon": "Any time",
       "steps": [
         {

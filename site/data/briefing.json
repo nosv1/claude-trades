@@ -1,9 +1,8 @@
 {
-  "date": "2026-11-23",
+  "date": "2026-11-27",
   "by": "Claude",
-  "headline": "India weighs a tax on rice sold abroad, while gold, silver and copper keep sliding.",
-  "summary": "India may tax rice sold abroad to keep it cheap at home. That could lift rice prices for buyers in Asia and Africa. Metals kept falling. Gold had its worst week since March, as traders bet on a US rate rise. Copper slumped on doubts about AI spending. Oil slipped again, far below October's $125 average, though attacks near Saudi Arabia go on.",
-  "lookback": "Gold and silver kept falling, as the last read expected while the Fed sounded tough. Gold had its worst week since March. Oil stayed low: Brent slipped again on Monday, even as attacks near Saudi Arabia went on. The dry monsoon in India is now hitting rice, not just wheat, and the government may tax rice sold abroad. Russia's wheat sales abroad slowed sharply, as the last read's IGC cut hinted. The OPEC+ meeting and FAO's November food prices are still ahead. We again couldn't open Malaysia's palm oil board.",
+  "headline": "Oil bounces back after attacks on Saudi refineries and tankers, days before OPEC+ meets.",
+  "summary": "Oil rose again this week. Attacks hit two Saudi refineries and tankers near Iran. It is still well below October's $125 average. India's harvests are shrinking after a dry monsoon. That keeps rice and wheat in focus. The US also proposed new tariffs on 14 trading partners, including China and India.",
   "summary_facts": [
     {
       "s": "brent",
@@ -12,135 +11,33 @@
       "month": "2026-10"
     }
   ],
+  "lookback": "Gold and silver kept falling, as the last read expected. Gold hit its lowest price in more than a year. Oil did not keep slipping, though. It bounced back after new attacks on Saudi refineries and tankers. India has not decided on its rice tax yet. But its own harvest estimate now shows less rice and much less maize. We found no new Russian wheat rules. OPEC+ and the FAO's November food prices are still ahead.",
   "lookback_facts": [],
   "items": [
     {
-      "tag": "Trade",
-      "title": "India may tax rice sold abroad to keep it cheap at home",
-      "text": "India is weighing a tax of up to 30% on ordinary (non-Basmati) rice sold abroad, The Hindu BusinessLine reported on Sunday. It could come next month. A full ban is a last resort. Rice in Indian shops costs over 11% more than a year ago. A weak monsoon (the summer rainy season) meant farmers planted about 4% less rice. World rice prices were already 37% higher in October than a year before. A tax would mean less Indian rice for sale abroad. Buyers in Asia and Africa could then pay more.",
-      "sources": [
-        {
-          "name": "The Hindu BusinessLine",
-          "url": "https://www.thehindubusinessline.com/markets/commodities/india-weighs-curbs-on-non-basmati-rice-exports-to-cool-domestic-prices/article71728177.ece",
-          "quote": "the government is considering to levy 30 per cent export duty"
-        },
-        {
-          "name": "The Hindu BusinessLine",
-          "url": "https://www.thehindubusinessline.com/markets/commodities/india-weighs-curbs-on-non-basmati-rice-exports-to-cool-domestic-prices/article71728177.ece",
-          "quote": "India is planning to ban non-Basmati rice export as a last resort to help cool domestic prices as it prepares to impose an export duty with a minimum export price (MEP) likely next month"
-        },
-        {
-          "name": "The Hindu BusinessLine",
-          "url": "https://www.thehindubusinessline.com/markets/commodities/india-weighs-curbs-on-non-basmati-rice-exports-to-cool-domestic-prices/article71728177.ece",
-          "quote": "average retail price of rice on November 21 was over 11 per cent higher from year-ago"
-        },
-        {
-          "name": "The Hindu BusinessLine",
-          "url": "https://www.thehindubusinessline.com/markets/commodities/india-weighs-curbs-on-non-basmati-rice-exports-to-cool-domestic-prices/article71728177.ece",
-          "quote": "Kharif acreage under paddy (both Basmati and non-Basmati) for 2026-27 declined by about 4 per cent to 42.68 million hectares due to deficient rainfall in many states"
-        }
-      ],
-      "facts": [
-        {
-          "s": "rice",
-          "m": "yoy",
-          "v": 37
-        }
-      ]
-    },
-    {
-      "tag": "Metals",
-      "title": "Gold has its worst week since March, and copper slumps",
-      "text": "Gold lost about 9% last week, its worst week since March, The Hindu BusinessLine reported. Silver fell to about $41 an ounce, two thirds below its January record. Traders see a 96% chance that the Fed (the US central bank) raises interest rates in December. Higher rates make gold, which pays no interest, less attractive. Copper briefly sank below $12,000 a tonne on Monday. Doubts about spending on AI (artificial intelligence) data centers hit it. That is about a sixth below October's average of about $14,500. Copper goes into wiring and buildings, so its price is a clue to how strong the economy is.",
-      "sources": [
-        {
-          "name": "The Hindu BusinessLine",
-          "url": "https://www.thehindubusinessline.com/markets/gold/gold-price-continues-to-fall-as-ai-selloff-rate-hike-bets-weigh-whats-ahead/article71727282.ece",
-          "quote": "Bullion has shed about 9.4 per cent so far this week, the most since the week ended March 20"
-        },
-        {
-          "name": "The Hindu BusinessLine",
-          "url": "https://www.thehindubusinessline.com/markets/gold/gold-price-continues-to-fall-as-ai-selloff-rate-hike-bets-weigh-whats-ahead/article71727282.ece",
-          "quote": "Spot silver fell 4.1 per cent to $40.99 per ounce, 66.3 per cent below its record high of $121.64"
-        },
-        {
-          "name": "The Hindu BusinessLine",
-          "url": "https://www.thehindubusinessline.com/markets/gold/gold-price-continues-to-fall-as-ai-selloff-rate-hike-bets-weigh-whats-ahead/article71727282.ece",
-          "quote": "Markets see a 96 per cent chance of a 25-basis-point US rate hike in December"
-        },
-        {
-          "name": "The Hindu BusinessLine (Bloomberg)",
-          "url": "https://www.thehindubusinessline.com/markets/commodities/copper-falls-below-12000-as-doubts-over-ai-spending-deepen-selloff/article71733303.ece",
-          "quote": "Copper briefly sank below $12,000 a tonne on the London Metal Exchange, deepening a sharp selloff as doubts grow about demand from artificial intelligence"
-        }
-      ],
-      "facts": [
-        {
-          "s": "copper",
-          "m": "last",
-          "v": 14500,
-          "month": "2026-10"
-        }
-      ]
-    },
-    {
-      "tag": "Food",
-      "title": "Russia ships far less wheat, while Argentina's is the cheapest",
-      "text": "Russia shipped about 1.1 million tonnes of grain from its ports in 1-20 November, Interfax reported. That is less than a third of a year earlier. Its wheat shipments were about a quarter of last year's. Egypt, the biggest buyer, got about 228,000 tonnes, down from 624,000. Argentina's wheat is now the cheapest of the big sellers, the Rosario grain exchange said. That helps buyers like Egypt. World wheat prices were still 37% higher in October than a year before.",
-      "sources": [
-        {
-          "name": "Interfax (Russian)",
-          "url": "https://www.interfax.ru/business/1130842",
-          "quote": "РФ с 1 по 20 ноября отгрузила через портовую инфраструктуру на экспорт 1,1 млн тонн зерна, что в 3,6 раза меньше, чем за аналогичный период прошлого года"
-        },
-        {
-          "name": "Interfax (Russian)",
-          "url": "https://www.interfax.ru/business/1130842",
-          "quote": "отгрузки пшеницы упали в 3,9 раза до 912 тыс. тонн с 3,57 млн тонн год назад"
-        },
-        {
-          "name": "Interfax (Russian)",
-          "url": "https://www.interfax.ru/business/1130842",
-          "quote": "Крупнейшим покупателем стал Египет. Правда, отгрузки в эту страну упали в 2,7 раза до 228 тыс. тонн с 624 тыс. тонн годом ранее"
-        },
-        {
-          "name": "Bolsa de Comercio de Rosario (Spanish)",
-          "url": "https://www.bcr.com.ar/es/mercados/investigacion-y-desarrollo/informativo-semanal/noticias-informativo-semanal/trigo-202627",
-          "quote": "el trigo argentino presenta el precio más bajo entre los principales proveedores globales"
-        }
-      ],
-      "facts": [
-        {
-          "s": "wheat",
-          "m": "yoy",
-          "v": 37
-        }
-      ]
-    },
-    {
       "tag": "Energy",
-      "title": "Oil slips to about $91 as attacks near Saudi Arabia go on",
-      "text": "Brent crude (the main world oil price) fell to about $91 a barrel on Monday, Interfax reported. October's average was $125. News of attacks on oil sites and tankers in the Middle East kept it from falling further. On Sunday the Houthis (a Yemeni armed group) struck a power plant and a port in Saudi Arabia. Iran said it will use all available means against the US naval blockade. Cheaper oil could ease gas prices in the coming months. But new attacks could push it back up quickly.",
+      "title": "Oil bounces back as attacks hit Saudi refineries and tankers",
+      "text": "Brent crude (the main world oil price) was near $97 a barrel on Friday, Interfax reported. The Houthis (a Yemeni armed group) hit Ras Tanura, Saudi Arabia's biggest refinery. A day later, a refinery in Jazan was hit, killing a worker. Iran also said two more tankers hit mines in the Strait of Hormuz. Oil is still below October's $125 average. OPEC+ (the big oil countries' group) meets on Sunday. Bloomberg says it may keep output limits unchanged for January. More attacks could push gas prices back up.",
       "sources": [
         {
           "name": "Interfax (Russian)",
-          "url": "https://www.interfax.ru/business/1130817",
-          "quote": "январские фьючерсы на Brent дешевели на лондонской бирже ICE Futures на $1,58 (1,71%) до $90,99 за баррель"
+          "url": "https://www.interfax.ru/business/1131864",
+          "quote": "январские фьючерсы на Brent дорожали на лондонской бирже ICE Futures на $0,24 (0,25%) до $96,81 за баррель"
         },
         {
           "name": "Interfax (Russian)",
-          "url": "https://www.interfax.ru/business/1130817",
-          "quote": "Сообщения о продолжающихся атаках на нефтяную инфраструктуру и танкеры на Ближнем Востоке ограничивают снижение цен на нефть"
+          "url": "https://www.interfax.ru/business/1131864",
+          "quote": "еще два нефтяных танкера столкнулись с минами и загорелись в Ормузском проливе"
         },
         {
           "name": "Interfax (Russian)",
-          "url": "https://www.interfax.ru/business/1130817",
-          "quote": "В воскресенье хуситы нанесли удары по электростанции Аш-Шукайк и порту Джизан в Саудовской Аравии"
+          "url": "https://www.interfax.ru/business/1131864",
+          "quote": "рассматривают возможность продления текущих квот на добычу нефти на январь 2027 года"
         },
         {
           "name": "Al Jazeera",
-          "url": "https://www.aljazeera.com/news/2026/11/23/iran-says-it-will-use-all-available-means-to-counter-us-blockade",
-          "quote": "We will certainly not tolerate these actions and will use all available means to counter US aggression"
+          "url": "https://www.aljazeera.com/news/2026/11/26/attack-on-saudi-aramcos-jazan-refinery-kills-worker-disrupts-operations",
+          "quote": "a day after the group claimed attacks on Ras Tanura, the kingdom’s largest refinery and a major crude export hub"
         }
       ],
       "facts": [
@@ -151,103 +48,228 @@
           "month": "2026-10"
         }
       ]
+    },
+    {
+      "tag": "Farming",
+      "title": "India's harvests shrink after a weak monsoon",
+      "text": "India now expects its summer grain harvest to be about 5% smaller than last year. Rice is down about 2%, and maize about 15%. A weak monsoon (the summer rainy season) caused it. Winter planting is lagging too: wheat fields are 17% smaller so far, as soils are dry. Rice in Indian shops cost 12.5% more in October than a year before. India has a lot of rice in storage, but not the kinds people want most. World rice and wheat were both 37% pricier in October than a year before. Smaller Indian harvests make limits on sales abroad more likely.",
+      "sources": [
+        {
+          "name": "The Hindu BusinessLine",
+          "url": "https://www.thehindubusinessline.com/economy/indias-kharif-foodgrains-estimate-5-lower-on-weather-woes/article71745520.ece",
+          "quote": "India’s kharif foodgrains output in the 2026-27 season has been estimated lower by 5.1 per cent at 167.14 million tonnes"
+        },
+        {
+          "name": "The Hindu BusinessLine",
+          "url": "https://www.thehindubusinessline.com/economy/indias-kharif-foodgrains-estimate-5-lower-on-weather-woes/article71745520.ece",
+          "quote": "maize production has been significantly impacted as the first estimate pegs it 14.6 per cent lower"
+        },
+        {
+          "name": "The Hindu BusinessLine",
+          "url": "https://www.thehindubusinessline.com/economy/agri-business/indias-rabi-sowing-trails-by-10-on-fall-in-coverage-of-wheat-gram/article71746852.ece",
+          "quote": "The area under of wheat, the main cereal crop in the rabi season, was lower by 17 per cent"
+        },
+        {
+          "name": "The Hindu BusinessLine",
+          "url": "https://www.thehindubusinessline.com/economy/agri-business/why-are-rice-prices-rising-in-india-despite-record-government-stocks/article71746000.ece",
+          "quote": "pushing the national average up 12.5% in October from a year ​earlier even as government stocks sit at record levels"
+        }
+      ],
+      "facts": [
+        {
+          "s": "rice",
+          "m": "yoy",
+          "v": 37
+        },
+        {
+          "s": "wheat",
+          "m": "yoy",
+          "v": 37
+        }
+      ]
+    },
+    {
+      "tag": "Trade",
+      "title": "US proposes new tariffs on 14 trading partners, China hit hardest",
+      "text": "The US proposed new tariffs (taxes on goods coming in) on 14 trading partners on Wednesday. They include China, the EU, India and Indonesia. China would face an extra 20%, the highest rate. China rejected the US claims. The US also plans higher duties on Brazilian sugar above a set amount. A US-China trade truce ends on 10 January. If talks go well, the tariffs could shrink. If they fail, China could buy fewer US crops, as it did before. Tariffs can also raise prices for shoppers.",
+      "sources": [
+        {
+          "name": "Al Jazeera",
+          "url": "https://www.aljazeera.com/news/2026/11/25/trump-announces-new-trade-tariffs-which-countries-will-they-target",
+          "quote": "The Trump administration has announced plans to impose new trade tariffs on 14 of its major trading partners, including China, the European Union and India"
+        },
+        {
+          "name": "Al Jazeera",
+          "url": "https://www.aljazeera.com/news/2026/11/25/trump-announces-new-trade-tariffs-which-countries-will-they-target",
+          "quote": "For China, the limit is 20 percent on tariffs imposed during Trump’s second term, under a trade truce with Beijing that expires on January 10."
+        },
+        {
+          "name": "Al Jazeera",
+          "url": "https://www.aljazeera.com/economy/2026/11/25/world-reacts-to-trumps-new-tariffs-as-us-stocks-tumble",
+          "quote": "The US also plans to raise duties on imports of Brazilian sugar that exceed quotas"
+        },
+        {
+          "name": "Al Jazeera",
+          "url": "https://www.aljazeera.com/economy/2026/11/25/world-reacts-to-trumps-new-tariffs-as-us-stocks-tumble",
+          "quote": "The so-called ‘overcapacity’ is a false issue, and China opposes using it as an excuse for political manipulation"
+        }
+      ],
+      "facts": []
+    },
+    {
+      "tag": "Weather",
+      "title": "El Niño adds new hunger hotspots, the UN warns",
+      "text": "El Niño (the Pacific running warm) pushed Southern Africa and Central America onto the UN's hunger hotspot list. The FAO (the UN's food agency) and the WFP (its food aid agency) said so on Friday. Hotter, drier weather threatens planting in Zimbabwe, Malawi and Mozambique. In Central America, the first crop season was the driest in 40 years. The list now has 16 places, up from 13 in June. Sudan and South Sudan are at risk of famine. When harvests fail, these countries must buy more food abroad.",
+      "sources": [
+        {
+          "name": "WFP",
+          "url": "https://www.wfp.org/news/el-nino-adds-new-hunger-hotspots-conflict-continues-drive-risk-famine-warn-fao-and-wfp",
+          "quote": "El Niño has pushed Southern Africa and the Central American Dry Corridor onto the list of hunger hotspots"
+        },
+        {
+          "name": "WFP",
+          "url": "https://www.wfp.org/news/el-nino-adds-new-hunger-hotspots-conflict-continues-drive-risk-famine-warn-fao-and-wfp",
+          "quote": "the 2026 Primera season, known as the first crop season, was the driest in four decades"
+        },
+        {
+          "name": "WFP",
+          "url": "https://www.wfp.org/news/el-nino-adds-new-hunger-hotspots-conflict-continues-drive-risk-famine-warn-fao-and-wfp",
+          "quote": "lists 16 hotspots, up from 13 in June"
+        }
+      ],
+      "facts": []
+    },
+    {
+      "tag": "Metals",
+      "title": "Gold falls to its lowest in over a year on rate-rise bets",
+      "text": "Gold fell more than 3% on Wednesday, to its lowest price in over a year. Silver slipped to about $41 an ounce. Traders see a 95% chance that the Fed (the US central bank) raises interest rates on 8-9 December. Higher rates make gold, which pays no interest, less attractive. US inflation data that day also came in firm. Gold was $4,105 an ounce on average in October, 13% below its high of the past six months.",
+      "sources": [
+        {
+          "name": "Al Jazeera",
+          "url": "https://www.aljazeera.com/economy/2026/11/25/world-reacts-to-trumps-new-tariffs-as-us-stocks-tumble",
+          "quote": "The price of gold – which is considered a safe investment in times of economic uncertainty – fell by more than 3 percent to its lowest level in more than a year."
+        },
+        {
+          "name": "The Hindu BusinessLine",
+          "url": "https://www.thehindubusinessline.com/markets/commodities/gold-slips-as-fed-hike-bets-weigh-silver-crude-base-metals-also-under-pressure/article71741631.ece",
+          "quote": "CME FedWatch shows a 95 per cent chance of a quarter-point hike at the December 8–9 meeting"
+        },
+        {
+          "name": "The Hindu BusinessLine",
+          "url": "https://www.thehindubusinessline.com/markets/commodities/gold-slips-as-fed-hike-bets-weigh-silver-crude-base-metals-also-under-pressure/article71741631.ece",
+          "quote": "COMEX silver traded near $40.75"
+        }
+      ],
+      "facts": [
+        {
+          "s": "gold",
+          "m": "last",
+          "v": 4105
+        },
+        {
+          "s": "gold",
+          "m": "fromPeak",
+          "v": -13
+        }
+      ]
     }
   ],
   "checked": [
     {
       "topic": "oil",
       "status": "covered",
-      "note": "Brent fell to about $91 on Monday as stocks slid; attacks on Saudi sites and tankers limited the drop.",
-      "url": "https://www.interfax.ru/business/1130817"
+      "note": "Brent rose to near $97 after Houthi hits on two Saudi refineries; OPEC+ meets Sunday.",
+      "url": "https://www.interfax.ru/business/1131864"
     },
     {
       "topic": "gas-fertilizer",
       "status": "quiet",
-      "note": "Russia kept its fertilizer export quotas and home price caps through May 2027. No big gas or urea news found.",
-      "url": "https://www.interfax.ru/business/1130768"
+      "note": "Gazprom expects gas prices to keep rising once the EU bans Russian LNG on 1 Jan. No big urea news.",
+      "url": "https://www.interfax.ru/business/1131866"
     },
     {
       "topic": "enso",
-      "status": "quiet",
-      "note": "NOAA site blocked this run. Australia's weather bureau page opened, but no new El Niño update found since NOAA's 12 Nov advisory.",
-      "url": "https://www.bom.gov.au/climate/enso/"
+      "status": "covered",
+      "note": "FAO and WFP say El Niño is gaining strength and added new hunger hotspots. NOAA blocked; next update due in December.",
+      "url": "https://www.wfp.org/news/el-nino-adds-new-hunger-hotspots-conflict-continues-drive-risk-famine-warn-fao-and-wfp"
     },
     {
       "topic": "southeast-asia",
       "status": "quiet",
-      "note": "Indonesian palm firms ask that a new 2027 export-handling fee stay low (17 Nov). Nothing newer found; MPOB blocked.",
-      "url": "https://industri.kontan.co.id/news/emiten-sawit-minta-fee-dsi-tak-tambah-beban-industri"
+      "note": "Palm oil rose about 2% on the week; Indonesia's export agency proposed a 0.5% fee. Malaysia's exports dipped.",
+      "url": "https://internasional.kontan.co.id/news/harga-minyak-sawit-lanjutkan-kenaikan-sepekan-sudah-mendaki-213"
     },
     {
       "topic": "south-asia",
       "status": "covered",
-      "note": "India weighs a rice export tax of up to 30%, with a ban as a last resort; rice planting fell after a weak monsoon.",
-      "url": "https://www.thehindubusinessline.com/markets/commodities/india-weighs-curbs-on-non-basmati-rice-exports-to-cool-domestic-prices/article71728177.ece"
+      "note": "India's summer grain estimate fell 5%; wheat planting is 17% behind. No rice tax decision yet.",
+      "url": "https://www.thehindubusinessline.com/economy/indias-kharif-foodgrains-estimate-5-lower-on-weather-woes/article71745520.ece"
     },
     {
       "topic": "black-sea",
-      "status": "covered",
-      "note": "Russia's grain port shipments in 1-20 Nov fell to less than a third of last year's; wheat to about a quarter.",
-      "url": "https://www.interfax.ru/business/1130842"
+      "status": "quiet",
+      "note": "Russia banned buckwheat sales abroad for six months (27 Nov). No new wheat rule or quota found.",
+      "url": "https://www.interfax.ru/russia/1131801"
     },
     {
       "topic": "americas",
       "status": "covered",
-      "note": "Rosario exchange: Argentina's wheat is the cheapest of the big sellers as its harvest gets going.",
-      "url": "https://www.bcr.com.ar/es/mercados/investigacion-y-desarrollo/informativo-semanal/noticias-informativo-semanal/trigo-202627"
+      "note": "US plans higher duties on Brazilian sugar. No new soybean or maize crop news reached (CONAB blocked).",
+      "url": "https://www.aljazeera.com/economy/2026/11/25/world-reacts-to-trumps-new-tariffs-as-us-stocks-tumble"
     },
     {
       "topic": "australia",
-      "status": "unreached",
-      "note": "ABARES, GrainCorp and Grain Central pages all refused us; no Australian wheat page could be opened."
+      "status": "quiet",
+      "note": "IGC (20 Nov) raised its Australian grain forecast. No newer Australian wheat news could be opened.",
+      "url": "https://www.igc.int/gmr_summary.aspx"
     },
     {
       "topic": "china",
-      "status": "quiet",
-      "note": "Rosario exchange piece on China's five-year plan to grow more of its own grain. No fresh China buying news opened.",
-      "url": "https://www.bcr.com.ar/es/mercados/investigacion-y-desarrollo/informativo-semanal/noticias-informativo-semanal/alimentar-mas"
+      "status": "covered",
+      "note": "US proposes an extra 20% tariff on China; China rejects it. Their trade truce ends 10 Jan.",
+      "url": "https://www.aljazeera.com/news/2026/11/25/trump-announces-new-trade-tariffs-which-countries-will-they-target"
     },
     {
       "topic": "importers",
       "status": "covered",
-      "note": "Russian wheat shipped to Egypt in 1-20 Nov fell to well under half of last year's.",
-      "url": "https://www.interfax.ru/business/1130842"
+      "note": "FAO and WFP list 16 hunger hotspots, adding Southern Africa and Chad. Sudan and South Sudan risk famine.",
+      "url": "https://www.wfp.org/news/el-nino-adds-new-hunger-hotspots-conflict-continues-drive-risk-famine-warn-fao-and-wfp"
     },
     {
       "topic": "shipping",
       "status": "covered",
-      "note": "Iran vowed to use all means against the US naval blockade; Houthis hit a Saudi port.",
-      "url": "https://www.aljazeera.com/news/2026/11/23/iran-says-it-will-use-all-available-means-to-counter-us-blockade"
+      "note": "Iran says two more tankers hit mines in the Strait of Hormuz; Houthis hit Saudi Red Sea ports.",
+      "url": "https://www.interfax.ru/business/1131864"
     },
     {
       "topic": "reports",
-      "status": "quiet",
-      "note": "No new FAO or USDA report since 20 Nov (both sites blocked). Rabobank's 2027 outlook expects world wheat to tighten.",
-      "url": "https://www.thehindubusinessline.com/economy/agri-business/geopolitics-weather-to-shape-agri-commodity-markets-in-2027-rabobank/article71734536.ece"
+      "status": "covered",
+      "note": "FAO-WFP Hunger Hotspots report out 27 Nov. FAO and USDA sites blocked; no other new report found.",
+      "url": "https://www.wfp.org/news/el-nino-adds-new-hunger-hotspots-conflict-continues-drive-risk-famine-warn-fao-and-wfp"
     },
     {
       "topic": "metals",
       "status": "covered",
-      "note": "Gold's worst week since March; silver near $41; copper briefly under $12,000 on AI doubts.",
-      "url": "https://www.thehindubusinessline.com/markets/commodities/copper-falls-below-12000-as-doubts-over-ai-spending-deepen-selloff/article71733303.ece"
+      "note": "Gold fell to its lowest in over a year; silver near $41; copper fell about 4% in one day.",
+      "url": "https://www.thehindubusinessline.com/markets/commodities/gold-slips-as-fed-hike-bets-weigh-silver-crude-base-metals-also-under-pressure/article71741631.ece"
     },
     {
       "topic": "money",
       "status": "covered",
-      "note": "Markets see a 96% chance of a Fed rate rise in December, lifting the dollar.",
-      "url": "https://www.thehindubusinessline.com/markets/gold/gold-price-continues-to-fall-as-ai-selloff-rate-hike-bets-weigh-whats-ahead/article71727282.ece"
+      "note": "Traders see a 95% chance of a Fed hike on 8-9 Dec. South Korea's central bank raised rates.",
+      "url": "https://www.thehindubusinessline.com/markets/commodities/gold-slips-as-fed-hike-bets-weigh-silver-crude-base-metals-also-under-pressure/article71741631.ece"
     },
     {
       "topic": "politics",
-      "status": "quiet",
-      "note": "UN climate talks (COP31) ended with no deal on Sunday after oil countries objected to the words 'fossil fuels'.",
-      "url": "https://www.aljazeera.com/news/2026/11/22/countries-react-after-cop31-climate-talks-end-in-collapse"
+      "status": "covered",
+      "note": "US proposed new tariffs on 14 partners. Report says US urged Iraq and Venezuela to leave OPEC.",
+      "url": "https://www.aljazeera.com/news/2026/11/25/trump-announces-new-trade-tariffs-which-countries-will-they-target"
     }
   ],
   "watch": [
-    "OPEC+ (the big oil countries' group) meets to set 2027 output, Sun 29 Nov",
+    "OPEC+ (the big oil countries' group) meets online, Sun 29 Nov",
     "World food prices for November (FAO Food Price Index), Fri 4 Dec",
-    "India's decision on a tax on rice sold abroad, likely in December",
-    "The Fed's December meeting, where traders expect a rate rise"
+    "US jobs data, Fri 4 Dec, then the Fed's decision on 8-9 Dec",
+    "The end of the US-China trade truce, 10 Jan"
   ]
 }
